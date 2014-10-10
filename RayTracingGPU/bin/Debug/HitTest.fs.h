@@ -40,7 +40,7 @@ uniform vec4 Viewport;
 uniform mat4 ProjectionMatrixInverse;
 
 
-void GetRay2D(vec4 pix, inout vec3 orgin, inout vec3 ray)
+void GetRay2D(vec4 pix, inout vec3 origin, inout vec3 ray)
 {
 	vec4 near, far;
 
@@ -61,7 +61,7 @@ void GetRay2D(vec4 pix, inout vec3 orgin, inout vec3 ray)
 	near = ProjectionMatrixInverse * near;
 	far /= far.w;
 	near /= near.w;
-	//orgin = far;
+	//origin = far;
 	//return;
 
 	//ustawianie zakresu -1, 1
@@ -74,7 +74,7 @@ void GetRay2D(vec4 pix, inout vec3 orgin, inout vec3 ray)
 	//far.z = 0;
 
 	ray = normalize(far.xyz - near.xyz);
-	orgin = near.xyz;
+	origin = near.xyz;
 }
 int GetTrianglesCount()
 {
@@ -113,7 +113,7 @@ void GetMaterial(int triangleIndex, inout vec4 diffuse, inout vec4 ambient, inou
 	ambient = texelFetch(MaterialPropertiesTexture, i0 * OFFSET_MATERIAL + OFFSET_AMBIENT);
 	reflectionRatio = texelFetch(MaterialPropertiesTexture, i0 * OFFSET_MATERIAL + OFFSET_RATIO).x;
 }
-//bool FindIntersectionNT(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrgin, vec3 rayDir,
+//bool FindIntersectionNT(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
 //	inout float dist, inout vec3 hitPoint, inout bool isLine, inout bool isFront, inout vec3 normal)
 //{
 //	dist = 0.0;
@@ -127,7 +127,7 @@ void GetMaterial(int triangleIndex, inout vec4 diffuse, inout vec4 ambient, inou
 //	normal = normalize(cross(e0, e1));
 //	float mdotn = (rayDir^normal);
 //	float PlaneCoef = (normal^v0);	// Same coef for all three vertices.
-//	float planarDist = (rayOrgin^normal) - PlaneCoef;
+//	float planarDist = (rayOrigin^normal) - PlaneCoef;
 //
 //	bool isFront = (mdotn <= 0.0);
 //	if (frontFace) {
@@ -144,7 +144,7 @@ void GetMaterial(int triangleIndex, inout vec4 diffuse, inout vec4 ambient, inou
 //	vec3 q;
 //	q = rayDir;
 //	q *= *dist;
-//	q += rayOrgin;						// Point of view line intersecting plane
+//	q += rayOrigin;						// Point of view line intersecting plane
 //
 //	// Compute barycentric coordinates
 //	vec3 v = q;
@@ -152,7 +152,7 @@ void GetMaterial(int triangleIndex, inout vec4 diffuse, inout vec4 ambient, inou
 //
 //
 //}
-bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrgin, vec3 rayDir,
+bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
 	inout float dist, inout vec3 hitPoint, inout bool isLine, inout bool isFront, inout vec3 normal)
 {
 	dist = 0.0;
@@ -181,7 +181,7 @@ bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrgin, vec3 rayDir,
 	float invD = 1.0 / d;
 
 	//obliczanie pierwszej wspó³rzednej barycentrycznej
-	vec3 d1 = rayOrgin - v0;
+	vec3 d1 = rayOrigin - v0;
 	float bc0 = dot(d1, s1) * invD;
 	if (bc0 < 0.0 || bc0 > 1.0)
 		return false;
@@ -195,7 +195,7 @@ bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrgin, vec3 rayDir,
 	dist = dot(e1, s2) * invD;
 
 	//punkt przeciêcia prostej z p³aszczyzn¹
-	hitPoint = rayOrgin + (rayDir * dist);
+	hitPoint = rayOrigin + (rayDir * dist);
 
 	if (bc0 <= 0.01 || bc0 >= 0.99 || bc1 <= 0.01 || bc1 >= 0.99)
 		isLine = true;
@@ -469,15 +469,15 @@ void main()
 
 
 
-	vec3 ray, orgin;
+	vec3 ray, origin;
 	vec4 result;
 
 	//pobieranie promienia we wspó³rzêdnych modelu
-	GetRay2D(vec4(pixel.xy, 0.0, 1.0), orgin, ray);
-	//outTest = orgin;
+	GetRay2D(vec4(pixel.xy, 0.0, 1.0), origin, ray);
+	outTest = origin;
 
 	//rozpoczêcie promienia
-	RayTrace1(orgin, ray, result);
+	RayTrace1(origin, ray, result);
 
 	//przypisanie wyjsciowego koloru
 	outFragColor = result;
@@ -540,18 +540,18 @@ void main()
 	////pobranie trójk¹ta
 	//GetTriangleCoords(0, v0, v1, v2);
 	////if (PickTriangle(vec3(-0.5, 0.0, 0.0), vec3(0.5, 0.0, 0.0), vec3(0.0, 1.0, 0.0), vec3(-1.0, 100.0, -1.0), vec3(0.0, 0.0, 1.0), tmpHitPoint, uvw, tmpDist, frontFacing))
-	////if (PickTriangle(v0, v1, v2, orgin.xyz, ray.xyz, tmpHitPoint, uvw, tmpDist, frontFacing))
-	//if (HitTest(v0, v1, v2, orgin.xyz, ray.xyz, dist, hitPoint, isLine))
+	////if (PickTriangle(v0, v1, v2, origin.xyz, ray.xyz, tmpHitPoint, uvw, tmpDist, frontFacing))
+	//if (HitTest(v0, v1, v2, origin.xyz, ray.xyz, dist, hitPoint, isLine))
 	////if (v0.x == -.5 && v0.y == 0 && v0.z == 0)
 	////if (v2.x == 0 && v2.y == 1 && v2.z == 0)
 	////if (ray.y > 0)
-	////if (orgin.x < 0.41 && orgin.x > 0.39 && orgin.y > 0.49 && orgin.y < 0.51)
+	////if (origin.x < 0.41 && origin.x > 0.39 && origin.y > 0.49 && origin.y < 0.51)
 	////if (pixel.y>400 && pixel.x>400)
-	//if (orgin.x < 0)
-	////if (orgin.z == 0 )
+	//if (origin.x < 0)
+	////if (origin.z == 0 )
 	////if (textureSize(PositionIndexTexture)==3)
-	//if (HitTest(vec3(0, 0, 0.4), vec3(0.4, 0, 0.4), vec3(0.4, 0.4, 0.4), orgin.xyz, ray.xyz, dist, hitPoint, isLine, isFront, tmpHitNormal))
-	//if (HitTest(vec3(-0.2, 0, 0), vec3(0.2, 0, 0), vec3(0.2, 0, 0.4), orgin.xyz, ray.xyz, dist, hitPoint, isLine, isFront, tmpHitNormal))
+	//if (HitTest(vec3(0, 0, 0.4), vec3(0.4, 0, 0.4), vec3(0.4, 0.4, 0.4), origin.xyz, ray.xyz, dist, hitPoint, isLine, isFront, tmpHitNormal))
+	//if (HitTest(vec3(-0.2, 0, 0), vec3(0.2, 0, 0), vec3(0.2, 0, 0.4), origin.xyz, ray.xyz, dist, hitPoint, isLine, isFront, tmpHitNormal))
 	//if (pixel.x>400 && pixel.z == 0)
 	//if (count>40)
 	//	outFragColor = vec4(0, 1, 0, 1);
@@ -559,7 +559,7 @@ void main()
 	//	outFragColor = vec4(1, 1, 0, 1);
 	//return;
 
-	//if (orgin.x<0.5)
+	//if (origin.x<0.5)
 	//	discard;
 
 
@@ -567,8 +567,8 @@ void main()
 	{
 		isLine = false;
 		GetTriangleCoords(i, v0, v1, v2);
-		//if (PickTriangle(v0, v1, v2, orgin.xyz, ray.xyz, tmpHitPoint, uvw, tmpDist, frontFacing))
-		if (HitTest(v0, v1, v2, orgin.xyz, ray.xyz, tmpDist, tmpHitPoint, isLine, isFront, tmpHitNormal))
+		//if (PickTriangle(v0, v1, v2, origin.xyz, ray.xyz, tmpHitPoint, uvw, tmpDist, frontFacing))
+		if (HitTest(v0, v1, v2, origin.xyz, ray.xyz, tmpDist, tmpHitPoint, isLine, isFront, tmpHitNormal))
 		{
 			//sprawdzanie czy po³o¿ony bli¿ej od poprzedniego
 			if (hitTriangle == -1 || tmpDist < dist)
