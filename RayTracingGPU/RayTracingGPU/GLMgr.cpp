@@ -218,7 +218,8 @@ void GLMgr::Init()
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	OpenGLHelper::CheckErrors();
 
-	tmpBufferUI = this->CurrentScene->GetPositionIndexData(&buffCount);
+	//z dodatkowym generowanym offsetem dla indexu
+	tmpBufferUI = this->CurrentScene->GetPositionIndexData(&buffCount, true);
 	OpenGLHelper::RegisterTexture(GL_TEXTURE0, tmpBufferUI, sizeof(unsigned int) * buffCount, GL_R32I,
 		&TextureBuffer_PositionIndex, &Texture_PositionIndex);
 
@@ -385,22 +386,38 @@ void GLMgr::RayTraceOnCPU(unsigned depth, const Ray *ray, Color *outColor)
 		//pobranie koloru trafionego punktu
 		*outColor = Shading::CalculateColor(&hitResult, &this->LightList);
 		//*outColor = Color(1, 0, 0);
-	}
-	if (depth < 1)
-	{
-		if (hitResult.HitMaterial->IsTransmissive())
+
+		if (depth < 2)
 		{
-			//wyznaczenie parametrów kolejnego promienia
-			Vector3D transmissiveDir = -ray->Direction;
-			Vector3D transmissiveOrigin = hitResult.HitPoint + transmissiveDir*0.001;
-			Color transmissiveColor = Color(0);
-			//kolejny test promienia
-			this->RayTraceOnCPU(depth + 1, &Ray(transmissiveOrigin, transmissiveDir), &transmissiveColor);
-			//color blending
-			*outColor = hitResult.HitMaterial->CalculateTransmissionColor(outColor, &transmissiveColor);
-			//todo: blending
+			//wyliczenie przeŸroczystoœci
+			if (hitResult.HitMaterial->IsTransmissive())
+			{
+				//wyznaczenie parametrów kolejnego promienia
+				Vector3D transmissiveDir = ray->Direction;
+				//dodatkowe minimalne przesuniecie (likwiduje bledy kolejnego przeciecia)
+				Vector3D transmissiveOrigin = hitResult.HitPoint + transmissiveDir*0.0001;
+				Color transmissiveColor = Color(1);
+				//kolejny test promienia
+				this->RayTraceOnCPU(depth + 1, &Ray(transmissiveOrigin, transmissiveDir), &transmissiveColor);
+				//color blending
+				*outColor = hitResult.HitMaterial->CalculateTransmissionColor(outColor, &transmissiveColor);
+			}
+			//wyliczenie odbicia
+			if (hitResult.HitMaterial->IsReflective())
+			{
+				//wyznaczenie parametrów kolejnego promienia
+				Vector3D rayDirectionInv = -ray->Direction;
+				float reflectionDot = Vector3D::dotProduct(hitResult.HitNormal, rayDirectionInv);
+				Vector3D reflectionDir = hitResult.HitNormal * reflectionDot * 2 - rayDirectionInv;
+				Vector3D reflectionOrigin = hitResult.HitPoint;
+
+				Color reflectionColor = Color(1);
+				//kolejny test promienia
+				this->RayTraceOnCPU(depth + 1, &Ray(reflectionOrigin, reflectionDir), &reflectionColor);
+				//color blending
+				*outColor = hitResult.HitMaterial->CalculateReflectionColor(outColor, &reflectionColor);
+			}
 		}
-		//todo: reflective
 	}
 }
 

@@ -9,5 +9,7 @@ public:
 	virtual float *GetColorProperties(unsigned int *outCount) = 0;
 	virtual bool IsTransmissive() = 0;
 	virtual Color CalculateTransmissionColor(const Color *baseColor, const Color *transmissiveColor) = 0;
+	virtual bool IsReflective() = 0;
+	virtual Color CalculateReflectionColor(const Color *baseColor, const Color *reflectionColor) = 0;
 };
 

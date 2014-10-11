@@ -43,6 +43,10 @@ public:
 		float transmissiveRatio = this->GetTransmissiveRatio();
 		return *baseColor * transmissiveRatio + *transmissiveColor * (1.0 - transmissiveRatio);
 	}
+	Color CalculateReflectionColor(const Color *baseColor, const Color *reflectionColor)
+	{
+		return *baseColor * (1.0 - this->ReflectionRatio) + *reflectionColor * this->ReflectionRatio;
+	}
 #pragma endregion
 
 #pragma region Gety
@@ -53,7 +57,12 @@ public:
 
 	bool IsTransmissive()
 	{
-		return this->GetTransmissiveRatio() < 1.f;
+		return this->GetTransmissiveRatio() < 1.f - DBL_EPSILON;
+	}
+
+	bool IsReflective()
+	{
+		return this->ReflectionRatio > DBL_EPSILON;
 	}
 
 	virtual float *GetColorProperties(unsigned int *outCount)

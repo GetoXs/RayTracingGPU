@@ -33,7 +33,7 @@ public:
 	{
 		mesh->AssignMaterial(MaterialList[materialIndex], materialIndex);
 		///przesuniecie wspolrzednych dla indexu (z powodu zmiany indexu w teskturze przechodzacej do shadera)
-		mesh->ApplyIndexOffset(this->MeshIndexOffset);
+		//mesh->ApplyIndexOffset(this->MeshIndexOffset);
 		this->MeshIndexOffset += mesh->PositionCount;
 		this->MeshObjectList.append(mesh);
 	}
@@ -46,12 +46,27 @@ public:
 #pragma endregion
 
 #pragma region Gety
-	unsigned *GetPositionIndexData(unsigned *count)
+	unsigned *GetPositionIndexData(unsigned *count, bool withPositionOffset)
 	{
+		unsigned indexOffset = 0;
 		std::vector<unsigned> *returnArray = new std::vector<unsigned>();
 		for each (Mesh *mesh in this->MeshObjectList)
 		{
-			returnArray->insert(returnArray->end(), mesh->IndexData, (mesh->IndexData + mesh->IndexDataCount));
+			//dodanie dodatkowego offsetu przy pobieraniu pe³nej tablicy indexów
+			//wymagane przy pobieraniu pelnej tablicy pozycji oraz indexow
+			unsigned *tmpIndexData = mesh->IndexData;
+			if (indexOffset != 0 && withPositionOffset)
+			{
+				for (int i = 0; i < mesh->IndexDataCount; i++)
+					returnArray->push_back(tmpIndexData[i] + indexOffset);
+			}
+			else
+			{	//dla pierwszego elementu (offset = 0)
+				returnArray->insert(returnArray->end(), tmpIndexData, (tmpIndexData + mesh->IndexDataCount));
+			}
+			//offset zwiêkszony o liczbe zdefiniowanych wierzcho³ków
+			indexOffset = mesh->PositionCount;
+
 		}
 		*count = returnArray->size();
 		return returnArray->data();

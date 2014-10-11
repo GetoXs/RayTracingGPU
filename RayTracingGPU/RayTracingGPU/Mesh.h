@@ -92,12 +92,6 @@ public:
 	//sprawdzanie przeciecia z meshem
 	virtual bool HitTest(const Ray *ray, ObjectHitResult *outResult)
 	{
-		if (ray->Start.x() > 0.3 && ray->Start.x() < 0.4
-			&& ray->Start.y() > 0.1 && ray->Start.y() < 0.2)
-		{
-			int i = 0;
-		}
-
 		Triangle3D testedTriangle;
 		ObjectHitResult triangleResult;
 

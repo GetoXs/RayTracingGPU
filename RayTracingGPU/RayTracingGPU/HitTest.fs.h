@@ -407,7 +407,8 @@ void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 		if (isTransmissive)
 		{	//ustawiamy promien przezroczystosci
 			transmissiveDir = rayDir;
-			transmissiveOrigin = hitPoint + transmissiveDir*0.001;
+			//dodatkowe minimalne przesuniecie (likwiduje bledy kolejnego przeciecia)
+			transmissiveOrigin = hitPoint + transmissiveDir*0.0001;
 		}
 		isReflective = reflectionRatio > 0;
 		if (isReflective)
