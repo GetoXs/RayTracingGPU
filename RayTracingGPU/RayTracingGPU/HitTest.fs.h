@@ -40,13 +40,15 @@ uniform vec4 Viewport;
 uniform mat4 ProjectionMatrixInverse;
 
 
-void GetRay2D(vec4 pix, inout vec3 origin, inout vec3 ray)
+void GetRay2D(vec4 pix, inout vec3 rayOrigin, inout vec3 rayDir)
 {
 	vec4 near, far;
 
-	//mapowanie do wspó³rzednych -1, 1
+	//przekszta³cenie ze wspó³rzêdnych vp na ortho 2d (-1; 1)
 	pix.x = (pix.x - Viewport[0]) / Viewport[2];
 	pix.y = (pix.y - Viewport[1]) / Viewport[3];
+
+	//ustawianie konca i pocz¹tku obliczanego wektora
 	far = vec4(pix.xy, 1.0, 1.0);
 	near = vec4(pix.xy, 0.0, 1.0);
 	near.xyz *= 2.0;
@@ -54,14 +56,12 @@ void GetRay2D(vec4 pix, inout vec3 origin, inout vec3 ray)
 	far.xyz *= 2.0;
 	far.xyz -= 1.0;
 
-	//zerowanie odleglosci na potrzeby tworzenia kierunku promienia
-	//pix.z = 0.0;
-
+	//przekszta³cenie ze wspó³rzêdnych ortho na perspektywiczne
 	far = ProjectionMatrixInverse * far;
 	near = ProjectionMatrixInverse * near;
 	far /= far.w;
 	near /= near.w;
-	//origin = far;
+	//rayOrigin = far;
 	//return;
 
 	//ustawianie zakresu -1, 1
@@ -73,8 +73,9 @@ void GetRay2D(vec4 pix, inout vec3 origin, inout vec3 ray)
 	//near.z = eyeDist;
 	//far.z = 0;
 
-	ray = normalize(far.xyz - near.xyz);
-	origin = near.xyz;
+	//obliczanie kierunku
+	rayDir = normalize(far.xyz - near.xyz);
+	rayOrigin = near.xyz;
 }
 int GetTrianglesCount()
 {
@@ -159,7 +160,7 @@ bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
 	isLine = false;
 	//hitPoint.xyz = v 0.0;
 
-	//krawedzie
+	//wyliczenie krawêdzi
 	vec3 e0, e1;
 	e0 = v1 - v0;
 	e1 = v2 - v0;
@@ -167,7 +168,7 @@ bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
 	//wyliczenie wektora normalnego do trojkata
 	normal = normalize(cross(e0, e1));
 
-	//wektor prostopad³y do plaszczyzny
+	//wektor prostopad³y do plaszczyzny (kierunku promienia i krawêdzi)
 	vec3 s1 = cross(rayDir, e1);
 
 	//sprawdzamy czy istnieje przeciecie wektora z drug¹ krawêdzi¹
@@ -177,12 +178,18 @@ bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
 		return false;
 
 	isFront = d > 0;
+	if (!isFront)
+		return false;
 
 	float invD = 1.0 / d;
 
 	//obliczanie pierwszej wspó³rzednej barycentrycznej
 	vec3 d1 = rayOrigin - v0;
 	float bc0 = dot(d1, s1) * invD;
+	if (v0 == vec3(0.1, 0, 0.4))
+	{
+		outTest = vec3(bc0,0,0);
+	}
 	if (bc0 < 0.0 || bc0 > 1.0)
 		return false;
 
@@ -192,16 +199,20 @@ bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
 	if (bc1 < 0.0 || (bc0 + bc1) > 1.0)
 		return false;
 
+	//kalkulacja dystansu do plaszczyzny
 	dist = dot(e1, s2) * invD;
+
+	//sprawdzenie czy trojkat jest po wlaœciwej stronie promienia
+	if (dist <= 0)
+		return false;
 
 	//punkt przeciêcia prostej z p³aszczyzn¹
 	hitPoint = rayOrigin + (rayDir * dist);
 
 	if (bc0 <= 0.01 || bc0 >= 0.99 || bc1 <= 0.01 || bc1 >= 0.99)
 		isLine = true;
-	if (dist> 0)
-		return true;
-	return false;
+
+	return true;
 }
 
 bool PickTriangle(const vec3 V0, const vec3 V1, const vec3 V2,
@@ -275,7 +286,8 @@ vec4 CalculateLocalLambertColor(int lightIndex, vec4 matAmbientColor, vec4 matDi
 		return CalculateLocalAmbientLight(lightIndex, matAmbientColor);
 	else
 	{
-		return CalculateLocalAmbientLight(lightIndex, matAmbientColor) + lightColorDiffuse * matDiffuseColor * diffuseRate;
+		return CalculateLocalAmbientLight(lightIndex, matAmbientColor) + 
+			lightColorDiffuse * matDiffuseColor * diffuseRate;
 	}
 }
 vec4 CalculateLambertColor(vec4 matAmbientColor, vec4 matDiffuseColor, vec3 point, vec3 normal)
@@ -458,6 +470,7 @@ void RayTrace1(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 void main()
 {
 
+	outTest = vec3(0);
 	//if (ray.z>0.0)
 	//if (pixel.y>400)
 	//if ((ProjectionMatrixInverse * vec4(pixel, 1.0)).x>0)
@@ -474,7 +487,7 @@ void main()
 
 	//pobieranie promienia we wspó³rzêdnych modelu
 	GetRay2D(vec4(pixel.xy, 0.0, 1.0), origin, ray);
-	outTest = origin;
+	//outTest = origin;
 
 	//rozpoczêcie promienia
 	RayTrace1(origin, ray, result);

@@ -1,8 +1,8 @@
 #pragma once
 #include "ISceneObject.h"
 
-class Sphere :
-	public ISceneObject
+class Sphere 
+	//:public ISceneObject
 {
 public:
 	Vector3D Center;
@@ -11,7 +11,7 @@ public:
 	virtual ObjectHitResult HitTest(Ray *ray);
 
 	Sphere(Vector3D center, double radius)
-		:ISceneObject(), Center(center), Radius(radius)
+//		:ISceneObject(), Center(center), Radius(radius)
 	{
 	}
 };

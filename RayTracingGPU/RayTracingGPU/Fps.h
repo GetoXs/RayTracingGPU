@@ -61,5 +61,12 @@ public:
 	{
 		return m_fps;
 	}
+	//reset counter
+	void Reset()
+	{
+		this->m_fps = 0;
+		this->m_fpscount = 0;
+		this->m_fpsinterval = Interval();
+	}
 };
 

@@ -1,0 +1,12 @@
+/RayTracingGPU/*.suo
+/RayTracingGPU/ipch
+/RayTracingGPU/RayTracingGPU.sdf
+/RayTracingGPU/GLTools/Debug
+/RayTracingGPU/GLTools/GLTools.vcxproj.user
+/RayTracingGPU/RayTracingGPU/Debug
+/RayTracingGPU/RayTracingGPU/RayTracingGPU.vcxproj.user
+/RayTracingGPU/bin/Debug/RayTracingGPU.pdb
+/RayTracingGPU/bin/Debug/RayTracingGPU.exp
+/RayTracingGPU/bin/Debug/RayTracingGPU.ilk
+/RayTracingGPU/bin/Debug/RayTracingGPU.lib
+/RayTracingGPU/RayTracingGPU.opensdf

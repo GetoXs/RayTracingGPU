@@ -1,35 +1,127 @@
 #pragma once
 #include "ISceneObject.h"
 #include "IMaterial.h"
+#include "Triangle3D.h"
 
 class Mesh :
 	public ISceneObject
 {
 public:
-	///Dane z indexem (wierzcholkow oraz normalnych)
+	//Dane z indexem (wierzcholkow oraz normalnych)
 	unsigned int *IndexData;
-	///Dane z pozycj¹ wierzcho³ków
+	//Dane z pozycj¹ wierzcho³ków
 	float *PositionData;
 
-	///Dane z wektorem normalnych
+	//Dane z wektorem normalnych
 	float *NormalData;
 
-	///Dane z indexem materia³u
+	//Dane z indexem materia³u
 	unsigned int *MaterialIndexData;
 
-	///Liczba wierzcho³kow
+	//Liczba wierzcho³kow
 	unsigned PositionCount;
 	//Liczba wierzcholkow * 3 skladowe wektora
 	unsigned PositionDataCount;
 	//Liczba trójk¹tów * 3 indexy trójk¹ta
 	unsigned IndexDataCount;
-	///Liczba trojkatow
+	//Liczba trojkatow
 	unsigned TriangleCount;
 
-	ObjectHitResult HitTest(Ray *ray)
+	void GetTriangle(int triangleIndex, Triangle3D *outTriangle)
 	{
-		//TODO:
-		return ObjectHitResult();
+		assert(triangleIndex <= this->TriangleCount);
+		unsigned pi0, pi1, pi2;
+
+		pi0 = this->IndexData[triangleIndex * 3 + 0];
+		pi1 = this->IndexData[triangleIndex * 3 + 1];
+		pi2 = this->IndexData[triangleIndex * 3 + 2];
+
+		outTriangle->LoadFromFloats(
+			this->PositionData + 3 * pi0,
+			this->PositionData + 3 * pi1,
+			this->PositionData + 3 * pi2);
+	}
+	bool HitTestTriangle(const Ray *ray, const Triangle3D *testedTriangle, ObjectHitResult *outResult)
+	{
+		//wyliczenie krawêdzi
+		Vector3D e0 = testedTriangle->V1 - testedTriangle->V0;
+		Vector3D e1 = testedTriangle->V2 - testedTriangle->V0;
+
+		//wyliczenie wektora normalnego do trojkata
+		outResult->HitNormal= Vector3D::crossProduct(e0, e1);
+		outResult->HitNormal.normalize();
+
+		//wektor prostopad³y do plaszczyzny (kierunku promienia i krawêdzi)
+		Vector3D s1 = Vector3D::crossProduct(ray->Direction, e1);
+
+		//sprawdzamy czy istnieje przeciecie wektora z drug¹ krawêdzi¹
+		float d = Vector3D::dotProduct(e0, s1);
+		if (d == 0.0)
+			return false;
+
+		bool isFront = d > 0;
+		if (!isFront)
+			return false;
+
+		float invD = 1.0 / d;
+
+		//obliczanie pierwszej wspó³rzednej barycentrycznej
+		Vector3D d1 = ray->Start - testedTriangle->V0;
+		float bc0 = Vector3D::dotProduct(d1, s1) * invD;
+		if (bc0 < 0.0 || bc0 > 1.0)
+			return false;
+
+		//obliczanie drugiej wspó³rzednej barycentrycznej
+		Vector3D s2 = Vector3D::crossProduct(d1, e0);
+		float bc1 = Vector3D::dotProduct(ray->Direction, s2) * invD;
+		if (bc1 < 0.0 || (bc0 + bc1) > 1.0)
+			return false;
+
+		//kalkulacja dystansu do plaszczyzny
+		outResult->MinDistance = Vector3D::dotProduct(e1, s2) * invD;
+
+		//sprawdzenie czy trojkat jest po wlaœciwej stronie promienia
+		if (outResult->MinDistance <= 0)
+			return false;
+
+		//punkt przeciêcia prostej z p³aszczyzn¹
+		outResult->HitPoint = ray->Start + (ray->Direction * outResult->MinDistance);
+
+		return true;
+	}
+	//sprawdzanie przeciecia z meshem
+	virtual bool HitTest(const Ray *ray, ObjectHitResult *outResult)
+	{
+		if (ray->Start.x() > 0.3 && ray->Start.x() < 0.4
+			&& ray->Start.y() > 0.1 && ray->Start.y() < 0.2)
+		{
+			int i = 0;
+		}
+
+		Triangle3D testedTriangle;
+		ObjectHitResult triangleResult;
+
+		outResult->MinDistance = DBL_MAX;
+		outResult->Result = false;
+		for (float i = 0; i < this->TriangleCount; i++)
+		{
+			//pobranie trójk¹ta
+			this->GetTriangle(i, &testedTriangle);
+			if (testedTriangle.V0 == Vector3D(0.1, 0, 0.4)
+				&& testedTriangle.V2 == Vector3D(0.4, 0.4, 0.4))
+			{
+				int j = 0;
+			}
+			//testowanie trójk¹ta w tym sprawdzenie czy odleg³osc jest mniejsza od aktualnie zapisanej
+			if (this->HitTestTriangle(ray, &testedTriangle, &triangleResult)
+				&& triangleResult.MinDistance < outResult->MinDistance)
+			{
+				//aktualizacja wyniku
+				*outResult = triangleResult;
+				outResult->Result = true;
+			}
+		}
+		return outResult->Result;
 	}
 
 	void AssignMaterial(const IMaterial *material, const unsigned int matIndex)
@@ -38,7 +130,7 @@ public:
 		this->_loadMaterial(matIndex);
 	}
 
-	///przesuniecie indexu (z powodu zmiany indexu w teskturze przechodzacej do shadera
+	//przesuniecie indexu (z powodu zmiany indexu w teskturze przechodzacej do shadera
 	void ApplyIndexOffset(unsigned indexOffset)
 	{
 		if (indexOffset == 0)
@@ -46,7 +138,7 @@ public:
 		for (int i = 0; i < this->IndexDataCount; i++)
 			IndexData[i] += indexOffset;
 	}
-	///przesuniecie pozycji wzglêdem ostatniej pozycji.ssssss
+	//przesuniecie pozycji wzglêdem ostatniej pozycji.ssssss
 	void SetPosition(const Vector3D *dstPosition)
 	{
 		Vector3D diff = *dstPosition - this->Position;

@@ -1,19 +1,24 @@
 #include "stdafx.h"
 #include "CameraPerspective.h"
 
-
 Ray CameraPerspective::GetRay(PointI pixelLocation, RectI viewport)
 {
-	double x = pixelLocation.x();
-	double y = pixelLocation.y();
+	const Matrix4x4 *modelViewProjectionMatrixInverted = this->GetModelViewProjectionMatrixInverted();
 
-	//calculate offset
-	double xOffset = x - (viewport.width() - 1.0) / 2.0;
-	double yOffset = y - (viewport.height() - 1.0) / 2.0;
+	//przekszta³cenie ze wspó³rzêdnych vp na ortho 2d (-1; 1)
+	double xOffset = pixelLocation.x() / ((viewport.width() - 1.0) / 2.0) - 1;
+	double yOffset = pixelLocation.y() / ((viewport.height() - 1.0) / 2.0) - 1;
 
-	//calculate direction
-	Vector3D dir = this->ProjectionMatrix*Vector3D(xOffset, yOffset, -Distance);
-	dir.normalize();
+	//ustawianie konca i pocz¹tku obliczanego wektora
+	Vector3D farPlaneSrc = Vector3D(xOffset, yOffset, 1);
+	Vector3D nearPlaneSrc = Vector3D(xOffset, yOffset, -1);
 
-	return Ray(this->CameraPosition, dir);
+	//przekszta³cenie ze wspó³rzêdnych ortho na perspektywiczne
+	Vector3D farPlaneDst = *modelViewProjectionMatrixInverted*farPlaneSrc;
+	Vector3D nearPlaneDst = *modelViewProjectionMatrixInverted*nearPlaneSrc;
+
+	//obliczanie kierunku
+	Vector3D dir = (farPlaneDst - nearPlaneDst).normalized();
+
+	return Ray(nearPlaneDst, dir);
 }

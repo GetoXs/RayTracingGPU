@@ -9,7 +9,7 @@ class ISceneObject
 public:
 	unsigned int MaterialIndex;
 	const IMaterial *Material;
-	virtual ObjectHitResult HitTest(Ray *ray) = 0;
+	virtual bool HitTest(const Ray *ray, ObjectHitResult *outResult) = 0;
 	Matrix4x4 ModelMatrix;
 	Vector3D Position;
 

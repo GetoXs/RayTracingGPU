@@ -2,43 +2,61 @@
 #include "IMaterial.h"
 #include "MetaTypes.h"
 #include "PointLight.h"
+
 class StandardMaterial:
 	public IMaterial
 {
 public:
 	Color DiffuseColor;
 	Color AmbientColor;
-	Color ColorSpecular;
-	Color ColorEmissive;
+	//todo:
+	//Color ColorSpecular;
+	//Color ColorEmissive;
 	float ReflectionRatio;
 
-	Color CalculateDiffuseColor(Color lightColor, Vector3D inVector, Vector3D normal)
+#pragma region Kalkulacje
+	Color CalculateLocalAmbientColor(const PointLight *light)
 	{
-		Color result(1,1,1), diffResult;
-
+		return this->AmbientColor * light->LightAmbientColor;
+	}
+	
+	virtual Color CalculateLocalColor(const PointLight *light, const Vector3D *point, const Vector3D *normal)
+	{
+		//obliczenie wektora prowadzacego od swiatla do oswietlanego punktu
+		Vector3D inVector = (light->Position - *point);
 		inVector.normalize();
-		double diffRate = Vector3D::dotProduct(inVector, normal);
-		if(diffRate < 0)
-			diffResult.setRgb(0,0,0);
+
+		//wyliczenie natê¿enia padania swiat³a
+		double diffRate = Vector3D::dotProduct(inVector, *normal);
+		if (diffRate < 0)
+		{	//punkt nieoœwietlony => swiat³o otoczenia
+			return this->CalculateLocalAmbientColor(light);
+		}
 		else
 		{
-			diffResult = this->DiffuseColor * lightColor * diffRate;
+			return this->CalculateLocalAmbientColor(light) +
+				this->DiffuseColor * light->LightDiffuseColor * diffRate;
 		}
-		
-		result = result * diffResult;
-		return result;
+	}
+	Color CalculateTransmissionColor(const Color *baseColor, const Color *transmissiveColor)
+	{
+		float transmissiveRatio = this->GetTransmissiveRatio();
+		return *baseColor * transmissiveRatio + *transmissiveColor * (1.0 - transmissiveRatio);
+	}
+#pragma endregion
+
+#pragma region Gety
+	float GetTransmissiveRatio()
+	{
+		return (this->AmbientColor.alphaF() + this->DiffuseColor.alphaF()) / 2.0;
 	}
 
-	Color GetAmbientColor()
+	bool IsTransmissive()
 	{
-		return this->AmbientColor;
+		return this->GetTransmissiveRatio() < 1.f;
 	}
 
-	StandardMaterial(Color diffColor, Color ambColor, float reflectionRatio) 
-		:DiffuseColor(diffColor), AmbientColor(ambColor), ReflectionRatio(reflectionRatio)
-	{
-	}
-	float *GetColorProperties(unsigned int *outCount)
+	virtual float *GetColorProperties(unsigned int *outCount)
 	{
 		*outCount = 3 * 4;
 		float *tab = new float[*outCount];
@@ -56,5 +74,13 @@ public:
 
 		return tab;
 	}
+#pragma endregion
+
+#pragma region Ctors
+	StandardMaterial(Color diffColor, Color ambColor, float reflectionRatio)
+		:DiffuseColor(diffColor), AmbientColor(ambColor), ReflectionRatio(reflectionRatio)
+	{
+	}
+#pragma endregion
 };
 

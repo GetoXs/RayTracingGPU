@@ -6,7 +6,7 @@
 #include "CameraOrto.h"
 #include "PointLight.h"
 #include "qlist.h"
-#include "Fps.h";
+#include "Fps.h"
 
 class GLMgr
 {
@@ -14,8 +14,9 @@ private:
 	static GLMgr *_instance;
 	GLMgr();
 
+	bool GPUMode;
+
 	int FrameCounter;
-	std::string WindowTitle;
 	Fps FpsObject;
 
 
@@ -60,11 +61,17 @@ public:
 		return _instance;
 	}
 
-	void UpdateCounter();
 	void PreInit(int argc, char* argv[]);
 	void Init();
-	void RenderScene(void);
+	void SwitchMode() { this->GPUMode = !this->GPUMode; this->ResetCounter(); }
+	bool IsGPUMode() { return this->GPUMode; }
+	void RayTraceOnCPU(unsigned depth, const Ray *ray, Color *outColor);
+	void RenderSceneOnCPU(void);
 	void RenderSceneOnGPU(void);
+
+	void UpdateWindowsTitle();
+	void UpdateCounter();
+	void ResetCounter();
 
 	~GLMgr(void);
 };

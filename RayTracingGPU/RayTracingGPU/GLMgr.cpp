@@ -5,7 +5,7 @@
 #include "Sphere.h"
 #include "StandardMaterial.h"
 #include "Shading.h"
-#include "Mesh.h";
+#include "Mesh.h"
 
 #include <stdio.h>
 #include <direct.h>
@@ -35,7 +35,6 @@ static const GLfloat quad[] =
 	-1.0f, 1.0f, 0.0f,
 };
 
-void RenderScene();
 #define WINDOWS_SIZE_X (800)
 #define WINDOWS_SIZE_Y (800)
 #define FOCAL_DIST 1000
@@ -84,37 +83,7 @@ bool HitTest(Vector3D v0, Vector3D v1, Vector3D v2, Ray ray,
 	return true;
 }
 
-void GLMgr::UpdateCounter()
-{
-	this->FrameCounter++;
-	std::string title;
-	title = WindowTitle.substr(0, WindowTitle.find_first_of('|'));
-	
-	char buff[50];
-	sprintf(buff, "%s| Frames: %d | FPS: %d", title.c_str(), this->FrameCounter, this->FpsObject.GetValue());
-	WindowTitle = std::string(buff);
-	glutSetWindowTitle(WindowTitle.c_str());
-}
 
-void GLMgr::PreInit(int argc, char* argv[])
-{
-    gltSetWorkingDirectory(argv[0]);
-    glutInit(&argc, argv);
-
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
-	glutInitWindowSize(WINDOWS_SIZE_X, WINDOWS_SIZE_Y);
-	WindowTitle = "RayTracing GPU | 0";
-	FrameCounter = 0;
-	glutCreateWindow(WindowTitle.c_str());
-	glutDisplayFunc(::RenderScene);
-	
-    GLenum err = glewInit();
-    if (GLEW_OK != err)
-    {
-        // Problem: glewInit failed, something is seriously wrong.
-        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-    }
-}
 GLuint TestOutputBuffer;
 GLuint TestOutputTexture;
 
@@ -137,14 +106,20 @@ void GLMgr::Init()
 	//kamera
 	if (this->Viewport.width() < this->Viewport.height() && this->Viewport.width() > 0)
 	{
-		this->Camera = new CameraPerspective(Vector3D(0, 0, 400), Vector3D(0, 0, 0), Vector3D(0, 1, 0), FOCAL_DIST,
-			left*this->Viewport.height() / this->Viewport.width(), right*this->Viewport.height() / this->Viewport.width(), top, bottom,
+		this->Camera = new CameraPerspective(
+			left*this->Viewport.height() / this->Viewport.width(), 
+			right*this->Viewport.height() / this->Viewport.width(), 
+			top, 
+			bottom,
 			nearPlane, farPlane);
 	}
 	else
 	{
-		this->Camera = new CameraPerspective(Vector3D(0, 0, 400), Vector3D(0, 0, 0), Vector3D(0, 1, 0), FOCAL_DIST,
-			left, right, top*this->Viewport.width() / this->Viewport.height(), bottom*this->Viewport.width() / this->Viewport.height(),
+		this->Camera = new CameraPerspective(
+			left, 
+			right, 
+			top*this->Viewport.width() / this->Viewport.height(), 
+			bottom*this->Viewport.width() / this->Viewport.height(),
 			nearPlane, farPlane);
 	}
 	
@@ -156,8 +131,8 @@ void GLMgr::Init()
 	this->CurrentScene = new Scene();
 	unsigned mat1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 1, 0, 0.4), Color(0.3, 0.3, 0, 0.4), 0));
 	unsigned mat2 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 0, 1), Color(0., 0., 0.5), 0.3));
-	this->CurrentScene->AddObject(new Mesh(MESH_FILE2, &Vector3D(-0.2, 0, 0)), mat2);
-	this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(0, -0.2, 0)), mat1);
+	this->CurrentScene->AddObject(new Mesh(MESH_FILE2, &Vector3D(0, 0, 0)), mat2);
+	this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(0, 0, 0)), mat1);
 
 	//this->CurrentScene->AddObject(new Sphere(Vector3D(0, 0, 0), 20, new StandardMaterial(Color(1,1,0), Color(0.2,0.2,0))));
 	//this->CurrentScene->AddObject(new Sphere(Vector3D(-40, 0, 0), 20, new StandardMaterial(Color(0,1,0), Color(0,0.2,0))));
@@ -173,6 +148,8 @@ void GLMgr::Init()
 
 #pragma region Shader
 	this->Shader_TestHit = OpenGLHelper::LoadShader("Main.vs.h", "HitTest.fs.h", NULL, 0, NULL);
+	OpenGLHelper::CheckErrors();
+	glUseProgram(0);
 	OpenGLHelper::CheckErrors();
 #pragma endregion
 	
@@ -346,7 +323,6 @@ void GLMgr::Init()
 
 #pragma region Generowanie obiektu bufora ramki
 	glGenFramebuffers(1, &this->FrameBufferObject);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->FrameBufferObject);
 	OpenGLHelper::CheckErrors();
 #pragma endregion
 
@@ -387,60 +363,82 @@ void GLMgr::Init()
 	glLoadIdentity();
 #pragma endregion
 
+
+
+	Matrix4x4 modelViewMatrix;
+	modelViewMatrix.setToIdentity();
+	modelViewMatrix.translate(0, 0, -3);
+	this->Camera->SetModelViewMatrix(&modelViewMatrix);
+
+
 	//start pêtli aplikacji
 	glutMainLoop();
 }
 
-void GLMgr::RenderScene()
+void GLMgr::RayTraceOnCPU(unsigned depth, const Ray *ray, Color *outColor)
 {
-	/*
-	GLenum numError = OpenGLHelper::CheckErrors();
+	//testowanie trafienia
+	HitResult hitResult = this->CurrentScene->HandleRay(ray);
+
+	if (hitResult.Result)
+	{
+		//pobranie koloru trafionego punktu
+		*outColor = Shading::CalculateColor(&hitResult, &this->LightList);
+		//*outColor = Color(1, 0, 0);
+	}
+	if (depth < 1)
+	{
+		if (hitResult.HitMaterial->IsTransmissive())
+		{
+			//wyznaczenie parametrów kolejnego promienia
+			Vector3D transmissiveDir = -ray->Direction;
+			Vector3D transmissiveOrigin = hitResult.HitPoint + transmissiveDir*0.001;
+			Color transmissiveColor = Color(0);
+			//kolejny test promienia
+			this->RayTraceOnCPU(depth + 1, &Ray(transmissiveOrigin, transmissiveDir), &transmissiveColor);
+			//color blending
+			*outColor = hitResult.HitMaterial->CalculateTransmissionColor(outColor, &transmissiveColor);
+			//todo: blending
+		}
+		//todo: reflective
+	}
+}
+
+void GLMgr::RenderSceneOnCPU()
+{
+	Ray *ray;
+	Color pixelColor(0);
+
+	OpenGLHelper::CheckErrors();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glUseProgram(0);
+	OpenGLHelper::CheckErrors();
 
-	numError = OpenGLHelper::CheckErrors();
-
-
+	glBegin(GL_POINTS);
 	for (int y = 0; y < this->Viewport.width(); y++)
 	{
 		for (int x = 0; x < this->Viewport.height(); x++)
 		{
-			Color pixelColor;
+			pixelColor = Color(0, 0, 0, 1);
+			//pobranie promienia
+			ray = &this->Camera->GetRay(PointI(x, y), this->Viewport);
+			//Ray ray = this->Camera->GetRay(PointI(x, y));
 
-			//1. Wygenerowañ promieñ dla aktualnego piksela
-			//Ray ray = this->Camera->GetRay(PointI(x, y), this->Viewport);
-			Ray ray = this->Camera->GetRay(PointI(x, y));
-			//2. Dla ka¿dego obiektu na scenie
-			// 1. Sprawdziæ czy promieñ przecina obiekt
-			// 2. Jeœli przecina, sprardziæ czy odleg³oœc do kamery jest mniejsza od zapisanej
-			// 3. Jeœli tak to podmieniæ i obliczac dalej
-			//3. Jeœli zaleniono jakiœ obiekt na drodze promienia to sprawdziæ czy odbity promieñ dociera do Ÿróde³ œwiat³a
-			HitResult hitResult = this->CurrentScene->HandleRay(&ray);
+			this->RayTraceOnCPU(1, ray, &pixelColor);
 
-
-
-			if (hitResult.Result)
-			{
-				pixelColor = Shading::CalculateColor(&hitResult, &this->LightList);
-				//pixelColor = Color(1,1,1);
-			}
-			//4. Jeœli dociera - wyliczyæ natê¿enie koloru w danym punkcie
-			//5. Jeœli nie dociera - wyliczyæ natê¿enie w cieniu
-
-			float red = pixelColor.redF();
-			float green = pixelColor.greenF();
-			float blue = pixelColor.blueF();
+			//rysowanie pixela
 			glColor3f(pixelColor.redF(), pixelColor.greenF(), pixelColor.blueF());
-			glBegin(GL_POINTS);
 			glVertex2i(x, y);
-			glEnd();
 		}
 	}
-	numError = OpenGLHelper::CheckErrors();
+	glEnd();
+	OpenGLHelper::CheckErrors();
 
+	glFlush();
 	glutSwapBuffers();
 	glutPostRedisplay();
-	numError = OpenGLHelper::CheckErrors();
-	*/
+	FpsObject.Update();
+	OpenGLHelper::CheckErrors();
 }
 void GLMgr::RenderSceneOnGPU()
 {
@@ -474,22 +472,14 @@ void GLMgr::RenderSceneOnGPU()
 
 	Matrix4x4 modelViewMatrix;
 	modelViewMatrix.setToIdentity();
-	modelViewMatrix.translate(0.2, 0.2, -3);
-	modelViewMatrix.scale(2);
+	modelViewMatrix.translate(0, 0, -3);
+	//modelViewMatrix.scale(2);
 	//modelViewMatrix.rotate(90, 0, 1, 0);
-	Matrix4x4 modelMatrix, modelMatrixInverted;
-	modelMatrix.setToIdentity();
-	modelMatrix.translate(0.5, 0, 0);
-	modelMatrixInverted = modelMatrix.inverted();
 
-	Matrix4x4 modelViewProjectionMatrixT = this->Camera->ProjectionMatrix.transposed() * modelViewMatrix.transposed();
-	Matrix4x4 modelViewProjectionMatrix = this->Camera->ProjectionMatrix* modelViewMatrix;
-	//modelViewProjectionMatrix = modelViewProjectionMatrix.transposed();
-	modelViewProjectionMatrixT = modelViewProjectionMatrixT.transposed();
+	//Matrix4x4 modelViewProjectionMatrix = this->Camera->_ProjectionMatrix* modelViewMatrix;
 
-	Matrix4x4 modelViewProjInverted = modelViewProjectionMatrix.inverted() * modelMatrixInverted;
-	//Matrix4x4 modelViewProjInverted = modelViewProjectionMatrix;
-	Matrix4x4 modelViewProjInvertedT = modelViewProjectionMatrixT.inverted();
+	this->Camera->SetModelViewMatrix(&modelViewMatrix);
+	const Matrix4x4 modelViewProjInverted = *this->Camera->GetModelViewProjectionMatrixInverted();
 	Matrix4x4 modelViewInverted = modelViewMatrix.inverted();
 
 	//wyliczanie promienia
@@ -538,9 +528,10 @@ void GLMgr::RenderSceneOnGPU()
 	numError = OpenGLHelper::CheckErrors();
 #pragma endregion
 
+#pragma region Testy
 	if (false)
 	{
-		///*
+		/*
 		for (int y = 0; y < this->Viewport.width(); y++)
 		{
 			for (int x = 0; x < this->Viewport.height(); x++)
@@ -588,9 +579,10 @@ void GLMgr::RenderSceneOnGPU()
 				//glEnd();
 			}
 		}
-		//*/
+		*/
 	}
 	numError = OpenGLHelper::CheckErrors();
+#pragma endregion
 
 #pragma region Przekopiowanie ramki na ekran
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, this->FrameBufferObject);
@@ -612,13 +604,70 @@ void GLMgr::RenderSceneOnGPU()
 	FpsObject.Update();
 }
 
-// Called to draw scene
 void RenderScene(void)
 {
 	//aktualizacja licznika
 	GLMgr::I()->UpdateCounter();
+
 	//rysowanie sceny w³aœciwej
-	GLMgr::I()->RenderSceneOnGPU();
+	if (GLMgr::I()->IsGPUMode())
+		GLMgr::I()->RenderSceneOnGPU();
+	else
+		GLMgr::I()->RenderSceneOnCPU();
+}
+
+// Called to draw scene
+void KeyboardFunc(unsigned char key, int x, int y)
+{
+	switch (key) {
+	case ' ':
+		GLMgr::I()->SwitchMode();
+		break;
+	}
+}
+
+
+void GLMgr::ResetCounter()
+{
+	this->FrameCounter = 0;
+	this->FpsObject.Reset();
+	this->UpdateWindowsTitle();
+}
+void GLMgr::UpdateWindowsTitle()
+{
+	char *prefix;
+	if (this->IsGPUMode())
+		prefix = "RayTracing GPU";
+	else
+		prefix = "RayTracing CPU";
+
+	char buff[100];
+	sprintf(buff, "%s | Frames: %d | FPS: %d", prefix, this->FrameCounter, this->FpsObject.GetValue());
+	glutSetWindowTitle(buff);
+}
+void GLMgr::UpdateCounter()
+{
+	this->UpdateWindowsTitle();
+	this->FrameCounter++;
+}
+void GLMgr::PreInit(int argc, char* argv[])
+{
+	gltSetWorkingDirectory(argv[0]);
+	glutInit(&argc, argv);
+
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
+	glutInitWindowSize(WINDOWS_SIZE_X, WINDOWS_SIZE_Y);
+	glutCreateWindow("RayTracing Init");
+	this->ResetCounter();
+	glutDisplayFunc(::RenderScene);
+	glutKeyboardFunc(::KeyboardFunc);
+
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		// Problem: glewInit failed, something is seriously wrong.
+		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+	}
 }
 
 GLMgr::~GLMgr(void)
@@ -631,7 +680,7 @@ GLMgr::~GLMgr(void)
 		delete(this->Camera);
 	this->Camera = NULL;
 }
-GLMgr::GLMgr()
+GLMgr::GLMgr() :GPUMode(false)
 {
 	this->CurrentScene = NULL;
 	this->Camera = NULL;

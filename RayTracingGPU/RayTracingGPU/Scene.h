@@ -13,7 +13,7 @@ class Scene
 	unsigned MeshIndexOffset;
 
 public:
-	HitResult HandleRay(Ray *ray);
+	HitResult HandleRay(const Ray *ray);
 
 #pragma region Addy
 	void AddObject(ISceneObject *object, unsigned materialIndex)

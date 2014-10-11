@@ -135,6 +135,7 @@ xcopy /y HitTest.fs.h "$(OutDir)"
       <DeploymentContent>true</DeploymentContent>
     </ClInclude>
     <ClInclude Include="IMaterial.h" />
+    <ClInclude Include="Triangle3D.h" />
     <_EmbedManagedResourceFile Include="Main.vs.h">
       <FileType>Document</FileType>
       <DeploymentContent>true</DeploymentContent>

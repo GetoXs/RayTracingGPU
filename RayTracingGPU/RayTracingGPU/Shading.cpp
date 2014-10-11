@@ -1,23 +1,13 @@
 #include "stdafx.h"
 #include "Shading.h"
 
-
-
 Color Shading::CalculateColor(HitResult *hitResult, QList<PointLight*> *lightList)
 {
-	Color result(0,0,0);
-
-	if(hitResult->Result)
+	Color result(0,0,0,0);
+	for each (PointLight *light in (*lightList))
 	{
-		for each (PointLight *light in (*lightList))
-		{
-			Vector3D inVector = (light->Position - hitResult->HitPoint).normalized();
-			result = result + hitResult->HitMaterial->CalculateDiffuseColor(light->LightDiffuseColor, inVector, hitResult->HitNormal);
-		}
+		result += hitResult->HitMaterial->CalculateLocalColor(light, &hitResult->HitPoint, &hitResult->HitNormal);
 	}
-	else
-	{
-		result = result + hitResult->HitMaterial->GetAmbientColor();
-	}
+	result.Clamp();
 	return result;
 }

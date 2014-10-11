@@ -1,15 +1,18 @@
 #include "stdafx.h"
 #include "Scene.h"
 
-HitResult Scene::HandleRay(Ray *ray)
+HitResult Scene::HandleRay(const Ray *ray)
 {
 	HitResult result;
 	double minDistance = DBL_MAX;
+	bool hitResult;
+	ObjectHitResult objResult;
+	int i = 0;
 	for each (ISceneObject *object in this->ObjectList)
 	{
 		//testing hit
-		ObjectHitResult objResult = object->HitTest(ray);
-		if (objResult.Result && objResult.MinDistance < minDistance)
+		hitResult = object->HitTest(ray, &objResult);
+		if (hitResult && objResult.MinDistance < minDistance)
 		{
 			//new result
 			minDistance = objResult.MinDistance;
@@ -18,6 +21,7 @@ HitResult Scene::HandleRay(Ray *ray)
 			result.HitNormal = objResult.HitNormal;
 			result.HitMaterial = (IMaterial*)object->Material;
 		}
+		i++;
 	}
 	return result;
 }
