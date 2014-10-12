@@ -297,11 +297,6 @@ GLenum OpenGLHelper::CheckErrors()
 	}
 	return error;
 }
-OpenGLHelper::~OpenGLHelper(void)
-{
-}
-
-
 
 void OpenGLHelper::RegisterTexture(GLenum textureNumber, void* data, size_t dataSize, GLenum textureFormat, 
 	GLuint *outTextureBuffer, GLuint *outTexture)
@@ -320,6 +315,16 @@ void OpenGLHelper::RegisterTexture(GLenum textureNumber, void* data, size_t data
 	glBindTexture(GL_TEXTURE_BUFFER, *outTexture);
 	glTexBuffer(GL_TEXTURE_BUFFER, textureFormat, *outTexture);
 	OpenGLHelper::CheckErrors();
+}
+//kasowanie tesktury z bufforem i zerowaniem zmiennej
+void OpenGLHelper::DeleteTexture(GLuint *outTextureBuffer, GLuint *outTexture)
+{
+	if (*outTextureBuffer)
+		glDeleteBuffers(1, outTextureBuffer);
+	outTextureBuffer = 0;
+	if (*outTexture)
+		glDeleteTextures(1, outTexture);
+	outTexture  = 0;
 }
 
 /**

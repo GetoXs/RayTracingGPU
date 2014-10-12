@@ -13,11 +13,18 @@
 
 const char* LIGHT_MESH_FILE = "\\Models\\box_light.obj";
 
+const char* MESH_FILE_BUNNY = "\\Models\\bunny.ply";
 const char* MESH_FILE1 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box.obj";
 const char* MESH_FILE2 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box2.obj";
 
 GLMgr *GLMgr::_instance = NULL;
 
+//sta³e wspó³czynników transformacji (obs³uga klawiatura)
+const float TRANSFORM_TRANSLATE_RATE = 0.02;
+const float TRANSFORM_SCALE_RATE = 1.05;
+const float TRANSFORM_ROTATE_ANGLE = 1.05;
+
+//ustawienia okna oraz kamery
 const int WINDOWS_SIZE_X = 800;
 const int WINDOWS_SIZE_Y = 800;
 const int PLANE_NEAR = 2;
@@ -113,11 +120,13 @@ void GLMgr::Init()
 #pragma region Scena
 	char cwd[MAX_PATH];
 	GetCurrentDir(cwd, sizeof(cwd));
+	char tmpPath[MAX_PATH];
 
 	this->CurrentScene = new Scene();
 	unsigned mat1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 1, 0, 0.4), Color(0.3, 0.3, 0, 0.4), 0));
 	unsigned mat2 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 0, 1), Color(0., 0., 0.5), 0.3));
-	this->CurrentScene->AddObject(new Mesh(MESH_FILE2, &Vector3D(0, 0, 0)), mat2);
+	sprintf(tmpPath, "%s%s", cwd, MESH_FILE_BUNNY);
+	this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, 0, 0)), mat2);
 	this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(0, 0, 0)), mat1);
 
 	//this->CurrentScene->AddObject(new Sphere(Vector3D(0, 0, 0), 20, new StandardMaterial(Color(1,1,0), Color(0.2,0.2,0))));
@@ -128,7 +137,6 @@ void GLMgr::Init()
 #pragma endregion
 
 #pragma region Light
-	char tmpPath[MAX_PATH];
 	sprintf(tmpPath, "%s%s", cwd, LIGHT_MESH_FILE);
 	Vector3D lightPosition;
 	unsigned lightMaterial;
@@ -238,8 +246,8 @@ void GLMgr::Init()
 		&TextureBuffer_MaterialIndex, &Texture_MaterialIndex);
 
 	tmpBufferF = this->CurrentScene->GetMaterialPropertiesData(&buffCount);
-	OpenGLHelper::RegisterTexture(GL_TEXTURE5, tmpBufferF, buffCount * sizeof(float),
-		GL_RGBA32F, &TextureBuffer_MaterialProperties, &Texture_MaterialProperties);
+	OpenGLHelper::RegisterTexture(GL_TEXTURE5, tmpBufferF, buffCount * sizeof(float), GL_RGBA32F, 
+		&TextureBuffer_MaterialProperties, &Texture_MaterialProperties);
 	OpenGLHelper::CheckErrors();
 #pragma endregion
 
@@ -353,7 +361,7 @@ void GLMgr::Init()
 #pragma endregion
 
 #pragma region Ustawienia macierzy dla raytracera
-	this->Camera->ModelViewTranslate(0, 0,  -3);
+	this->Camera->ModelViewTranslate(0, 0, -(PLANE_NEAR + PLANE_FAR) / 2.f);
 #pragma endregion
 
 	//start pêtli aplikacji
@@ -404,7 +412,6 @@ void GLMgr::RayTraceOnCPU(unsigned depth, const Ray *ray, Color *outColor)
 		}
 	}
 }
-
 void GLMgr::RenderSceneOnCPU()
 {
 	Ray *ray;
@@ -441,23 +448,31 @@ void GLMgr::RenderSceneOnCPU()
 	FpsObject.Update();
 	OpenGLHelper::CheckErrors();
 }
+const bool IS_ADDITIONAL_FRAMEBUFFER = true;
 void GLMgr::RenderSceneOnGPU()
 {
 	GLenum numError = OpenGLHelper::CheckErrors();
 
 #pragma region Wypelnienie ramki
-	//ustawienie tamki dla tekstury testowej
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->FrameBufferObject);
-	//glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	OpenGLHelper::CheckErrors();
-	//dowiazanie wyjsciowej testury testowej
-	GLenum drawBuffer[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, this->RenderBuffer_Color);
-	OpenGLHelper::CheckErrors();
-	glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, TestOutputTexture, 0);
-	OpenGLHelper::CheckErrors();
-	glDrawBuffers(sizeof(drawBuffer) / sizeof(GLenum), drawBuffer);
-	OpenGLHelper::CheckErrors();
+	if (IS_ADDITIONAL_FRAMEBUFFER)
+	{
+		//ustawienie tamki dla tekstury testowej
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->FrameBufferObject);
+		//glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		OpenGLHelper::CheckErrors();
+		//dowiazanie wyjsciowej testury testowej
+		GLenum drawBuffer[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+		glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, this->RenderBuffer_Color);
+		OpenGLHelper::CheckErrors();
+		glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, TestOutputTexture, 0);
+		OpenGLHelper::CheckErrors();
+		glDrawBuffers(sizeof(drawBuffer) / sizeof(GLenum), drawBuffer);
+		OpenGLHelper::CheckErrors();
+	}
+	else
+	{
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	}
 #pragma endregion
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -586,21 +601,24 @@ void GLMgr::RenderSceneOnGPU()
 #pragma endregion
 
 #pragma region Przekopiowanie ramki na ekran
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, this->FrameBufferObject);
-	OpenGLHelper::CheckErrors();
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	OpenGLHelper::CheckErrors();
-	//powrot do standardowej ramki
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	OpenGLHelper::CheckErrors();
-	glBlitFramebuffer(0, 0, this->Viewport.width(), this->Viewport.height(),
-		0, 0, this->Viewport.width(), this->Viewport.height(),
-		GL_COLOR_BUFFER_BIT, GL_LINEAR);
-	OpenGLHelper::CheckErrors();
+	if (IS_ADDITIONAL_FRAMEBUFFER)
+	{
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, this->FrameBufferObject);
+		OpenGLHelper::CheckErrors();
+		glReadBuffer(GL_COLOR_ATTACHMENT0);
+		OpenGLHelper::CheckErrors();
+		//powrot do standardowej ramki
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		OpenGLHelper::CheckErrors();
+		glBlitFramebuffer(0, 0, this->Viewport.width(), this->Viewport.height(),
+			0, 0, this->Viewport.width(), this->Viewport.height(),
+			GL_COLOR_BUFFER_BIT, GL_LINEAR);
+		OpenGLHelper::CheckErrors();
+	}
 #pragma endregion
 
 	glutSwapBuffers();
-	numError = OpenGLHelper::CheckErrors();
+	OpenGLHelper::CheckErrors();
 	glutPostRedisplay();
 	FpsObject.Update();
 }
@@ -616,10 +634,6 @@ void RenderScene(void)
 	else
 		GLMgr::I()->RenderSceneOnCPU();
 }
-
-const float TRANSFORM_TRANSLATE_RATE = 0.02;
-const float TRANSFORM_SCALE_RATE = 1.05;
-const float TRANSFORM_ROTATE_ANGLE = 1.05;
 void KeyboardFunc(unsigned char key, int x, int y)
 {
 	switch (key) {
@@ -717,6 +731,21 @@ void GLMgr::PreInit(int argc, char* argv[])
 
 GLMgr::~GLMgr(void)
 {
+	if (this->Shader_TestHit)
+		glDeleteProgram(this->Shader_TestHit);
+	this->Shader_TestHit = 0;
+
+	if (this->RenderBuffer_Color)
+		glDeleteRenderbuffers(1, &this->RenderBuffer_Color);
+	this->RenderBuffer_Color = 0;
+
+	OpenGLHelper::DeleteTexture(&this->TextureBuffer_PositionIndex, &this->Texture_PositionIndex);
+	OpenGLHelper::DeleteTexture(&this->TextureBuffer_PositionCords, &this->Texture_PositionCords);
+	OpenGLHelper::DeleteTexture(&this->TextureBuffer_NormalIndex, &this->Texture_NormalIndex);
+	OpenGLHelper::DeleteTexture(&this->TextureBuffer_NormalCords, &this->Texture_NormalCords);
+	OpenGLHelper::DeleteTexture(&this->TextureBuffer_MaterialIndex, &this->Texture_MaterialIndex);
+	OpenGLHelper::DeleteTexture(&this->TextureBuffer_MaterialProperties, &this->Texture_MaterialProperties);
+
 	if (this->CurrentScene)
 		delete(this->CurrentScene);
 	this->CurrentScene = NULL;
@@ -726,8 +755,23 @@ GLMgr::~GLMgr(void)
 	this->Camera = NULL;
 }
 GLMgr::GLMgr() 
-	:GPUMode(true), RayTracerDepth(1)
+	:GPUMode(true), RayTracerDepth(0)
 {
+	this->Shader_TestHit = 0;
+	this->RenderBuffer_Color = 0;
+	this->TextureBuffer_PositionIndex = 0;
+	this->Texture_PositionIndex = 0;
+	this->TextureBuffer_PositionCords = 0;
+	this->Texture_PositionCords = 0;
+	this->TextureBuffer_NormalIndex = 0;
+	this->Texture_NormalIndex = 0;
+	this->TextureBuffer_NormalCords = 0;
+	this->Texture_NormalCords = 0;
+	this->TextureBuffer_MaterialIndex = 0;
+	this->Texture_MaterialIndex = 0;
+	this->TextureBuffer_MaterialProperties = 0;
+	this->Texture_MaterialProperties = 0;
+
 	this->CurrentScene = NULL;
 	this->Camera = NULL;
 }
