@@ -13,17 +13,15 @@
 
 const char* LIGHT_MESH_FILE = "\\Models\\box_light.obj";
 
-//const char* MESH_FILE1 = "C:\\Users\\Mateusz\\Desktop\\mgr\\proj\\Qt\\RayTracingGPU\\bin\\Debug\\cube.ply";
 const char* MESH_FILE1 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box.obj";
-//const char* MESH_FILE1 = "C:\\Users\\Mateusz\\Desktop\\mgr\\proj\\Qt\\RayTracingGPU\\bin\\Debug\\Wuson.ply";
-//const char* MESH_FILE1 = "C:\\Users\\Mateusz\\Desktop\\mgr\\proj\\Qt\\RayTracingGPU\\bin\\Debug\\bunny.ply";
-//const char* MESH_FILE1 = "Z:\\Programowanie\\OpenGL\\Kurs OpenGl 3.2\\14_opengl_32_zaawansowane_modele_cieniowania_i_oswietlenia\\media\\obj\\teapot.obj";
 const char* MESH_FILE2 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box2.obj";
 
 GLMgr *GLMgr::_instance = NULL;
 
-#define WINDOWS_SIZE_X (800)
-#define WINDOWS_SIZE_Y (800)
+const int WINDOWS_SIZE_X = 800;
+const int WINDOWS_SIZE_Y = 800;
+const int PLANE_NEAR = 2;
+const int PLANE_FAR = 7;
 
 bool HitTest(Vector3D v0, Vector3D v1, Vector3D v2, Ray ray,
 	float *dist, Vector3D *hitPoint, bool *isFront, Vector3D *normal)
@@ -88,7 +86,6 @@ void GLMgr::Init()
 #pragma region Kamera
 	float left = -1, right = 1;
 	float top = -1, bottom = 1;
-	float nearPlane = 2, farPlane = 7;
 	//kamera
 	if (this->Viewport.width() < this->Viewport.height() && this->Viewport.width() > 0)
 	{
@@ -97,7 +94,7 @@ void GLMgr::Init()
 			right*this->Viewport.height() / this->Viewport.width(), 
 			top, 
 			bottom,
-			nearPlane, farPlane);
+			PLANE_NEAR, PLANE_FAR);
 	}
 	else
 	{
@@ -106,7 +103,7 @@ void GLMgr::Init()
 			right, 
 			top*this->Viewport.width() / this->Viewport.height(), 
 			bottom*this->Viewport.width() / this->Viewport.height(),
-			nearPlane, farPlane);
+			PLANE_NEAR, PLANE_FAR);
 	}
 	
 	//this->Camera = new CameraOrto(Vector3D(0, 0, -5), PointI(this->Viewport.width(), this->Viewport.height()),
@@ -133,11 +130,18 @@ void GLMgr::Init()
 #pragma region Light
 	char tmpPath[MAX_PATH];
 	sprintf(tmpPath, "%s%s", cwd, LIGHT_MESH_FILE);
-	unsigned lightMaterial1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1.0, 1.0, 1.0), Color(.4, .4, .4), 0.f));
-	this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0., -0.2, -.2)), mat1);
-	this->LightList.append(new PointLight(Vector3D(0., -0.2, .6), Color(1.0, 1.0, 1.0), Color(.4, .4, .4)));
+	Vector3D lightPosition;
+	unsigned lightMaterial;
 
-	this->LightList.append(new PointLight(Vector3D(0., 0.4, 0), Color(1.0, 0, 0), Color(.4, .0, .0)));
+	lightPosition = Vector3D(0., -0.2, .6);
+	lightMaterial = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 1, 1)));
+	this->CurrentScene->AddObject(new Mesh(tmpPath, &lightPosition), lightMaterial);
+	this->LightList.append(new PointLight(lightPosition, Color(1.0, 1.0, 1.0), Color(.4, .4, .4)));
+
+	lightPosition = Vector3D(0., 0.4, 0);
+	lightMaterial = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1., 0, 0)));
+	this->CurrentScene->AddObject(new Mesh(tmpPath, &lightPosition), lightMaterial);
+	this->LightList.append(new PointLight(lightPosition, Color(1.0, 0, 0), Color(.4, .0, .0)));
 #pragma endregion
 
 #pragma region Shader
@@ -349,7 +353,7 @@ void GLMgr::Init()
 #pragma endregion
 
 #pragma region Ustawienia macierzy dla raytracera
-	this->Camera->ModelViewTranslate(0, 0, -3);
+	this->Camera->ModelViewTranslate(0, 0,  -3);
 #pragma endregion
 
 	//start pêtli aplikacji
@@ -367,7 +371,7 @@ void GLMgr::RayTraceOnCPU(unsigned depth, const Ray *ray, Color *outColor)
 		*outColor = Shading::CalculateColor(&hitResult, &this->LightList);
 		//*outColor = Color(1, 0, 0);
 
-		if (depth <= this->RayTracerDepth)
+		if (depth <= this->RayTracerDepth && !hitResult.HitMaterial->IsEmissive())
 		{
 			//wyliczenie przeŸroczystoœci
 			if (hitResult.HitMaterial->IsTransmissive())

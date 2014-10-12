@@ -14,5 +14,8 @@ public:
 
 	virtual bool IsReflective() = 0;
 	virtual Color CalculateReflectionColor(const Color *baseColor, const Color *reflectionColor) = 0;
+
+	virtual bool IsEmissive() = 0;
+	virtual Color CalculateEmissiveColor() = 0;
 };
 

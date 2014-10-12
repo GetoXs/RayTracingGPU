@@ -3,7 +3,7 @@
 
 Color Shading::CalculateColor(HitResult *hitResult, QList<PointLight*> *lightList)
 {
-	Color result(0,0,0,0);
+	Color result = hitResult->HitMaterial->CalculateEmissiveColor();
 	for each (PointLight *light in (*lightList))
 	{
 		result += hitResult->HitMaterial->CalculateLocalColor(light, &hitResult->HitPoint, &hitResult->HitNormal);

@@ -11,7 +11,7 @@ public:
 	Color AmbientColor;
 	//todo:
 	//Color ColorSpecular;
-	//Color ColorEmissive;
+	Color EmissiveColor;
 	float ReflectionRatio;
 
 #pragma region Kalkulacje
@@ -47,6 +47,10 @@ public:
 	{
 		return *baseColor * (1.0 - this->ReflectionRatio) + *reflectionColor * this->ReflectionRatio;
 	}
+	Color CalculateEmissiveColor()
+	{
+		return this->EmissiveColor;
+	}
 #pragma endregion
 
 #pragma region Gety
@@ -64,10 +68,14 @@ public:
 	{
 		return this->ReflectionRatio > DBL_EPSILON;
 	}
+	bool IsEmissive()
+	{
+		return this->EmissiveColor.alphaF() > DBL_EPSILON;
+	}
 
 	virtual float *GetColorProperties(unsigned int *outCount)
 	{
-		*outCount = 3 * 4;
+		*outCount = 4 * 4;
 		float *tab = new float[*outCount];
 		float *tmpCol;
 
@@ -77,17 +85,27 @@ public:
 
 		tmpCol = this->AmbientColor.GetValue();
 		memcpy(tab + (1 * 4), tmpCol, 4 * sizeof(float));
-		//delete tmpCol;
 
-		tab[4 * 2] = ReflectionRatio;
+		tmpCol = this->EmissiveColor.GetValue();
+		memcpy(tab + (2 * 4), tmpCol, 4 * sizeof(float));
+
+		tab[3 * 4] = ReflectionRatio;
 
 		return tab;
 	}
 #pragma endregion
 
 #pragma region Ctors
+	StandardMaterial(Color diffColor, Color ambColor, Color emissiveColor, float reflectionRatio)
+		:DiffuseColor(diffColor), AmbientColor(ambColor), ReflectionRatio(reflectionRatio), EmissiveColor(emissiveColor)
+	{
+	}
 	StandardMaterial(Color diffColor, Color ambColor, float reflectionRatio)
-		:DiffuseColor(diffColor), AmbientColor(ambColor), ReflectionRatio(reflectionRatio)
+		: StandardMaterial(diffColor, ambColor, Color(0.f), reflectionRatio)
+	{
+	}
+	StandardMaterial(Color emissiveColor)
+		: StandardMaterial(Color(0.f), Color(0.f), emissiveColor, 0.f)
 	{
 	}
 #pragma endregion

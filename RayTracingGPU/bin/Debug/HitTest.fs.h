@@ -1,10 +1,9 @@
-
 #version 410
 struct SLightSource
 {
-	vec4 position;              // po³o¿enie Ÿród³a œwiat³a punktowego/reflektora
-	vec4 ambient;               // intensywnoœæ œwiat³a otoczenia; oznaczenie La
-	vec4 diffuse;               // intensywnoœæ œwiat³a rozproszonego; oznaczenie Ld
+	vec4 position;              //po³o¿enie Ÿród³a œwiat³a
+	vec4 ambient;               //intensywnoœæ œwiat³a otoczenia
+	vec4 diffuse;               //intensywnoœæ œwiat³a rozproszonego
 };
 uniform uint LightNum;
 uniform SLightSource Light[10];
@@ -41,6 +40,13 @@ uniform vec4 Viewport;
 
 uniform mat4 ProjectionMatrixInverse;
 
+struct SMaterial
+{
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 emissive;
+	float reflectionRatio;
+};
 
 void GetRay2D(vec4 pix, inout vec3 rayOrigin, inout vec3 rayDir)
 {
@@ -104,17 +110,19 @@ void GetTriangleNormals(int triangleIndex, inout vec3 v0, inout vec3 v1, inout v
 
 #define OFFSET_DIFFUSE 0
 #define OFFSET_AMBIENT 1
-#define OFFSET_RATIO 2
+#define OFFSET_EMISSIVE 2
+#define OFFSET_REFLECTION_RATIO 3
 
-#define OFFSET_MATERIAL (3)
+#define OFFSET_MATERIAL (4)
 
-void GetMaterial(int triangleIndex, inout vec4 diffuse, inout vec4 ambient, inout float reflectionRatio)
+void GetMaterial(int triangleIndex, inout SMaterial outMaterial)
 {
 	int i0 = texelFetch(MaterialIndexTexture, triangleIndex + 0).x;
 
-	diffuse = texelFetch(MaterialPropertiesTexture, i0 * OFFSET_MATERIAL + OFFSET_DIFFUSE);
-	ambient = texelFetch(MaterialPropertiesTexture, i0 * OFFSET_MATERIAL + OFFSET_AMBIENT);
-	reflectionRatio = texelFetch(MaterialPropertiesTexture, i0 * OFFSET_MATERIAL + OFFSET_RATIO).x;
+	outMaterial.diffuse = texelFetch(MaterialPropertiesTexture, i0 * OFFSET_MATERIAL + OFFSET_DIFFUSE);
+	outMaterial.ambient = texelFetch(MaterialPropertiesTexture, i0 * OFFSET_MATERIAL + OFFSET_AMBIENT);
+	outMaterial.emissive = texelFetch(MaterialPropertiesTexture, i0 * OFFSET_MATERIAL + OFFSET_EMISSIVE);
+	outMaterial.reflectionRatio = texelFetch(MaterialPropertiesTexture, i0 * OFFSET_MATERIAL + OFFSET_REFLECTION_RATIO).x;
 }
 //bool FindIntersectionNT(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
 //	inout float dist, inout vec3 hitPoint, inout bool isLine, inout bool isFront, inout vec3 normal)
@@ -271,8 +279,7 @@ vec4 CalculateLocalAmbientLight(int lightIndex, vec4 matAmbientColor)
 	vec4 lightColorAmbient = Light[lightIndex].ambient;
 	return lightColorAmbient * matAmbientColor;
 }
-
-vec4 CalculateLocalLambertColor(int lightIndex, vec4 matAmbientColor, vec4 matDiffuseColor, vec3 point, vec3 normal)
+vec4 CalculateLocalLambertColor(int lightIndex, SMaterial material, vec3 point, vec3 normal)
 {
 	vec3 lightPosition = Light[lightIndex].position.xyz;
 	vec4 lightColorDiffuse = Light[lightIndex].diffuse;
@@ -281,29 +288,30 @@ vec4 CalculateLocalLambertColor(int lightIndex, vec4 matAmbientColor, vec4 matDi
 	float diffuseRate = dot(inVector, normal);
 	
 	if (diffuseRate < 0)
-		return CalculateLocalAmbientLight(lightIndex, matAmbientColor);
+		return CalculateLocalAmbientLight(lightIndex, material.ambient);
 	else
 	{
-		return CalculateLocalAmbientLight(lightIndex, matAmbientColor) + 
-			lightColorDiffuse * matDiffuseColor * diffuseRate;
+		return CalculateLocalAmbientLight(lightIndex, material.ambient) +
+			lightColorDiffuse * material.diffuse * diffuseRate;
 	}
 }
-vec4 CalculateLambertColor(vec4 matAmbientColor, vec4 matDiffuseColor, vec3 point, vec3 normal)
+vec4 CalculateLambertColor(SMaterial material, vec3 point, vec3 normal)
 {
-	vec4 outColor = vec4(0, 0, 0, 0);
+	vec4 outColor = material.emissive;
 	for (int i = 0; i < LightNum; i++)
 	{
-		outColor += CalculateLocalLambertColor(i, matAmbientColor, matDiffuseColor, point, normal);
+		outColor += CalculateLocalLambertColor(i, material, point, normal);
 	}
 	clamp(outColor, 0, 1);
 	return outColor;
 }
-
-float GetTransmissiveRatio(vec4 matDiffuse, vec4 matAmbient)
+float GetTransmissiveRatio(SMaterial material)
 {
-	//todo: dodac specular
-	return ((matDiffuse.a + matAmbient.a) / 2.0);
-
+	return ((material.ambient.a + material.diffuse.a) / 2.0);
+}
+bool IsEmissive(SMaterial material)
+{
+	return material.emissive.a > 0;
 }
 vec4 CalculateTransmissionColor(vec4 baseColor, vec4 transmissiveColor, float transmissiveRatio)
 {
@@ -401,15 +409,16 @@ void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 	//vec3 vn0, vn1, vn2;
 	//GetTriangleNormals(hitTriangle, vn0, vn1, vn2);
 
-	vec4 matDiffuse, matAmbient;
-	GetMaterial(hitTriangle, matDiffuse, matAmbient, reflectionRatio);
+	SMaterial material;
+	GetMaterial(hitTriangle, material);
 
-	outColor = CalculateLambertColor(matAmbient, matDiffuse, hitPoint, hitNormal);
+	outColor = CalculateLambertColor(material, hitPoint, hitNormal);
 	//outColor = vec4(1, 0, 0, 1);
+	reflectionRatio = material.reflectionRatio;
 
-	if (depth <= RayTracerDepth)
+	if (depth <= RayTracerDepth && !IsEmissive(material))
 	{
-		transmissiveRatio = GetTransmissiveRatio(matDiffuse, matAmbient);
+		transmissiveRatio = GetTransmissiveRatio(material);
 		isTransmissive = transmissiveRatio < 1;
 		if (isTransmissive)
 		{	//ustawiamy promien przezroczystosci
@@ -438,7 +447,7 @@ void RayTrace6(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 	float transmissiveRatio, reflectionRatio;
 	vec4 transmissiveColor, reflectionColor;
 	//testowanie przeciêcia oraz obliczanie koloru
-	RayTrace(1, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
+	RayTrace(6, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
 		isReflective, reflectionOrigin, reflectionDir, reflectionRatio);
 }
 void RayTrace5(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
@@ -448,7 +457,7 @@ void RayTrace5(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 	float transmissiveRatio, reflectionRatio;
 	vec4 transmissiveColor, reflectionColor;
 	//testowanie przeciêcia oraz obliczanie koloru
-	RayTrace(1, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
+	RayTrace(5, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
 		isReflective, reflectionOrigin, reflectionDir, reflectionRatio);
 	if (isTransmissive)
 	{	//funckjonalnoœc przeŸroczystoœci
@@ -468,7 +477,7 @@ void RayTrace4(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 	float transmissiveRatio, reflectionRatio;
 	vec4 transmissiveColor, reflectionColor;
 	//testowanie przeciêcia oraz obliczanie koloru
-	RayTrace(1, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
+	RayTrace(4, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
 		isReflective, reflectionOrigin, reflectionDir, reflectionRatio);
 	if (isTransmissive)
 	{	//funckjonalnoœc przeŸroczystoœci
@@ -488,7 +497,7 @@ void RayTrace3(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 	float transmissiveRatio, reflectionRatio;
 	vec4 transmissiveColor, reflectionColor;
 	//testowanie przeciêcia oraz obliczanie koloru
-	RayTrace(1, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
+	RayTrace(3, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
 		isReflective, reflectionOrigin, reflectionDir, reflectionRatio);
 	if (isTransmissive)
 	{	//funckjonalnoœc przeŸroczystoœci
@@ -508,7 +517,7 @@ void RayTrace2(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 	float transmissiveRatio, reflectionRatio;
 	vec4 transmissiveColor, reflectionColor;
 	//testowanie przeciêcia oraz obliczanie koloru
-	RayTrace(1, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
+	RayTrace(2, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
 		isReflective, reflectionOrigin, reflectionDir, reflectionRatio);
 	if (isTransmissive)
 	{	//funckjonalnoœc przeŸroczystoœci
@@ -577,38 +586,7 @@ void main()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	/*
 
 
 	int count = GetTrianglesCount();
@@ -719,4 +697,5 @@ void main()
 	//	outFragColor = vec4(0, 1, 0, 1);
 
 	//outFragColor = vec4(1, 1, 1, 1);
+	*/
 }
