@@ -19,6 +19,7 @@ private:
 	int FrameCounter;
 	Fps FpsObject;
 
+	unsigned RayTracerDepth;
 
 	RectI Viewport;
 	Scene *CurrentScene;
@@ -61,6 +62,8 @@ public:
 		return _instance;
 	}
 
+	CameraPerspective *GetCamera() const { return this->Camera; }
+
 	void PreInit(int argc, char* argv[]);
 	void Init();
 	void SwitchMode() { this->GPUMode = !this->GPUMode; this->ResetCounter(); }
@@ -68,6 +71,9 @@ public:
 	void RayTraceOnCPU(unsigned depth, const Ray *ray, Color *outColor);
 	void RenderSceneOnCPU(void);
 	void RenderSceneOnGPU(void);
+
+	void IncreaseRayTracerDepth() { this->RayTracerDepth++; }
+	void DecreaseRayTracerDepth() { if (this->RayTracerDepth >0) this->RayTracerDepth--; }
 
 	void UpdateWindowsTitle();
 	void UpdateCounter();

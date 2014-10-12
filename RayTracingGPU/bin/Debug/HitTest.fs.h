@@ -9,6 +9,8 @@ struct SLightSource
 uniform uint LightNum;
 uniform SLightSource Light[10];
 
+uniform uint RayTracerDepth;
+
 //zawiera informacje o wspolrzednych pixela w przestrzeni widoku
 varying vec3 pixel;
 
@@ -186,10 +188,6 @@ bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
 	//obliczanie pierwszej wspó³rzednej barycentrycznej
 	vec3 d1 = rayOrigin - v0;
 	float bc0 = dot(d1, s1) * invD;
-	if (v0 == vec3(0.1, 0, 0.4))
-	{
-		outTest = vec3(bc0,0,0);
-	}
 	if (bc0 < 0.0 || bc0 > 1.0)
 		return false;
 
@@ -307,7 +305,14 @@ float GetTransmissiveRatio(vec4 matDiffuse, vec4 matAmbient)
 	return ((matDiffuse.a + matAmbient.a) / 2.0);
 
 }
-void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor);
+vec4 CalculateTransmissionColor(vec4 baseColor, vec4 transmissiveColor, float transmissiveRatio)
+{
+	return baseColor * transmissiveRatio + transmissiveColor * (1.0 - transmissiveRatio);
+}
+vec4 CalculateReflectionColor(vec4 baseColor, vec4 reflectionColor, float reflectionRatio)
+{
+	return baseColor * (1.0 - reflectionRatio) + reflectionColor * reflectionRatio;
+}
 
 void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 	inout bool isTransmissive, inout vec3 transmissiveOrigin, inout vec3 transmissiveDir, inout float transmissiveRatio,
@@ -317,6 +322,7 @@ void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 
 
 	int count = GetTrianglesCount();
+	//outTest = vec3(count);
 	vec3 v0, v1, v2;
 	int hitTriangle = -1;
 	int hitDistance;
@@ -399,8 +405,9 @@ void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 	GetMaterial(hitTriangle, matDiffuse, matAmbient, reflectionRatio);
 
 	outColor = CalculateLambertColor(matAmbient, matDiffuse, hitPoint, hitNormal);
+	//outColor = vec4(1, 0, 0, 1);
 
-	if (depth < 2)
+	if (depth <= RayTracerDepth)
 	{
 		transmissiveRatio = GetTransmissiveRatio(matDiffuse, matAmbient);
 		isTransmissive = transmissiveRatio < 1;
@@ -413,65 +420,131 @@ void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 		isReflective = reflectionRatio > 0;
 		if (isReflective)
 		{	//ustawiamy promien odbicia
-			//todo
 			vec3 rayDirInv = -rayDir;
 			float refDot = dot(hitNormal, rayDirInv);
 			reflectionDir = hitNormal * refDot * 2 - rayDirInv;
 			reflectionDir = normalize(reflectionDir);
 			reflectionOrigin = hitPoint;
-
-			//obliczanie koloru œwiat³a przeŸroczystego
-			//outColor = outColor * outColor.a + transColor * (1.0 - transColor.a);
 		}
-		//TODO: reflection
 	}
 
 
 }
 
-void RayTrace2(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
+void RayTrace6(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 {
-	outColor = vec4(1, 0, 0, 1);
-	vec3 transmissiveOrigin, transmissiveDir;
-	vec3 reflectionOrigin, reflectionDir;
+	vec3 transmissiveOrigin, transmissiveDir, reflectionOrigin, reflectionDir;
 	bool isTransmissive, isReflective;
 	float transmissiveRatio, reflectionRatio;
-
-	RayTrace(2, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
+	vec4 transmissiveColor, reflectionColor;
+	//testowanie przeciêcia oraz obliczanie koloru
+	RayTrace(1, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
 		isReflective, reflectionOrigin, reflectionDir, reflectionRatio);
 }
-void RayTrace1(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
+void RayTrace5(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 {
-	vec3 transmissiveOrigin, transmissiveDir;
-	vec3 reflectionOrigin, reflectionDir;
+	vec3 transmissiveOrigin, transmissiveDir, reflectionOrigin, reflectionDir;
 	bool isTransmissive, isReflective;
 	float transmissiveRatio, reflectionRatio;
-	vec4 transColor, reflectColor;
-
+	vec4 transmissiveColor, reflectionColor;
+	//testowanie przeciêcia oraz obliczanie koloru
 	RayTrace(1, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
 		isReflective, reflectionOrigin, reflectionDir, reflectionRatio);
 	if (isTransmissive)
-	{
-		//outColor = vec4(1);
-		RayTrace2(transmissiveOrigin, transmissiveDir, transColor);
-		outColor = outColor * transmissiveRatio + transColor * (1.0 - transmissiveRatio);
-		//outColor = transColor * (1.0 - outColor.a);
+	{	//funckjonalnoœc przeŸroczystoœci
+		RayTrace6(transmissiveOrigin, transmissiveDir, transmissiveColor);
+		outColor = CalculateTransmissionColor(outColor, transmissiveColor, transmissiveRatio);
 	}
 	if (isReflective)
-	{
-		//outColor = vec4(1);
-		//vec4 transColor;
-		RayTrace2(reflectionOrigin, reflectionDir, reflectColor);
-		outColor = outColor * (1.0 - reflectionRatio) + reflectColor * reflectionRatio;
-		//outColor = transColor * (1.0 - outColor.a);
-		//outColor = reflectionRatio * reflectColor;
+	{	//funckjonalnoœc refleksji
+		RayTrace6(reflectionOrigin, reflectionDir, reflectionColor);
+		outColor = CalculateReflectionColor(outColor, reflectionColor, reflectionRatio);
+	}
+}
+void RayTrace4(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
+{
+	vec3 transmissiveOrigin, transmissiveDir, reflectionOrigin, reflectionDir;
+	bool isTransmissive, isReflective;
+	float transmissiveRatio, reflectionRatio;
+	vec4 transmissiveColor, reflectionColor;
+	//testowanie przeciêcia oraz obliczanie koloru
+	RayTrace(1, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
+		isReflective, reflectionOrigin, reflectionDir, reflectionRatio);
+	if (isTransmissive)
+	{	//funckjonalnoœc przeŸroczystoœci
+		RayTrace5(transmissiveOrigin, transmissiveDir, transmissiveColor);
+		outColor = CalculateTransmissionColor(outColor, transmissiveColor, transmissiveRatio);
+	}
+	if (isReflective)
+	{	//funckjonalnoœc refleksji
+		RayTrace5(reflectionOrigin, reflectionDir, reflectionColor);
+		outColor = CalculateReflectionColor(outColor, reflectionColor, reflectionRatio);
+	}
+}
+void RayTrace3(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
+{
+	vec3 transmissiveOrigin, transmissiveDir, reflectionOrigin, reflectionDir;
+	bool isTransmissive, isReflective;
+	float transmissiveRatio, reflectionRatio;
+	vec4 transmissiveColor, reflectionColor;
+	//testowanie przeciêcia oraz obliczanie koloru
+	RayTrace(1, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
+		isReflective, reflectionOrigin, reflectionDir, reflectionRatio);
+	if (isTransmissive)
+	{	//funckjonalnoœc przeŸroczystoœci
+		RayTrace4(transmissiveOrigin, transmissiveDir, transmissiveColor);
+		outColor = CalculateTransmissionColor(outColor, transmissiveColor, transmissiveRatio);
+	}
+	if (isReflective)
+	{	//funckjonalnoœc refleksji
+		RayTrace4(reflectionOrigin, reflectionDir, reflectionColor);
+		outColor = CalculateReflectionColor(outColor, reflectionColor, reflectionRatio);
+	}
+}
+void RayTrace2(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
+{
+	vec3 transmissiveOrigin, transmissiveDir, reflectionOrigin, reflectionDir;
+	bool isTransmissive, isReflective;
+	float transmissiveRatio, reflectionRatio;
+	vec4 transmissiveColor, reflectionColor;
+	//testowanie przeciêcia oraz obliczanie koloru
+	RayTrace(1, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
+		isReflective, reflectionOrigin, reflectionDir, reflectionRatio);
+	if (isTransmissive)
+	{	//funckjonalnoœc przeŸroczystoœci
+		RayTrace3(transmissiveOrigin, transmissiveDir, transmissiveColor);
+		outColor = CalculateTransmissionColor(outColor, transmissiveColor, transmissiveRatio);
+	}
+	if (isReflective)
+	{	//funckjonalnoœc refleksji
+		RayTrace3(reflectionOrigin, reflectionDir, reflectionColor);
+		outColor = CalculateReflectionColor(outColor, reflectionColor, reflectionRatio);
+	}
+}
+void RayTrace1(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
+{
+	vec3 transmissiveOrigin, transmissiveDir, reflectionOrigin, reflectionDir;
+	bool isTransmissive, isReflective;
+	float transmissiveRatio, reflectionRatio;
+	vec4 transmissiveColor, reflectionColor;
+	//testowanie przeciêcia oraz obliczanie koloru
+	RayTrace(1, rayOrigin, rayDir, outColor, isTransmissive, transmissiveOrigin, transmissiveDir, transmissiveRatio,
+		isReflective, reflectionOrigin, reflectionDir, reflectionRatio);
+	if (isTransmissive)
+	{	//funckjonalnoœc przeŸroczystoœci
+		RayTrace2(transmissiveOrigin, transmissiveDir, transmissiveColor);
+		outColor = CalculateTransmissionColor(outColor, transmissiveColor, transmissiveRatio);
+	}
+	if (isReflective)
+	{	//funckjonalnoœc refleksji
+		RayTrace2(reflectionOrigin, reflectionDir, reflectionColor);
+		outColor = CalculateReflectionColor(outColor, reflectionColor, reflectionRatio);
 	}
 }
 
 void main()
 {
 
-	outTest = vec3(0);
 	//if (ray.z>0.0)
 	//if (pixel.y>400)
 	//if ((ProjectionMatrixInverse * vec4(pixel, 1.0)).x>0)

@@ -11,6 +11,7 @@
 #include <direct.h>
 #define GetCurrentDir _getcwd
 
+const char* LIGHT_MESH_FILE = "\\Models\\box_light.obj";
 
 //const char* MESH_FILE1 = "C:\\Users\\Mateusz\\Desktop\\mgr\\proj\\Qt\\RayTracingGPU\\bin\\Debug\\cube.ply";
 const char* MESH_FILE1 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box.obj";
@@ -21,23 +22,8 @@ const char* MESH_FILE2 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1
 
 GLMgr *GLMgr::_instance = NULL;
 
-//static GLFrame				viewFrame;
-static GLuint               vao;                // The VAO
-static GLuint               vertexBuffer;       // Geometry VBO
-static GLTriangleBatch     sphereBatch;
-
-// Geometry for a simple quad
-static const GLfloat quad[] =
-{
-	-1.0f, -1.0f, 0.0f,
-	1.0f, -1.0f, 0.0f,
-	1.0f, 1.0f, 0.0f,
-	-1.0f, 1.0f, 0.0f,
-};
-
 #define WINDOWS_SIZE_X (800)
 #define WINDOWS_SIZE_Y (800)
-#define FOCAL_DIST 1000
 
 bool HitTest(Vector3D v0, Vector3D v1, Vector3D v2, Ray ray,
 	float *dist, Vector3D *hitPoint, bool *isFront, Vector3D *normal)
@@ -128,6 +114,9 @@ void GLMgr::Init()
 #pragma endregion
 
 #pragma region Scena
+	char cwd[MAX_PATH];
+	GetCurrentDir(cwd, sizeof(cwd));
+
 	this->CurrentScene = new Scene();
 	unsigned mat1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 1, 0, 0.4), Color(0.3, 0.3, 0, 0.4), 0));
 	unsigned mat2 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 0, 1), Color(0., 0., 0.5), 0.3));
@@ -142,7 +131,12 @@ void GLMgr::Init()
 #pragma endregion
 
 #pragma region Light
+	char tmpPath[MAX_PATH];
+	sprintf(tmpPath, "%s%s", cwd, LIGHT_MESH_FILE);
+	unsigned lightMaterial1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1.0, 1.0, 1.0), Color(.4, .4, .4), 0.f));
+	this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0., -0.2, -.2)), mat1);
 	this->LightList.append(new PointLight(Vector3D(0., -0.2, .6), Color(1.0, 1.0, 1.0), Color(.4, .4, .4)));
+
 	this->LightList.append(new PointLight(Vector3D(0., 0.4, 0), Color(1.0, 0, 0), Color(.4, .0, .0)));
 #pragma endregion
 
@@ -341,22 +335,12 @@ void GLMgr::Init()
 
 	glClearColor(1.f, 0.f, 0.f, 1.0f);
 
-#pragma region Ustawienia macierzy OpenGL
+#pragma region Ustawienia macierzy dla OpenGL
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//double aspectRatio = (double)WINDOWS_SIZE_X/WINDOWS_SIZE_Y;
-	//double theta = 2.0*atan( 0.5*(double)WINDOWS_SIZE_Y/Camera->Distance );
-	//double fH = tan( theta / 360 * 3.14 ) * 1;
-	//gluPerspective( 100, aspectRatio, 1.0, 200 );
-	//numError = OpenGLHelper::CheckErrors();
-
-	//gluOrtho2D(0.0, this->Viewport.width(), 0.0, this->Viewport.height());
-
-	//Matrix4x4 m;
-	//m.ortho(0.0, this->Viewport.width(), 0.0, this->Viewport.height(), 0.0, 1.0);
 
 	//macierz projekcji ustawiona na 2d -> renderowanie perspektywiczne odbywa siê w shaderze
-	Matrix4x4 ortho2D = Matrix4x4();
+	Matrix4x4 ortho2D;
 	ortho2D.ortho(this->Viewport.left(), this->Viewport.right(), this->Viewport.top(), this->Viewport.bottom(), -1., 1.);
 	glLoadMatrixf(ortho2D.data());
 
@@ -364,13 +348,9 @@ void GLMgr::Init()
 	glLoadIdentity();
 #pragma endregion
 
-
-
-	Matrix4x4 modelViewMatrix;
-	modelViewMatrix.setToIdentity();
-	modelViewMatrix.translate(0, 0, -3);
-	this->Camera->SetModelViewMatrix(&modelViewMatrix);
-
+#pragma region Ustawienia macierzy dla raytracera
+	this->Camera->ModelViewTranslate(0, 0, -3);
+#pragma endregion
 
 	//start pêtli aplikacji
 	glutMainLoop();
@@ -387,7 +367,7 @@ void GLMgr::RayTraceOnCPU(unsigned depth, const Ray *ray, Color *outColor)
 		*outColor = Shading::CalculateColor(&hitResult, &this->LightList);
 		//*outColor = Color(1, 0, 0);
 
-		if (depth < 2)
+		if (depth <= this->RayTracerDepth)
 		{
 			//wyliczenie przeŸroczystoœci
 			if (hitResult.HitMaterial->IsTransmissive())
@@ -482,11 +462,8 @@ void GLMgr::RenderSceneOnGPU()
 	numError = OpenGLHelper::CheckErrors();
 
 #pragma region Setting Uniform
-	//ustawienie viewportu do kalkulacji wspó³rzêdnych na zmienne lokalne
-	glUniform4f(glGetUniformLocation(Shader_TestHit, "Viewport"),
-		this->Viewport.left(), this->Viewport.top(), this->Viewport.right(), this->Viewport.bottom());
-	numError = OpenGLHelper::CheckErrors();
 
+	/*
 	Matrix4x4 modelViewMatrix;
 	modelViewMatrix.setToIdentity();
 	modelViewMatrix.translate(0, 0, -3);
@@ -518,20 +495,26 @@ void GLMgr::RenderSceneOnGPU()
 	QVector3D boF = QVector3D(voFar);
 	QVector3D voRay = boF - boN;
 	voRay.normalize();
+	*/
 
-
+	//ustawienie viewportu do kalkulacji na wspó³rzedne orto
+	glUniform4f(glGetUniformLocation(Shader_TestHit, "Viewport"),
+		this->Viewport.left(), this->Viewport.top(), this->Viewport.right(), this->Viewport.bottom());
+	//ustawienie macierzy MVP do kalkulacji na wspólrzedne modelu
 	glUniformMatrix4fv(OpenGLHelper::GetUniformLocation(Shader_TestHit, "ProjectionMatrixInverse"), 1, GL_FALSE,
-		modelViewProjInverted.data());
-	numError = OpenGLHelper::CheckErrors();
-
+		this->Camera->GetModelViewProjectionMatrixInverted()->data());
+	//ustawienie tekstur
 	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "PositionIndexTexture"), 0);
 	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "PositionCordsTexture"), 1);
 	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "NormalTexture"), 2);
 	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "NormalIndexTexture"), 3);
 	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "MaterialIndexTexture"), 4);
 	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "MaterialPropertiesTexture"), 5);
+	//ustawienie wlasciwosci swiatla
 	OpenGLHelper::UpdateLightUniformList("Light", &this->LightList, Shader_TestHit, NULL);
 	numError = OpenGLHelper::CheckErrors();
+	//ustawienie glebokosci renderowania
+	glUniform1ui(OpenGLHelper::GetUniformLocation(Shader_TestHit, "RayTracerDepth"), this->RayTracerDepth);
 #pragma endregion
 
 #pragma region Draw
@@ -546,58 +529,55 @@ void GLMgr::RenderSceneOnGPU()
 #pragma endregion
 
 #pragma region Testy
-	if (false)
+	/*
+	for (int y = 0; y < this->Viewport.width(); y++)
 	{
-		/*
-		for (int y = 0; y < this->Viewport.width(); y++)
+		for (int x = 0; x < this->Viewport.height(); x++)
 		{
-			for (int x = 0; x < this->Viewport.height(); x++)
+			Color pixelColor;
+
+			//1. Wygenerowañ promieñ dla aktualnego piksela
+			Ray ray = this->Camera->GetRay(PointI(x, y), this->Viewport);
+			//Ray ray = this->Camera->GetRay(PointI(x, y));
+			Ray ray1(Vector3D(0.1, 0.1, -2.0), Vector3D(0.0, 0.0, 1.0));
+
+			float dist = -1;
+			Vector3D point(-1, -1, -1), normal;
+			bool isFront;
+			bool test = HitTest(Vector3D(-0.5, 0.0, 0.0), Vector3D(0.5, 0.0, 0.0), Vector3D(0.0, 1.0, 0.0),
+				ray1, &dist, &point, &isFront, &normal);
+			Vector3D uvw;
+			float frontFacing = -1;
+			//bool tt = PickTriangle(Vector3D(-0.5, 0.0, 0.0), Vector3D(0.5, 0.0, 0.0), Vector3D(0.0, 1.0, 0.0), ray1.Start, ray1.Direction,
+			//	&point, &uvw, &dist, &frontFacing);
+
+			//2. Dla ka¿dego obiektu na scenie
+			// 1. Sprawdziæ czy promieñ przecina obiekt
+			// 2. Jeœli przecina, sprardziæ czy odleg³oœc do kamery jest mniejsza od zapisanej
+			// 3. Jeœli tak to podmieniæ i obliczac dalej
+			//3. Jeœli zaleniono jakiœ obiekt na drodze promienia to sprawdziæ czy odbity promieñ dociera do Ÿróde³ œwiat³a
+			HitResult hitResult = this->CurrentScene->HandleRay(&ray);
+
+
+
+			if (hitResult.Result)
 			{
-				Color pixelColor;
-
-				//1. Wygenerowañ promieñ dla aktualnego piksela
-				Ray ray = this->Camera->GetRay(PointI(x, y), this->Viewport);
-				//Ray ray = this->Camera->GetRay(PointI(x, y));
-				Ray ray1(Vector3D(0.1, 0.1, -2.0), Vector3D(0.0, 0.0, 1.0));
-
-				float dist = -1;
-				Vector3D point(-1, -1, -1), normal;
-				bool isFront;
-				bool test = HitTest(Vector3D(-0.5, 0.0, 0.0), Vector3D(0.5, 0.0, 0.0), Vector3D(0.0, 1.0, 0.0),
-					ray1, &dist, &point, &isFront, &normal);
-				Vector3D uvw;
-				float frontFacing = -1;
-				//bool tt = PickTriangle(Vector3D(-0.5, 0.0, 0.0), Vector3D(0.5, 0.0, 0.0), Vector3D(0.0, 1.0, 0.0), ray1.Start, ray1.Direction,
-				//	&point, &uvw, &dist, &frontFacing);
-
-				//2. Dla ka¿dego obiektu na scenie
-				// 1. Sprawdziæ czy promieñ przecina obiekt
-				// 2. Jeœli przecina, sprardziæ czy odleg³oœc do kamery jest mniejsza od zapisanej
-				// 3. Jeœli tak to podmieniæ i obliczac dalej
-				//3. Jeœli zaleniono jakiœ obiekt na drodze promienia to sprawdziæ czy odbity promieñ dociera do Ÿróde³ œwiat³a
-				HitResult hitResult = this->CurrentScene->HandleRay(&ray);
-
-
-
-				if (hitResult.Result)
-				{
-					pixelColor = Shading::CalculateColor(&hitResult, &this->LightList);
-					//pixelColor = Color(1,1,1);
-				}
-				//4. Jeœli dociera - wyliczyæ natê¿enie koloru w danym punkcie
-				//5. Jeœli nie dociera - wyliczyæ natê¿enie w cieniu
-
-				float red = pixelColor.redF();
-				float green = pixelColor.greenF();
-				float blue = pixelColor.blueF();
-				//glColor3f(pixelColor.redF(), pixelColor.greenF(), pixelColor.blueF());
-				//glBegin(GL_POINTS);
-				//glVertex2i(x, y);
-				//glEnd();
+				pixelColor = Shading::CalculateColor(&hitResult, &this->LightList);
+				//pixelColor = Color(1,1,1);
 			}
+			//4. Jeœli dociera - wyliczyæ natê¿enie koloru w danym punkcie
+			//5. Jeœli nie dociera - wyliczyæ natê¿enie w cieniu
+
+			float red = pixelColor.redF();
+			float green = pixelColor.greenF();
+			float blue = pixelColor.blueF();
+			//glColor3f(pixelColor.redF(), pixelColor.greenF(), pixelColor.blueF());
+			//glBegin(GL_POINTS);
+			//glVertex2i(x, y);
+			//glEnd();
 		}
-		*/
 	}
+	*/
 	numError = OpenGLHelper::CheckErrors();
 #pragma endregion
 
@@ -633,16 +613,59 @@ void RenderScene(void)
 		GLMgr::I()->RenderSceneOnCPU();
 }
 
-// Called to draw scene
+const float TRANSFORM_TRANSLATE_RATE = 0.02;
+const float TRANSFORM_SCALE_RATE = 1.05;
+const float TRANSFORM_ROTATE_ANGLE = 1.05;
 void KeyboardFunc(unsigned char key, int x, int y)
 {
 	switch (key) {
 	case ' ':
 		GLMgr::I()->SwitchMode();
 		break;
+	case 'a':
+		GLMgr::I()->GetCamera()->ModelViewTranslate(TRANSFORM_TRANSLATE_RATE, 0.f, 0.f);
+		break;
+	case 'd':
+		GLMgr::I()->GetCamera()->ModelViewTranslate(-TRANSFORM_TRANSLATE_RATE, 0.f, 0.f);
+		break;
+	case 'w':
+		GLMgr::I()->GetCamera()->ModelViewTranslate(0.f, 0.f, TRANSFORM_TRANSLATE_RATE);
+		break;
+	case 's':
+		GLMgr::I()->GetCamera()->ModelViewTranslate(0.f, 0.f, -TRANSFORM_TRANSLATE_RATE);
+		break;
+	case '+':
+		GLMgr::I()->IncreaseRayTracerDepth();
+		break;
+	case '-':
+		GLMgr::I()->DecreaseRayTracerDepth();
+		break;
+		
 	}
 }
-
+void KeyboardSpecialFunc(int key, int x, int y)
+{
+	switch (key) {
+	case GLUT_KEY_PAGE_UP:
+		GLMgr::I()->GetCamera()->ModelViewTranslate(0.f, -TRANSFORM_TRANSLATE_RATE, 0.f);
+		break;
+	case GLUT_KEY_PAGE_DOWN:
+		GLMgr::I()->GetCamera()->ModelViewTranslate(0.f, TRANSFORM_TRANSLATE_RATE, 0.f);
+		break;
+	case GLUT_KEY_LEFT:
+		GLMgr::I()->GetCamera()->ModelViewRotate(TRANSFORM_ROTATE_ANGLE, 0.f, 1.f, 0.f);
+		break;
+	case GLUT_KEY_RIGHT:
+		GLMgr::I()->GetCamera()->ModelViewRotate(-TRANSFORM_ROTATE_ANGLE, 0.f, 1.f, 0.f);
+		break;
+	case GLUT_KEY_DOWN:
+		GLMgr::I()->GetCamera()->ModelViewRotate(-TRANSFORM_ROTATE_ANGLE, 1.f, 0.f, 0.f);
+		break;
+	case GLUT_KEY_UP:
+		GLMgr::I()->GetCamera()->ModelViewRotate(TRANSFORM_ROTATE_ANGLE, 1.f, 0.f, 0.f);
+		break;
+	}
+}
 
 void GLMgr::ResetCounter()
 {
@@ -659,7 +682,7 @@ void GLMgr::UpdateWindowsTitle()
 		prefix = "RayTracing CPU";
 
 	char buff[100];
-	sprintf(buff, "%s | Frames: %d | FPS: %d", prefix, this->FrameCounter, this->FpsObject.GetValue());
+	sprintf(buff, "%s | Depth: %d | Frames: %d | FPS: %d", prefix, this->RayTracerDepth, this->FrameCounter, this->FpsObject.GetValue());
 	glutSetWindowTitle(buff);
 }
 void GLMgr::UpdateCounter()
@@ -667,6 +690,7 @@ void GLMgr::UpdateCounter()
 	this->UpdateWindowsTitle();
 	this->FrameCounter++;
 }
+
 void GLMgr::PreInit(int argc, char* argv[])
 {
 	gltSetWorkingDirectory(argv[0]);
@@ -678,11 +702,11 @@ void GLMgr::PreInit(int argc, char* argv[])
 	this->ResetCounter();
 	glutDisplayFunc(::RenderScene);
 	glutKeyboardFunc(::KeyboardFunc);
+	glutSpecialFunc(::KeyboardSpecialFunc);
 
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
-		// Problem: glewInit failed, something is seriously wrong.
 		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
 	}
 }
@@ -697,7 +721,8 @@ GLMgr::~GLMgr(void)
 		delete(this->Camera);
 	this->Camera = NULL;
 }
-GLMgr::GLMgr() :GPUMode(false)
+GLMgr::GLMgr() 
+	:GPUMode(true), RayTracerDepth(1)
 {
 	this->CurrentScene = NULL;
 	this->Camera = NULL;

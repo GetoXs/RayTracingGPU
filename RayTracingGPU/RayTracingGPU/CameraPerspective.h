@@ -11,6 +11,14 @@ private:
 	Matrix4x4 _ModelViewProjectionMatrixInverted;
 public:
 
+	Ray GetRay(PointI pixelLocation, RectI viewport);
+
+	void RecalcModelViewProjectionMatrix()
+	{
+		this->_ModelViewProjectionMatrix = this->_ProjectionMatrix * this->_ModelViewMatrix;
+		this->_ModelViewProjectionMatrixInverted = this->_ModelViewProjectionMatrix.inverted();
+	}
+
 #pragma region Gety Sety
 	const Matrix4x4* GetProjectionMatrix()
 	{
@@ -36,22 +44,33 @@ public:
 	}
 #pragma endregion
 
-	Ray GetRay(PointI pixelLocation, RectI viewport);
-
-	void RecalcModelViewProjectionMatrix()
+#pragma region ModelView transformacje
+	void ModelViewTranslate(float x, float y, float z)
 	{
-		this->_ModelViewProjectionMatrix = this->_ProjectionMatrix * this->_ModelViewMatrix;
-		this->_ModelViewProjectionMatrixInverted = this->_ModelViewProjectionMatrix.inverted();
+		this->_ModelViewMatrix.translate(x, y, z);
+		this->RecalcModelViewProjectionMatrix();
 	}
+	void ModelViewRotate(float angle, float x, float y, float z)
+	{
+		this->_ModelViewMatrix.rotate(angle, x, y, z);
+		this->RecalcModelViewProjectionMatrix();
+	}
+	void ModelViewScale(float scale)
+	{
+		this->_ModelViewMatrix.scale(scale);
+		this->RecalcModelViewProjectionMatrix();
+	}
+#pragma endregion
 
-	CameraPerspective(float left, float right, float bottom, float top, float nearPlane, float farPlane) 
+#pragma region Ctors
+	CameraPerspective(float left, float right, float bottom, float top, float nearPlane, float farPlane)
+		:_ModelViewMatrix()
 	{
 		this->_ProjectionMatrix.setToIdentity();
 		this->_ProjectionMatrix.frustum(left, right, bottom, top, nearPlane, farPlane);
 
-		this->_ModelViewMatrix.setToIdentity();
-
 		this->RecalcModelViewProjectionMatrix();
 	}
+#pragma endregion
 };
 

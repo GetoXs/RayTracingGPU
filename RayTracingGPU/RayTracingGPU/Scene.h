@@ -6,6 +6,7 @@
 
 class Scene
 {
+private:
 	QList<ISceneObject*> ObjectList;
 	QList<Mesh*> MeshObjectList;
 	QList<IMaterial*> MaterialList;
@@ -65,7 +66,7 @@ public:
 				returnArray->insert(returnArray->end(), tmpIndexData, (tmpIndexData + mesh->IndexDataCount));
 			}
 			//offset zwiêkszony o liczbe zdefiniowanych wierzcho³ków
-			indexOffset = mesh->PositionCount;
+			indexOffset += mesh->PositionCount;
 
 		}
 		*count = returnArray->size();
@@ -125,9 +126,11 @@ public:
 	}
 #pragma endregion
 
+#pragma region Ctors
 	Scene() : ObjectList()
 	{
 		MeshIndexOffset = 0;
 	}
+#pragma endregion
 };
 
