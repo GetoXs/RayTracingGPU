@@ -17,6 +17,10 @@ public:
 	HitResult HandleRay(const Ray *ray);
 
 #pragma region Addy
+	void AddObject(ISceneObject *object, IMaterial *newMaterial)
+	{
+		this->AddObject(object, this->AddMaterial(newMaterial));
+	}
 	void AddObject(ISceneObject *object, unsigned materialIndex)
 	{
 		Mesh *mesh = dynamic_cast<Mesh*> (object);

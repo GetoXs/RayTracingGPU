@@ -11,7 +11,7 @@
 void Mesh::_load(const char* filename)
 {
 	Assimp::Importer importer;
-	const aiScene* sc = importer.ReadFile(filename, aiProcess_GenNormals | aiProcess_Triangulate);
+	const aiScene* sc = importer.ReadFile(filename, aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
 	if (sc == NULL)
 	{
 		const char* erer = importer.GetErrorString();

@@ -132,7 +132,8 @@ public:
 		for (int i = 0; i < this->IndexDataCount; i++)
 			IndexData[i] += indexOffset;
 	}
-	//przesuniecie pozycji wzglêdem ostatniej pozycji.ssssss
+	//przesuniecie pozycji wzglêdem ostatniej pozycji
+	//depricated
 	void SetPosition(const Vector3D *dstPosition)
 	{
 		Vector3D diff = *dstPosition - this->Position;
@@ -145,8 +146,44 @@ public:
 		}
 		ISceneObject::SetPosition(dstPosition);
 	}
+	void ApplyTransform(const Matrix4x4 *transform)
+	{
+		Vector3D tmp;
+		for (int i = 0; i < this->PositionDataCount; i += 3)
+		{
+			tmp = Vector3D(this->PositionData[i + 0], this->PositionData[i + 1], this->PositionData[i + 2]);
+			tmp = *transform * tmp;
+			this->PositionData[i + 0] = tmp.x();
+			this->PositionData[i + 1] = tmp.y();
+			this->PositionData[i + 2] = tmp.z();
+		}
+		this->ModelMatrix = *transform;
+	}
+
+	void Translate(const Vector3D *dstPosition)
+	{
+		Matrix4x4 modelMatrix;
+		modelMatrix.translate(dstPosition->x(), dstPosition->y(), dstPosition->z());
+		this->ApplyTransform(&modelMatrix);
+	}
+	void Scale(float ratio)
+	{
+		Matrix4x4 modelMatrix;
+		modelMatrix.scale(ratio);
+		this->ApplyTransform(&modelMatrix);
+	}
+	void Rotate(float angle, const Vector3D *vector)
+	{
+		Matrix4x4 modelMatrix;
+		modelMatrix.rotate(angle, *vector);
+		this->ApplyTransform(&modelMatrix);
+	}
 
 	Mesh(const char* filename, const Vector3D *dstPosition)
+		:Mesh(filename, dstPosition, 1.f)
+	{
+	}
+	Mesh(const char* filename, const Vector3D *dstPosition, float scaleRatio)
 		:ISceneObject()
 	{
 		IndexData = NULL;
@@ -156,8 +193,11 @@ public:
 		TriangleCount = PositionDataCount = PositionCount = 0;
 
 		this->_load(filename);
-		this->SetPosition(dstPosition);
+
+		this->Translate(dstPosition);
+		this->Scale(scaleRatio);
 	}
+
 
 	~Mesh()
 	{

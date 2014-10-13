@@ -330,6 +330,7 @@ void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 
 
 	int count = GetTrianglesCount();
+	//count = 30000;
 	//outTest = vec3(count);
 	vec3 v0, v1, v2;
 	int hitTriangle = -1;

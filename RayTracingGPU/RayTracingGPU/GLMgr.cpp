@@ -11,18 +11,19 @@
 #include <direct.h>
 #define GetCurrentDir _getcwd
 
-const char* LIGHT_MESH_FILE = "\\Models\\box_light.obj";
+const char* LIGHT_MESH_FILE = "\\..\\Models\\box_light.obj";
 
-const char* MESH_FILE_BUNNY = "\\Models\\bunny.ply";
+const char* MESH_FILE_BUNNY = "\\..\\Models\\bunny.obj";
+const char* MESH_FILE_SPHERE = "\\..\\Models\\Sphere1.obj";
 const char* MESH_FILE1 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box.obj";
 const char* MESH_FILE2 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box2.obj";
 
 GLMgr *GLMgr::_instance = NULL;
 
 //sta³e wspó³czynników transformacji (obs³uga klawiatura)
-const float TRANSFORM_TRANSLATE_RATE = 0.02;
-const float TRANSFORM_SCALE_RATE = 1.05;
-const float TRANSFORM_ROTATE_ANGLE = 1.05;
+const float TRANSFORM_TRANSLATE_RATE = 0.08;
+const float TRANSFORM_SCALE_RATE = 1.2;
+const float TRANSFORM_ROTATE_ANGLE = 3;
 
 //ustawienia okna oraz kamery
 const int WINDOWS_SIZE_X = 800;
@@ -117,17 +118,46 @@ void GLMgr::Init()
 	//	0.0, this->Viewport.width(), 0.0, this->Viewport.height(), -1.0, 1.0);
 #pragma endregion
 
+#pragma region Ustawienia macierzy dla raytracera
+	this->Camera->ModelViewTranslate(0, 0, -(PLANE_NEAR + PLANE_FAR) / 2.f);
+#pragma endregion
+
 #pragma region Scena
 	char cwd[MAX_PATH];
 	GetCurrentDir(cwd, sizeof(cwd));
 	char tmpPath[MAX_PATH];
 
 	this->CurrentScene = new Scene();
-	unsigned mat1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 1, 0, 0.4), Color(0.3, 0.3, 0, 0.4), 0));
-	unsigned mat2 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 0, 1), Color(0., 0., 0.5), 0.3));
+	unsigned mat1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 0, 0, 0.7), Color(0.6, 0, 0, 0.7), 0));
+	unsigned mat2 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 0), Color(0., 0.5, 0.), 0.5));
+	unsigned mat3 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 1), Color(0., 0.5, .5), 0));
+	unsigned matFullRef = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 0), Color(0., 0.5, 0.), 1));
+
+	////2 szesciany
+	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(0.3, 0.3, -1.4)), mat2);
+	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(1.5, 1, 0),0.5), mat1);
+	//this->Camera->ModelViewRotate(30, 0, 1, 0);
+	//this->SetRayTracerDepth(3);
+
+
 	sprintf(tmpPath, "%s%s", cwd, MESH_FILE_BUNNY);
-	this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, 0, 0)), mat2);
-	this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(0, 0, 0)), mat1);
+	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(-.3, 0, -2), 2), matFullRef);
+	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0.1, -0.08, 0.02), 11), mat3);
+	//this->Camera->ModelViewRotate(30, 0, 1, 0);
+
+	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, -0.08, -0.02),11), mat2);
+	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(1.2, 0, 2), 0.3), mat1);
+
+	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, -0.08, -0.02),11), mat2);
+	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0.12, -0.08, 0.1), 6), mat1);
+
+	sprintf(tmpPath, "%s%s", cwd, MESH_FILE_SPHERE);
+	this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(0, 0, -0.65), 5), new StandardMaterial(Color(1, 1, 1), Color(0.5, 0.5, 0.5), 0.95));
+	this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(-1.5, 0, -0.4), 0.5), mat1);
+	this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, 0, 0), 1), mat2);
+	this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(1.5, 0, -0.4), 0.5), new StandardMaterial(Color(1, 1, 0), Color(0., 0.5, 0.), 0.8));
+	this->Camera->ModelViewRotate(30, 1, 0, 0);
+	this->SetRayTracerDepth(3);
 
 	//this->CurrentScene->AddObject(new Sphere(Vector3D(0, 0, 0), 20, new StandardMaterial(Color(1,1,0), Color(0.2,0.2,0))));
 	//this->CurrentScene->AddObject(new Sphere(Vector3D(-40, 0, 0), 20, new StandardMaterial(Color(0,1,0), Color(0,0.2,0))));
@@ -141,12 +171,12 @@ void GLMgr::Init()
 	Vector3D lightPosition;
 	unsigned lightMaterial;
 
-	lightPosition = Vector3D(0., -0.2, .6);
+	lightPosition = Vector3D(-1., 1, 1);
 	lightMaterial = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 1, 1)));
 	this->CurrentScene->AddObject(new Mesh(tmpPath, &lightPosition), lightMaterial);
 	this->LightList.append(new PointLight(lightPosition, Color(1.0, 1.0, 1.0), Color(.4, .4, .4)));
 
-	lightPosition = Vector3D(0., 0.4, 0);
+	lightPosition = Vector3D(0., -1, 0);
 	lightMaterial = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1., 0, 0)));
 	this->CurrentScene->AddObject(new Mesh(tmpPath, &lightPosition), lightMaterial);
 	this->LightList.append(new PointLight(lightPosition, Color(1.0, 0, 0), Color(.4, .0, .0)));
@@ -358,10 +388,6 @@ void GLMgr::Init()
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-#pragma endregion
-
-#pragma region Ustawienia macierzy dla raytracera
-	this->Camera->ModelViewTranslate(0, 0, -(PLANE_NEAR + PLANE_FAR) / 2.f);
 #pragma endregion
 
 	//start pêtli aplikacji
@@ -652,11 +678,20 @@ void KeyboardFunc(unsigned char key, int x, int y)
 	case 's':
 		GLMgr::I()->GetCamera()->ModelViewTranslate(0.f, 0.f, -TRANSFORM_TRANSLATE_RATE);
 		break;
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+		GLMgr::I()->SetRayTracerDepth(key-'0');
+		break;
 	case '+':
-		GLMgr::I()->IncreaseRayTracerDepth();
+		GLMgr::I()->GetCamera()->ModelViewScale(TRANSFORM_SCALE_RATE);
 		break;
 	case '-':
-		GLMgr::I()->DecreaseRayTracerDepth();
+		GLMgr::I()->GetCamera()->ModelViewScale(1/TRANSFORM_SCALE_RATE);
 		break;
 		
 	}
@@ -755,7 +790,7 @@ GLMgr::~GLMgr(void)
 	this->Camera = NULL;
 }
 GLMgr::GLMgr() 
-	:GPUMode(true), RayTracerDepth(0)
+	:GPUMode(true), RayTracerDepth(1)
 {
 	this->Shader_TestHit = 0;
 	this->RenderBuffer_Color = 0;

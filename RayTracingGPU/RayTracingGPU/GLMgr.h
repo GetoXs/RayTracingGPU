@@ -73,6 +73,7 @@ public:
 	void RenderSceneOnGPU(void);
 
 	void IncreaseRayTracerDepth() { this->RayTracerDepth++; }
+	void SetRayTracerDepth(unsigned depth) { this->RayTracerDepth = depth; }
 	void DecreaseRayTracerDepth() { if (this->RayTracerDepth >0) this->RayTracerDepth--; }
 
 	void UpdateWindowsTitle();
