@@ -14,6 +14,7 @@
 const char* LIGHT_MESH_FILE = "\\..\\Models\\box_light.obj";
 
 const char* MESH_FILE_BUNNY = "\\..\\Models\\bunny.obj";
+const char* MESH_FILE_BUNNY_BIG = "\\..\\Models\\bunny.ply";
 const char* MESH_FILE_SPHERE = "\\..\\Models\\Sphere1.obj";
 const char* MESH_FILE1 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box.obj";
 const char* MESH_FILE2 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box2.obj";
@@ -158,6 +159,10 @@ void GLMgr::Init()
 	this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(1.5, 0, -0.4), 0.5), new StandardMaterial(Color(1, 1, 0), Color(0., 0.5, 0.), 0.8));
 	this->Camera->ModelViewRotate(30, 1, 0, 0);
 	this->SetRayTracerDepth(3);
+
+	//sprintf(tmpPath, "%s%s", cwd, MESH_FILE_BUNNY_BIG);
+	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, 0, 0), 9), new StandardMaterial(Color(0.9, 0.9, 0.9), Color(0.5, 0.5, 0.5), 0));
+	//this->Camera->ModelViewRotate(-15, 0, 1, 0);
 
 	//this->CurrentScene->AddObject(new Sphere(Vector3D(0, 0, 0), 20, new StandardMaterial(Color(1,1,0), Color(0.2,0.2,0))));
 	//this->CurrentScene->AddObject(new Sphere(Vector3D(-40, 0, 0), 20, new StandardMaterial(Color(0,1,0), Color(0,0.2,0))));
