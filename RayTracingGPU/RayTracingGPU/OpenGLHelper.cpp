@@ -293,6 +293,7 @@ GLenum OpenGLHelper::CheckErrors()
 	GLenum error = glGetError();
 	if (error != GL_NO_ERROR)
 	{
+		assert(error != GL_NO_ERROR);
 		int i = 0;
 	}
 	return error;

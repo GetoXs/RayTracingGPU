@@ -55,6 +55,11 @@ public:
 		this->_ModelViewMatrix.rotate(angle, x, y, z);
 		this->RecalcModelViewProjectionMatrix();
 	}
+	void ModelViewRotate(float angle, const Vector3D *axis)
+	{
+		this->_ModelViewMatrix.rotate(angle, *axis);
+		this->RecalcModelViewProjectionMatrix();
+	}
 	void ModelViewScale(float scale)
 	{
 		this->_ModelViewMatrix.scale(scale);

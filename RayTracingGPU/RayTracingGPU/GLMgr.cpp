@@ -129,15 +129,20 @@ void GLMgr::Init()
 	char tmpPath[MAX_PATH];
 
 	this->CurrentScene = new Scene();
-	unsigned mat1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 0, 0, 0.7), Color(0.6, 0, 0, 0.7), 0));
-	unsigned mat2 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 0), Color(0., 0.5, 0.), 0.5));
-	unsigned mat3 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 1), Color(0., 0.5, .5), 0));
-	unsigned matFullRef = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 0), Color(0., 0.5, 0.), 1));
+
+	this->SceneLoader->Parse(this);
+
+
+
+	//unsigned mat1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 0, 0, 0.7), Color(0.6, 0, 0, 0.7), 0));
+	//unsigned mat2 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 0), Color(0., 0.5, 0.), 0.5));
+	//unsigned mat3 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 1), Color(0., 0.5, .5), 0));
+	//unsigned matFullRef = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 0), Color(0., 0.5, 0.), 1));
 
 	////2 szesciany
 	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(0.3, 0.3, -1.4)), mat2);
 	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(1.5, 1, 0),0.5), mat1);
-	//this->Camera->ModelViewRotate(30, 0, 1, 0);
+	//this->Camera->ModelViewRotate(15, 0, 1, 0);
 	//this->SetRayTracerDepth(3);
 
 
@@ -152,13 +157,13 @@ void GLMgr::Init()
 	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, -0.08, -0.02),11), mat2);
 	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0.12, -0.08, 0.1), 6), mat1);
 
-	sprintf(tmpPath, "%s%s", cwd, MESH_FILE_SPHERE);
-	this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(0, 0, -0.65), 5), new StandardMaterial(Color(1, 1, 1), Color(0.5, 0.5, 0.5), 0.95));
-	this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(-1.5, 0, -0.4), 0.5), mat1);
-	this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, 0, 0), 1), mat2);
-	this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(1.5, 0, -0.4), 0.5), new StandardMaterial(Color(1, 1, 0), Color(0., 0.5, 0.), 0.8));
-	this->Camera->ModelViewRotate(30, 1, 0, 0);
-	this->SetRayTracerDepth(3);
+	//sprintf(tmpPath, "%s%s", cwd, MESH_FILE_SPHERE);
+	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(0, 0, -0.65), 5), new StandardMaterial(Color(1, 1, 1), Color(0.5, 0.5, 0.5), 0.95));
+	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(-1.5, 0, -0.4), 0.5), mat1);
+	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, 0, 0), 1), mat2);
+	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(1.5, 0, -0.4), 0.5), new StandardMaterial(Color(1, 1, 0), Color(0., 0.5, 0.), 0.8));
+	//this->Camera->ModelViewRotate(30, 1, 0, 0);
+	//this->SetRayTracerDepth(3);
 
 	//sprintf(tmpPath, "%s%s", cwd, MESH_FILE_BUNNY_BIG);
 	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, 0, 0), 9), new StandardMaterial(Color(0.9, 0.9, 0.9), Color(0.5, 0.5, 0.5), 0));
@@ -172,19 +177,20 @@ void GLMgr::Init()
 #pragma endregion
 
 #pragma region Light
-	sprintf(tmpPath, "%s%s", cwd, LIGHT_MESH_FILE);
-	Vector3D lightPosition;
-	unsigned lightMaterial;
 
-	lightPosition = Vector3D(-1., 1, 1);
-	lightMaterial = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 1, 1)));
-	this->CurrentScene->AddObject(new Mesh(tmpPath, &lightPosition), lightMaterial);
-	this->LightList.append(new PointLight(lightPosition, Color(1.0, 1.0, 1.0), Color(.4, .4, .4)));
+	//sprintf(tmpPath, "%s%s", cwd, LIGHT_MESH_FILE);
+	//Vector3D lightPosition;
+	//unsigned lightMaterial;
 
-	lightPosition = Vector3D(0., -1, 0);
-	lightMaterial = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1., 0, 0)));
-	this->CurrentScene->AddObject(new Mesh(tmpPath, &lightPosition), lightMaterial);
-	this->LightList.append(new PointLight(lightPosition, Color(1.0, 0, 0), Color(.4, .0, .0)));
+	//lightPosition = Vector3D(-1., 1, 1);
+	//lightMaterial = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 1, 1)));
+	//this->CurrentScene->AddObject(new Mesh(tmpPath, &lightPosition), lightMaterial);
+	//this->LightList.append(new PointLight(lightPosition, Color(1.0, 1.0, 1.0), Color(.4, .4, .4)));
+
+	//lightPosition = Vector3D(0., -1, 0);
+	//lightMaterial = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1., 0, 0)));
+	//this->CurrentScene->AddObject(new Mesh(tmpPath, &lightPosition), lightMaterial);
+	//this->LightList.append(new PointLight(lightPosition, Color(1.0, 0, 0), Color(.4, .0, .0)));
 #pragma endregion
 
 #pragma region Shader
@@ -753,6 +759,11 @@ void GLMgr::PreInit(int argc, char* argv[])
 {
 	gltSetWorkingDirectory(argv[0]);
 	glutInit(&argc, argv);
+
+	if (argc>1)
+		this->SceneLoader = new SceneConfigLoader(argv[1]);
+	else
+		this->SceneLoader = new SceneConfigLoader("SceneConfig.json");
 
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
 	glutInitWindowSize(WINDOWS_SIZE_X, WINDOWS_SIZE_Y);

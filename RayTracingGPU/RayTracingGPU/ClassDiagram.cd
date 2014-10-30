@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Color" Collapsed="true">
+    <Position X="10.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAACAABIAABwAAAAAAAIRAAAAAAAAAAACAwgAEAACA=</HashCode>
+      <FileName>Color.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Interval" Collapsed="true">
+    <Position X="10.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAACAAAAAAAACAAAgAAAAAAAAA=</HashCode>
+      <FileName>Fps.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Fps" Collapsed="true">
+    <Position X="12.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAgAAAIAAABAAAAAAACAAAAAAAAAAAAIAAAAAQAAA=</HashCode>
+      <FileName>Fps.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HitResult" Collapsed="true">
+    <Position X="8.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAACAAABQQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HitResult.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Triangle3D" Collapsed="true">
+    <Position X="19.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAABAAAIAAAAgAQAAAAAAAAAAA=</HashCode>
+      <FileName>Triangle3D.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mesh" Collapsed="true">
+    <Position X="1.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAUAAAAFAABAAABYAAAIAOAIACgEAAYgEAAAAAAA=</HashCode>
+      <FileName>Mesh.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ObjectHitResult" Collapsed="true">
+    <Position X="12.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAAAAAAAAAAABQQAAAAAAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>ObjectHitResult.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shading" Collapsed="true">
+    <Position X="8.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shading.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GLMgr" Collapsed="true">
+    <Position X="7" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAwGAAkAEAEMKAAAAAQIJAMCIQBCgIEAIhJHACACIEA=</HashCode>
+      <FileName>GLMgr.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OpenGLHelper" Collapsed="true">
+    <Position X="7" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIBAAAQAAAAACAAAAAAACAABBAAACAAAAAAAAAQAAAA=</HashCode>
+      <FileName>OpenGLHelper.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RayTracingGPU" Collapsed="true">
+    <Position X="12.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAIAAAAAAAA=</HashCode>
+      <FileName>raytracinggpu.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ui_RayTracingGPUClass" Collapsed="true">
+    <Position X="1.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEAQAAAAAAAAIAAAAQAIAAAgAAAAAAAAAA=</HashCode>
+      <FileName>GeneratedFiles\ui_raytracinggpu.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CameraOrto" Collapsed="true">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAgAAAAAAAAAAAgAAAAAAgAEAAAAgAAAA=</HashCode>
+      <FileName>CameraOrto.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CameraPerspective" Collapsed="true">
+    <Position X="8.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgABAAAAEAAAAxAAAAEAAAAAgAAYAqAABAAAAAAABA=</HashCode>
+      <FileName>CameraPerspective.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IMaterial">
+    <Position X="4.5" Y="0.5" Width="2.25" />
+    <Members>
+      <Method Name="CalculateEmissiveColor" Hidden="true" />
+      <Method Name="CalculateReflectionColor" Hidden="true" />
+      <Method Name="CalculateTransmissionColor" Hidden="true" />
+      <Method Name="IsEmissive" Hidden="true" />
+      <Method Name="IsReflective" Hidden="true" />
+      <Method Name="IsTransmissive" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>EAAAAAAgEAgAAAAEAAAAAAAAAAAAAAAAAAIAAAQIAAA=</HashCode>
+      <FileName>IMaterial.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ISceneObject">
+    <Position X="1.5" Y="3.5" Width="1.5" />
+    <Members>
+      <Method Name="~ISceneObject" Hidden="true" />
+      <Method Name="ISceneObject" Hidden="true" />
+      <Field Name="Position" Hidden="true" />
+      <Method Name="SetPosition" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAABAAAAgAAQAAAAAAQABQgAAAAAAAAAAgAA=</HashCode>
+      <FileName>ISceneObject.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PointLight" Collapsed="true">
+    <Position X="8.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQgAAAAAAAAAIAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>PointLight.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ray" Collapsed="true">
+    <Position X="10.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAACAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Ray.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scene" Collapsed="true">
+    <Position X="7" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEABAAUAAAQAggAAAQCABACAAAAIAEAAAAgAAAA=</HashCode>
+      <FileName>Scene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sphere" Collapsed="true">
+    <Position X="16.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAABAAAAAAAQAAAAAAAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Sphere.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StandardMaterial" Collapsed="true">
+    <Position X="4.5" Y="2.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>EQkAAAAgEAgAAAYEAAAAAAAAAAAAAAAAAAIAAEQIgAA=</HashCode>
+      <FileName>StandardMaterial.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ui::RayTracingGPUClass" Collapsed="true">
+    <Position X="1.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GeneratedFiles\ui_raytracinggpu.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="qt_meta_stringdata_RayTracingGPU_t" Collapsed="true">
+    <Position X="7" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAQAAAAAAA=</HashCode>
+      <FileName>GeneratedFiles\Debug\moc_raytracinggpu.cpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SLightSource" Collapsed="true">
+    <Position X="8.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAIAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HitTest.fs.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SMaterial" Collapsed="true">
+    <Position X="10.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAACAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>HitTest.fs.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Typedef Name="Vector3D" Collapsed="true">
+    <Position X="12.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MetaTypes.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="RectI" Collapsed="true">
+    <Position X="10.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MetaTypes.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PointI" Collapsed="true">
+    <Position X="8.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MetaTypes.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="Matrix4x4" Collapsed="true">
+    <Position X="7" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MetaTypes.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

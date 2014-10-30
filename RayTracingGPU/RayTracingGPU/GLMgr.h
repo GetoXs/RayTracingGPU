@@ -7,14 +7,18 @@
 #include "PointLight.h"
 #include "qlist.h"
 #include "Fps.h"
+#include "SceneConfigLoader.h"
 
 class GLMgr
 {
+	friend SceneConfigLoader;
 private:
 	static GLMgr *_instance;
 	GLMgr();
 
 	bool GPUMode;
+
+	SceneConfigLoader *SceneLoader;
 
 	int FrameCounter;
 	Fps FpsObject;

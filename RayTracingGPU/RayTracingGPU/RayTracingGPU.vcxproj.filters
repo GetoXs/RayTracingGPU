@@ -87,6 +87,9 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SceneConfigLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -155,6 +158,9 @@
     <ClInclude Include="Triangle3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SceneConfigLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="raytracinggpu.h">
@@ -171,5 +177,9 @@
     <_EmbedManagedResourceFile Include="Main.vs.h">
       <Filter>Shaders</Filter>
     </_EmbedManagedResourceFile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="SceneConfig.json" />
   </ItemGroup>
 </Project>

@@ -72,7 +72,7 @@
     <PostBuildEvent>
       <Command>xcopy /y Main.vs.h "$(OutDir)"
 xcopy /y HitTest.fs.h "$(OutDir)"
-</Command>
+xcopy /y SceneConfig.json "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -94,6 +94,11 @@ xcopy /y HitTest.fs.h "$(OutDir)"
       <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;opengl32.lib;gltools.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y Main.vs.h "$(OutDir)"
+xcopy /y HitTest.fs.h "$(OutDir)"
+xcopy /y SceneConfig.json "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CameraOrto.cpp" />
@@ -117,6 +122,7 @@ xcopy /y HitTest.fs.h "$(OutDir)"
     <ClCompile Include="OpenGLHelper.cpp" />
     <ClCompile Include="raytracinggpu.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneConfigLoader.cpp" />
     <ClCompile Include="Shading.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -135,6 +141,7 @@ xcopy /y HitTest.fs.h "$(OutDir)"
       <DeploymentContent>true</DeploymentContent>
     </ClInclude>
     <ClInclude Include="IMaterial.h" />
+    <ClInclude Include="SceneConfigLoader.h" />
     <ClInclude Include="Triangle3D.h" />
     <_EmbedManagedResourceFile Include="Main.vs.h">
       <FileType>Document</FileType>
@@ -188,6 +195,10 @@ xcopy /y HitTest.fs.h "$(OutDir)"
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="SceneConfig.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
