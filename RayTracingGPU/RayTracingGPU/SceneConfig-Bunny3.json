@@ -1,0 +1,54 @@
+{
+    "rayTracer": {
+        "depth": 3
+    },
+    "camera": {
+        "rotate": {
+            "angle": 15,
+            "axis": [ 0, 1, 0 ]
+        }
+    },
+    "materials": [
+        {
+            "id": "mat1",
+            "diffuse": [ 1, 0, 0, 0.7 ],
+            "ambient": [ 0.6, 0, 0, 0.7 ],
+            "reflectionRatio": 0
+        },
+        {
+            "id": "mat2",
+            "diffuse": [ 0, 1, 0, 1 ],
+            "ambient": [ 0.0, 0.5, 0.0, 1 ],
+            "reflectionRatio": 0.5
+        }
+    ],
+    "objects": [
+        {
+            "filePath": "..\\Models\\bunny.obj",
+            "position": [ 0, -0.08, -0.02 ],
+            "scale": 11,
+            "materialId": "mat2"
+        },
+        {
+            "filePath": "..\\Models\\bunny.obj",
+            "position": [ 0.12, -0.08, 0.1 ],
+            "scale": 6,
+            "materialId": "mat1"
+        }
+    ],
+    "lights": {
+        "meshFilePath": "..\\Models\\box_light.obj",
+        "light": [
+            {
+                "position": [ -1, 1, 1 ],
+                "diffuse": [ 1, 1, 1 ],
+                "ambient": [ 0.4, 0.4, 0.4 ]
+            },
+            {
+                "position": [ 0, -1, 0 ],
+                "diffuse": [ 1, 0, 0 ],
+                "ambient": [ 0.4, 0, 0 ]
+            }
+        ]
+    }
+}

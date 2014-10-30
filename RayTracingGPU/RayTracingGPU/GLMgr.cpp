@@ -128,12 +128,13 @@ void GLMgr::Init()
 	GetCurrentDir(cwd, sizeof(cwd));
 	char tmpPath[MAX_PATH];
 
+	//tworzenie nowej sceny
 	this->CurrentScene = new Scene();
 
+	//parsowanie pliku konfiguracyjnego sceny
 	this->SceneLoader->Parse(this);
 
-
-
+	/*
 	//unsigned mat1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 0, 0, 0.7), Color(0.6, 0, 0, 0.7), 0));
 	//unsigned mat2 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 0), Color(0., 0.5, 0.), 0.5));
 	//unsigned mat3 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 1), Color(0., 0.5, .5), 0));
@@ -145,8 +146,7 @@ void GLMgr::Init()
 	//this->Camera->ModelViewRotate(15, 0, 1, 0);
 	//this->SetRayTracerDepth(3);
 
-
-	sprintf(tmpPath, "%s%s", cwd, MESH_FILE_BUNNY);
+	//sprintf(tmpPath, "%s%s", cwd, MESH_FILE_BUNNY);
 	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(-.3, 0, -2), 2), matFullRef);
 	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0.1, -0.08, 0.02), 11), mat3);
 	//this->Camera->ModelViewRotate(30, 0, 1, 0);
@@ -174,6 +174,7 @@ void GLMgr::Init()
 	//this->CurrentScene->AddObject(new Sphere(Vector3D(40, 40, 0), 20, new StandardMaterial(Color(0,1,1), Color(0,0.2,0.2))));
 	//this->CurrentScene->AddObject(new Sphere(Vector3D(80, -40, 0), 20, new StandardMaterial(Color(1,1,1), Color(0,0.2,0.2))));
 	//this->CurrentScene->AddObject(new Sphere(Vector3D(120, 0, 0), 20, new StandardMaterial(Color(0,1,1), Color(0,0.2,0.2))));
+	*/
 #pragma endregion
 
 #pragma region Light

@@ -1,0 +1,78 @@
+{
+    "rayTracer": {
+        "depth": 3
+    },
+    "camera": {
+        "rotate": {
+            "angle": 15,
+            "axis": [ 0, 1, 0 ]
+        }
+    },
+    "materials": [
+        {
+            "id": "mat1",
+            "diffuse": [ 1, 0, 0, 0.7 ],
+            "ambient": [ 0.6, 0, 0, 0.7 ],
+            "reflectionRatio": 0
+        },
+        {
+            "id": "mat2",
+            "diffuse": [ 1, 1, 1 ],
+            "ambient": [ 0.0, 0.5, 0.0, 1 ],
+            "reflectionRatio": 0.5
+        },
+        {
+            "id": "mat10",
+            "diffuse": [ 1, 1, 1 ],
+            "ambient": [ 0.5, 0.5, 0.5 ],
+            "reflectionRatio":0.95
+        },
+        {
+            "id": "mat11",
+            "diffuse": [ 1, 1, 0 ],
+            "ambient": [ 0.5, 0.5, 0 ],
+            "reflectionRatio":0.8
+        }
+    ],
+    "objects": [
+        {
+            "filePath": "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box.obj",
+            "position": [ 0, 0, -0.65 ],
+            "scale": 5,
+            "materialId": "mat10"
+        },
+        {
+            "filePath": "..\\Models\\Sphere1.obj",
+            "position": [ -1.5, 0, -0.4 ],
+            "scale": 0.5,
+            "materialId": "mat1"
+        },
+        {
+            "filePath": "..\\Models\\Sphere1.obj",
+            "position": [ 0, 0, 0 ],
+            "scale": 1,
+            "materialId": "mat2"
+        },
+        {
+            "filePath": "..\\Models\\Sphere1.obj",
+            "position": [ 1.5, 0, -0.4 ],
+            "scale": 0.5,
+            "materialId": "mat11"
+        }
+    ],
+    "lights": {
+        "meshFilePath": "..\\Models\\box_light.obj",
+        "light": [
+            {
+                "position": [ -1, 1, 1 ],
+                "diffuse": [ 1, 1, 1 ],
+                "ambient": [ 0.4, 0.4, 0.4 ]
+            },
+            {
+                "position": [ 0, -1, 0 ],
+                "diffuse": [ 1, 0, 0 ],
+                "ambient": [ 0.4, 0, 0 ]
+            }
+        ]
+    }
+}

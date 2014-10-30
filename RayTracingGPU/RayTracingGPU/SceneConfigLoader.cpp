@@ -40,13 +40,15 @@ void SceneConfigLoader::ParseCamera(const QJsonValue *jsonCam, GLMgr *mgr)
 {
 	QJsonObject jsonObj = jsonCam->toObject();
 
-	QJsonObject jsonRot = jsonObj.value("rotate").toObject();
+	if (jsonObj.contains("rotate"))
+	{
+		//rotacja kamery
+		QJsonObject jsonRot = jsonObj.value("rotate").toObject();
+		float angle = jsonRot["angle"].toDouble();
+		Vector3D axis = SceneConfigLoader::JsonArrayToVector3D(&jsonRot["axis"].toArray());
+		mgr->Camera->ModelViewRotate(angle, &axis);
+	}
 
-	//rotacja kamery
-	float angle = jsonRot["angle"].toDouble();
-	Vector3D axis = SceneConfigLoader::JsonArrayToVector3D(&jsonRot["axis"].toArray());
-
-	mgr->Camera->ModelViewRotate(angle, &axis);
 }
 void SceneConfigLoader::ParseMaterials(const QJsonValue *jsonMats, GLMgr *mgr)
 {
@@ -57,7 +59,9 @@ void SceneConfigLoader::ParseMaterials(const QJsonValue *jsonMats, GLMgr *mgr)
 		QString id = jsonObj["id"].toString();
 		Color diffuse = SceneConfigLoader::JsonArrayToColor(&jsonObj["diffuse"].toArray());
 		Color ambient = SceneConfigLoader::JsonArrayToColor(&jsonObj["ambient"].toArray());
-		double reflectionRatio = jsonObj["reflectionRatio"].toDouble();
+		float reflectionRatio = 0.;
+		if (jsonObj.contains("reflectionRatio"))
+			reflectionRatio = jsonObj["reflectionRatio"].toDouble();
 
 		unsigned matId = mgr->CurrentScene->AddMaterial(new StandardMaterial(diffuse, ambient, reflectionRatio));
 

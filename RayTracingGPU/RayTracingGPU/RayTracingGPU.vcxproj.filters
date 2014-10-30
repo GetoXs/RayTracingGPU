@@ -40,6 +40,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{63047000-61e8-49d8-b6f0-2fbc4c6a4968}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene Configs">
+      <UniqueIdentifier>{b301c732-acf5-42bb-a3a4-8bc0f872b4e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -180,6 +183,23 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="SceneConfig.json" />
+    <None Include="SceneConfig.json">
+      <Filter>Scene Configs</Filter>
+    </None>
+    <None Include="SceneConfig-BigBunny.json">
+      <Filter>Scene Configs</Filter>
+    </None>
+    <None Include="SceneConfig-Bunny1.json">
+      <Filter>Scene Configs</Filter>
+    </None>
+    <None Include="SceneConfig-Bunny2.json">
+      <Filter>Scene Configs</Filter>
+    </None>
+    <None Include="SceneConfig-Bunny3.json">
+      <Filter>Scene Configs</Filter>
+    </None>
+    <None Include="SceneConfig-Sphere.json">
+      <Filter>Scene Configs</Filter>
+    </None>
   </ItemGroup>
 </Project>
