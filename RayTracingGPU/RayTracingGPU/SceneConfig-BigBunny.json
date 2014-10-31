@@ -18,14 +18,14 @@
     ],
     "objects": [
         {
-            "filePath": "..\\Models\\bunny.ply",
+            "filePath": "Models\\bunny.ply",
             "position": [ 0, 0, 0 ],
             "scale": 9,
             "materialId": "mat1"
         }
     ],
     "lights": {
-        "meshFilePath": "..\\Models\\box_light.obj",
+        "meshFilePath": "Models\\box_light.obj",
         "light": [
             {
                 "position": [ -1, 1, 1 ],

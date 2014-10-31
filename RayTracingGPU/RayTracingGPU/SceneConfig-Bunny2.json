@@ -24,7 +24,7 @@
     ],
     "objects": [
         {
-            "filePath": "..\\Models\\bunny.obj",
+            "filePath": "Models\\bunny.obj",
             "position": [ 0, -0.08, -0.02 ],
             "scale": 11,
             "materialId": "mat2"
@@ -37,7 +37,7 @@
         }
     ],
     "lights": {
-        "meshFilePath": "..\\Models\\box_light.obj",
+        "meshFilePath": "Models\\box_light.obj",
         "light": [
             {
                 "position": [ -1, 1, 1 ],

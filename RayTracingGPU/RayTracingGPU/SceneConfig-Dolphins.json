@@ -31,14 +31,14 @@
             "materialId": "matFullRef"
         },
         {
-            "filePath": "..\\Models\\dolphins.obj",
+            "filePath": "Models\\dolphins.obj",
             "position": [ 200, -400, 0 ],
             "scale": 0.005,
             "materialId": "mat3"
         }
     ],
     "lights": {
-        "meshFilePath": "..\\Models\\box_light.obj",
+        "meshFilePath": "Models\\box_light.obj",
         "light": [
             {
                 "position": [ -1, 1, 0 ],

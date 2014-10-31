@@ -31,14 +31,14 @@
             "materialId": "matFullRef"
         },
         {
-            "filePath": "..\\Models\\Sphere1.obj",
+            "filePath": "Models\\Sphere1.obj",
             "position": [ 0.5, -0.08, 0.02 ],
             "scale": 1,
             "materialId": "mat3"
         }
     ],
     "lights": {
-        "meshFilePath": "..\\Models\\box_light.obj",
+        "meshFilePath": "Models\\box_light.obj",
         "light": [
             {
                 "position": [ -1, 1, 1 ],

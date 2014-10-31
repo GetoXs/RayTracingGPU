@@ -43,26 +43,26 @@
             "materialId": "mat10"
         },
         {
-            "filePath": "..\\Models\\Sphere1.obj",
+            "filePath": "Models\\Sphere1.obj",
             "position": [ -1.5, 0, -0.4 ],
             "scale": 0.5,
             "materialId": "mat1"
         },
         {
-            "filePath": "..\\Models\\Sphere1.obj",
+            "filePath": "Models\\Sphere1.obj",
             "position": [ 0, 0, 0 ],
             "scale": 1,
             "materialId": "mat2"
         },
         {
-            "filePath": "..\\Models\\Sphere1.obj",
+            "filePath": "Models\\Sphere1.obj",
             "position": [ 1.5, 0, -0.4 ],
             "scale": 0.5,
             "materialId": "mat11"
         }
     ],
     "lights": {
-        "meshFilePath": "..\\Models\\box_light.obj",
+        "meshFilePath": "Models\\box_light.obj",
         "light": [
             {
                 "position": [ -1, 1, 1 ],
