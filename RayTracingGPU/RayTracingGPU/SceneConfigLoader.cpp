@@ -58,6 +58,12 @@ void SceneConfigLoader::ParseCamera(const QJsonValue *jsonCam, GLMgr *mgr)
 		Vector3D axis = SceneConfigLoader::JsonArrayToVector3D(&jsonRot["axis"].toArray());
 		mgr->Camera->ModelViewRotate(angle, &axis);
 	}
+	if (jsonObj.contains("zoom"))
+	{
+		//zoom kamery
+		float ratio = jsonObj["zoom"].toDouble();
+		mgr->Camera->ModelViewScale(ratio);
+	}
 
 }
 void SceneConfigLoader::ParseMaterials(const QJsonValue *jsonMats, GLMgr *mgr)

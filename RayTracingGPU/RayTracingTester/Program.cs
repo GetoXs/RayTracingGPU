@@ -14,11 +14,11 @@ namespace RayTracingTester
 		static string RayTracerFilePath = System.Configuration.ConfigurationManager.AppSettings["RayTracerFilePath"];
 		static string SceneConfigFilePath = System.Configuration.ConfigurationManager.AppSettings["SceneConfigFilePath"];
 		static int RTDepthStart = 0;
-		static int RTDepthEnd = 2;
+		static int RTDepthEnd = 1;
 
 		static void Main(string[] args)
 		{
-			TestRT(SceneConfigFilePath, 10000, 60000);
+			TestRT(SceneConfigFilePath, 10000, 300000);
 		}
 		static void TestRT(string sceneConfigFilePath, int gpuTimeInterval, int cpuTimeInterval)
 		{
@@ -47,7 +47,7 @@ namespace RayTracingTester
 				//przełączenie na GPU
 				//SendKeyToProcess(proc.MainWindowHandle, "{F1}");
 				SendSpecialKeyToProcess(proc.MainWindowHandle, (int)Keys.F1);
-				TestRTDepth(proc, gpuTimeInterval, RTDepthStart, RTDepthEnd);
+				//TestRTDepth(proc, gpuTimeInterval, RTDepthStart, RTDepthEnd);
 
 				//przełączenie na CPU
 				//SendKeyToProcess(proc.MainWindowHandle, "{F2}");

@@ -24,6 +24,7 @@ private:
 	Fps FpsObject;
 	Fps FpsRaportObject;
 	Interval IntervalRaport;
+	QString RaportFilename;
 
 	unsigned RayTracerDepth;
 

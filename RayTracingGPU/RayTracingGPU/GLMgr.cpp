@@ -671,10 +671,16 @@ void GLMgr::Raport()
 {
 	//dopisywanie kolejnych wierszy do pliku (format csv), wraz z nazw¹ pliku obrazka
 	//zapisywanie obrazka z dat¹
-	QFileInfo fi = (this->SceneLoader->SceneConfigFilePath);
-	QString configFilename = fi.baseName();
-	QString raportFilename = QString("Raport ")+configFilename + ".csv";
-	QFile raportFile(raportFilename);
+	QString configFilename = QFileInfo(this->SceneLoader->SceneConfigFilePath).baseName();
+	QDateTime currentDT = QDateTime::currentDateTime();
+	if (this->RaportFilename.isEmpty())
+		this->RaportFilename = "Raports\\" + currentDT.toString("yyyyMMdd-HHmmss") + "-Raport-" + configFilename + ".csv";
+	//tworzenie katalogu
+	QDir d = QFileInfo(this->RaportFilename).dir();
+	bool res = QDir().mkpath(d.path());
+
+	//otwarcie pliku
+	QFile raportFile(this->RaportFilename);
 	bool fileNotExists = false;
 	if (!raportFile.exists())
 		fileNotExists = true;
@@ -690,7 +696,6 @@ void GLMgr::Raport()
 
 		QString mode = this->IsGPUMode() ? "GPU" : "CPU";
 		QString imageExt = ".png";
-		QDateTime currentDT = QDateTime::currentDateTime();
 		QString displayFileName = currentDT.toString("yyyyMMdd-HHmmss") + "-RaportImage-" + mode + "-" + QString::number(this->RayTracerDepth) + imageExt;
 
 		//Data pomiaru    |    Tryb    |    Liczba unikalnych wierzcho³ków    |    Liczba trójk¹tów    |    Liczba œwiate³    |    G³êbokoœc RT    |    Liczba klatek    |    Czas testu    |    Plik z obrazem
@@ -699,7 +704,7 @@ void GLMgr::Raport()
 
 		raportFile.close();
 		
-		this->SaveDisplayToFile("RaportImages\\" + displayFileName.toLocal8Bit());
+		this->SaveDisplayToFile("Raports\\RaportImages\\" + displayFileName.toLocal8Bit());
 	}
 }
 void GLMgr::SaveDisplayToFile(const char *filename)
@@ -905,7 +910,7 @@ GLMgr::~GLMgr(void)
 	this->SceneLoader = NULL;
 }
 GLMgr::GLMgr() 
-	:GPUMode(true), RayTracerDepth(1), SceneLoader(NULL)
+	:GPUMode(true), RayTracerDepth(1), SceneLoader(NULL), RaportFilename()
 {
 	this->Shader_TestHit = 0;
 	this->RenderBuffer_Color = 0;
