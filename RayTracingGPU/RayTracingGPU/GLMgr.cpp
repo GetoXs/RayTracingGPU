@@ -449,6 +449,8 @@ void GLMgr::RayTraceOnCPU(unsigned depth, const Ray *ray, Color *outColor)
 			}
 		}
 	}
+	else
+		*outColor = Color(1, 1, 1, 1);
 }
 void GLMgr::RenderSceneOnCPU()
 {
