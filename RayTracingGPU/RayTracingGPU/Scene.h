@@ -128,6 +128,20 @@ public:
 		*count = returnArray->size();
 		return returnArray->data();
 	}
+	unsigned GetPositionCount()
+	{
+		unsigned result = 0;
+		for each (Mesh *mesh in this->MeshObjectList)
+			result += mesh->PositionCount;
+		return result;
+	}
+	unsigned GetTriangleCount()
+	{
+		unsigned result = 0;
+		for each (Mesh *mesh in this->MeshObjectList)
+			result += mesh->TriangleCount;
+		return result;
+	}
 #pragma endregion
 
 #pragma region Ctors

@@ -9,7 +9,7 @@
 bool SceneConfigLoader::Parse(GLMgr *mgr)
 {
 	QFile file;
-	file.setFileName(this->_SceneConfigFilePath);
+	file.setFileName(this->SceneConfigFilePath);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return false;
 	QString txt = file.readAll();
@@ -30,10 +30,20 @@ bool SceneConfigLoader::Parse(GLMgr *mgr)
 void SceneConfigLoader::ParseRayTracer(const QJsonValue *jsonRT, GLMgr *mgr)
 {
 	QJsonObject jsonObj = jsonRT->toObject();
-	//g³êbokoœæ ray tracera
-	float depth = jsonObj.value("depth").toDouble();
+	if (jsonObj.contains("depth"))
+	{
+		//g³êbokoœæ ray tracera
+		float depth = jsonObj.value("depth").toDouble();
 
-	mgr->RayTracerDepth = depth;
+		mgr->RayTracerDepth = depth;
+	}
+	if (jsonObj.contains("IsGPUMode"))
+	{
+		//tryb RT
+		bool isGPUMode = jsonObj.value("IsGPUMode").toBool();
+
+		mgr->GPUMode = isGPUMode;
+	}
 }
 
 void SceneConfigLoader::ParseCamera(const QJsonValue *jsonCam, GLMgr *mgr)
@@ -93,8 +103,13 @@ void SceneConfigLoader::ParseLights(const QJsonValue *jsonLights, GLMgr *mgr)
 {
 	QJsonObject jsonObj = jsonLights->toObject();
 
-	QByteArray bta = jsonObj["meshFilePath"].toString().toUtf8();
-	const char *lightMeshPath = bta.data();
+	const char *lightMeshPath = NULL;
+	QByteArray bta;
+	if (jsonObj.contains("meshFilePath"))
+	{	//w przypadku braku mesha
+		bta = jsonObj["meshFilePath"].toString().toUtf8();
+		lightMeshPath = bta.data();
+	}
 
 	for each (QJsonValue val in jsonObj.value("light").toArray())
 	{
@@ -105,11 +120,13 @@ void SceneConfigLoader::ParseLights(const QJsonValue *jsonLights, GLMgr *mgr)
 		Color diffuse = SceneConfigLoader::JsonArrayToColor(&jsonObj["diffuse"].toArray());
 		Color ambient = SceneConfigLoader::JsonArrayToColor(&jsonObj["ambient"].toArray());
 
-		//stworzenie materia³u
-		unsigned lightMaterial = mgr->CurrentScene->AddMaterial(new StandardMaterial(diffuse));
-
-		//dodanie obiektu na scenie
-		mgr->CurrentScene->AddObject(new Mesh(lightMeshPath, &position), lightMaterial);
+		if (lightMeshPath != NULL)
+		{
+			//stworzenie materia³u z emisj¹ tak¹ jak œwiat³a rozproszenia dla danego Ÿród³a
+			unsigned lightMaterial = mgr->CurrentScene->AddMaterial(new StandardMaterial(diffuse));
+			//dodanie obiektu na scenie
+			mgr->CurrentScene->AddObject(new Mesh(lightMeshPath, &position), lightMaterial);
+		}
 
 		//dodanie œwiat³a
 		mgr->LightList.append(new PointLight(position, diffuse, ambient));
@@ -120,7 +137,7 @@ void SceneConfigLoader::ParseLights(const QJsonValue *jsonLights, GLMgr *mgr)
 
 #pragma region Ctors
 
-SceneConfigLoader::SceneConfigLoader(const char *sceneConfigFile) :_SceneConfigFilePath(sceneConfigFile)
+SceneConfigLoader::SceneConfigLoader(const char *sceneConfigFile) :SceneConfigFilePath(sceneConfigFile)
 {
 }
 

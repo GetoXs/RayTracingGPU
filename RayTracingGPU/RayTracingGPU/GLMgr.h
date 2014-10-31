@@ -22,6 +22,8 @@ private:
 
 	int FrameCounter;
 	Fps FpsObject;
+	Fps FpsRaportObject;
+	Interval IntervalRaport;
 
 	unsigned RayTracerDepth;
 
@@ -72,9 +74,13 @@ public:
 	void Init();
 	void SwitchMode() { this->GPUMode = !this->GPUMode; this->ResetCounter(); }
 	bool IsGPUMode() { return this->GPUMode; }
+	void SetGPUMode(bool isGPUMode) { this->GPUMode = isGPUMode; this->ResetCounter(); }
 	void RayTraceOnCPU(unsigned depth, const Ray *ray, Color *outColor);
 	void RenderSceneOnCPU(void);
 	void RenderSceneOnGPU(void);
+
+	void Raport();
+	void SaveDisplayToFile(const char *filename);
 
 	void IncreaseRayTracerDepth() { this->RayTracerDepth++; }
 	void SetRayTracerDepth(unsigned depth) { this->RayTracerDepth = depth; }

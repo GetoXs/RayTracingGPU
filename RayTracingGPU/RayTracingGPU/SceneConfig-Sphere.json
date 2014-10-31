@@ -1,5 +1,6 @@
 {
     "rayTracer": {
+        "IsGPUMode": true,
         "depth": 3
     },
     "camera": {

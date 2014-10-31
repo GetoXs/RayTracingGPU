@@ -10,32 +10,67 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RayTracingGPU", "RayTracing
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLTools", "GLTools\GLTools.vcxproj", "{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayTracingTester", "RayTracingTester\RayTracingTester.csproj", "{F9548C03-F71B-4025-A9FD-D378390125DF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B12702AD-ABFB-343A-A199-8E24837244A3} = {B12702AD-ABFB-343A-A199-8E24837244A3}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
+		Debug|Mixed Platforms = Debug|Mixed Platforms
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
 		Release|ARM = Release|ARM
+		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|ARM.ActiveCfg = Debug|Win32
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|Win32.ActiveCfg = Debug|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|Win32.Build.0 = Debug|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x64.ActiveCfg = Debug|Win32
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Any CPU.ActiveCfg = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|ARM.ActiveCfg = Release|Win32
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.ActiveCfg = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.Build.0 = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.ActiveCfg = Release|Win32
+		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|ARM.ActiveCfg = Debug|Win32
+		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|Win32.ActiveCfg = Debug|Win32
 		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|Win32.Build.0 = Debug|Win32
 		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|x64.ActiveCfg = Debug|Win32
+		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|Any CPU.ActiveCfg = Release|Win32
 		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|ARM.ActiveCfg = Release|Win32
+		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|Win32.ActiveCfg = Release|Win32
 		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|Win32.Build.0 = Release|Win32
 		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|x64.ActiveCfg = Release|Win32
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Release|ARM.ActiveCfg = Release|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Release|Win32.ActiveCfg = Release|Any CPU
+		{F9548C03-F71B-4025-A9FD-D378390125DF}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

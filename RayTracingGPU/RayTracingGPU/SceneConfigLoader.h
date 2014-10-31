@@ -5,7 +5,6 @@ class GLMgr;
 class SceneConfigLoader
 {
 private:
-	QString _SceneConfigFilePath;
 	//mapa z informacjami o sparsowanych materia³ach
 	//wykorzystywana przy dodawaniu nowych obiektów do sceny
 	QMap<QString, unsigned> _MaterialMap;
@@ -18,6 +17,7 @@ private:
 	void ParseLights(const QJsonValue *jsonLights, GLMgr *mgr);
 
 public:
+	QString SceneConfigFilePath;
 	SceneConfigLoader(const char *sceneConfigFile);
 	bool Parse(GLMgr *mgr);
 

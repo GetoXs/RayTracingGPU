@@ -11,7 +11,8 @@ uniform SLightSource Light[10];
 uniform uint RayTracerDepth;
 
 //zawiera informacje o wspolrzednych pixela w przestrzeni widoku
-varying vec3 pixel;
+in vec4 gl_FragCoord;
+//varying vec3 pixel;
 
 layout(location = 0) out vec4 outFragColor;
 layout(location = 1) out vec3 outTest;
@@ -26,18 +27,15 @@ uniform samplerBuffer NormalTexture;
 // tekstura buforowa z indeksami wspó³rzêdnych wierzcho³ka
 uniform isamplerBuffer NormalIndexTexture;
 
-// tekstura buforowa z wlasciwosciami obiektu sceny 
-uniform samplerBuffer SceneObjectPropertiesTexture;
-
 // tekstura buforowa z indeksami materialu
 uniform isamplerBuffer MaterialIndexTexture;
 // tekstura buforowa z wlasciwosciami materialu
 uniform samplerBuffer MaterialPropertiesTexture;
 
-
-//uniform vec3 eyePosition;
+//wektor okreslaj¹cy wielkoœæ okna renderingu
 uniform vec4 Viewport;
 
+//macierz, bêd¹ca odwrotn¹ macierz¹ projekcji oraz widoku. Wymagana przy obliczaniu pocz¹tkowego promienia, pozwala na zamianê wspó³rzêdnych okna na wspó³rzêdne œwiata
 uniform mat4 ProjectionMatrixInverse;
 
 struct SMaterial
@@ -398,7 +396,7 @@ void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 	}
 	if (hitTriangle == -1)
 	{
-		outColor = vec4(0, 0, 0, 1);
+		outColor = vec4(1, 1, 1, 1);
 		return;
 	}
 	//if (hitPoint.z <-0.2)
@@ -570,7 +568,7 @@ void main()
 	vec4 result;
 
 	//pobieranie promienia we wspó³rzêdnych modelu
-	GetRay2D(vec4(pixel.xy, 0.0, 1.0), origin, ray);
+	GetRay2D(vec4(gl_FragCoord.xy, 0.0, 1.0), origin, ray);
 	//outTest = origin;
 
 	//rozpoczêcie promienia

@@ -465,7 +465,7 @@ void GLMgr::RenderSceneOnCPU()
 	{
 		for (int x = 0; x < this->Viewport.height(); x++)
 		{
-			pixelColor = Color(0, 0, 0, 1);
+			pixelColor = Color(1, 1, 1, 1);
 			//pobranie promienia
 			ray = &this->Camera->GetRay(PointI(x, y), this->Viewport);
 			//Ray ray = this->Camera->GetRay(PointI(x, y));
@@ -484,9 +484,10 @@ void GLMgr::RenderSceneOnCPU()
 	glutSwapBuffers();
 	glutPostRedisplay();
 	FpsObject.Update();
+	FpsRaportObject.Update();
 	OpenGLHelper::CheckErrors();
 }
-const bool IS_ADDITIONAL_FRAMEBUFFER = true;
+const bool IS_ADDITIONAL_FRAMEBUFFER = false;
 void GLMgr::RenderSceneOnGPU()
 {
 	GLenum numError = OpenGLHelper::CheckErrors();
@@ -498,12 +499,14 @@ void GLMgr::RenderSceneOnGPU()
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->FrameBufferObject);
 		//glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		OpenGLHelper::CheckErrors();
-		//dowiazanie wyjsciowej testury testowej
 		GLenum drawBuffer[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+		//dowiazanie wyjsciowej ramki renderingu
 		glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, this->RenderBuffer_Color);
 		OpenGLHelper::CheckErrors();
+		//dowiazanie wyjsciowej testury testowej
 		glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, TestOutputTexture, 0);
 		OpenGLHelper::CheckErrors();
+		//ustawienie ramek do renderingu
 		glDrawBuffers(sizeof(drawBuffer) / sizeof(GLenum), drawBuffer);
 		OpenGLHelper::CheckErrors();
 	}
@@ -641,6 +644,7 @@ void GLMgr::RenderSceneOnGPU()
 #pragma region Przekopiowanie ramki na ekran
 	if (IS_ADDITIONAL_FRAMEBUFFER)
 	{
+		//ustawienie bufora do odczytu
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, this->FrameBufferObject);
 		OpenGLHelper::CheckErrors();
 		glReadBuffer(GL_COLOR_ATTACHMENT0);
@@ -648,17 +652,76 @@ void GLMgr::RenderSceneOnGPU()
 		//powrot do standardowej ramki
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		OpenGLHelper::CheckErrors();
+		//przepisanie ramek na ca³¹ wielkoœc okna
 		glBlitFramebuffer(0, 0, this->Viewport.width(), this->Viewport.height(),
 			0, 0, this->Viewport.width(), this->Viewport.height(),
 			GL_COLOR_BUFFER_BIT, GL_LINEAR);
 		OpenGLHelper::CheckErrors();
 	}
 #pragma endregion
-
 	glutSwapBuffers();
 	OpenGLHelper::CheckErrors();
 	glutPostRedisplay();
 	FpsObject.Update();
+}
+void GLMgr::Raport()
+{
+	//dopisywanie kolejnych wierszy do pliku (format csv), wraz z nazw¹ pliku obrazka
+	//zapisywanie obrazka z dat¹
+	QFileInfo fi = (this->SceneLoader->SceneConfigFilePath);
+	QString configFilename = fi.baseName();
+	QString raportFilename = QString("Raport ")+configFilename + ".csv";
+	QFile raportFile(raportFilename);
+	bool fileNotExists = false;
+	if (!raportFile.exists())
+		fileNotExists = true;
+	if (raportFile.open(QFile::Append | QFile::Text))
+	{
+		QTextStream txt(&raportFile);
+		txt.setCodec("UTF-8");
+		char delimiter = ';';
+		if (fileNotExists)
+		{
+			txt << "Tryb renderowania" << delimiter << "Liczba wierzcholkow" << delimiter << "Liczba trojkatow" << delimiter << "Liczba swiatel" << delimiter << "Glebokosc RT" << delimiter << "Liczba klatek" << delimiter << "Czas testu" << delimiter << "Plik z obrazem" << endl;
+		}
+
+		QString mode = this->IsGPUMode() ? "GPU" : "CPU";
+		QString imageExt = ".png";
+		QString displayFileName = QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss") + "-RaportImage-" + mode + "-" + QString::number(this->RayTracerDepth) + imageExt;
+
+		//Tryb    |    Liczba wierzcho³ków    |    Liczba trójk¹tów    |    Liczba œwiate³    |    G³êbokoœc RT    |    Liczba klatek    |    Czas testu    |    Plik z obrazem
+		txt << mode << delimiter << this->CurrentScene->GetPositionCount() << delimiter << this->CurrentScene->GetTriangleCount() << delimiter << this->LightList.count() 
+			<< delimiter << this->RayTracerDepth << delimiter << this->FrameCounter << delimiter << this->IntervalRaport.value() << delimiter << displayFileName << endl;
+
+		raportFile.close();
+		
+		this->SaveDisplayToFile("RaportImages\\" + displayFileName.toLocal8Bit());
+	}
+}
+void GLMgr::SaveDisplayToFile(const char *filename)
+{
+	//inicjalizacja bufora
+	unsigned length = this->Viewport.width() * this->Viewport.height() * 4;
+	uchar *pixels = new uchar[length];
+	memset(pixels, 0x0, length * sizeof(uchar));
+	//kopiowanie danych
+	glReadPixels(0, 0, this->Viewport.width(), this->Viewport.height(), GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+	//zapisywanie do pliku
+	QImage image = QImage(pixels, this->Viewport.width(), this->Viewport.height(), QImage::Format_ARGB32);
+	image = image.rgbSwapped();
+	//odwrocenie osi
+	image = image.mirrored(false, true);
+	
+	//tworzenie katalogu
+	QFileInfo fi(filename);
+	QDir d = fi.dir();
+	bool res = QDir().mkpath(d.path());
+
+	res = image.save(filename);
+
+	delete[] pixels;
+	OpenGLHelper::CheckErrors();
 }
 
 void RenderScene(void)
@@ -672,9 +735,13 @@ void RenderScene(void)
 	else
 		GLMgr::I()->RenderSceneOnCPU();
 }
+#pragma region Keyboard
 void KeyboardFunc(unsigned char key, int x, int y)
 {
 	switch (key) {
+	case 0x7F:	//klawisz DELETE
+		GLMgr::I()->ResetCounter();
+		break;
 	case ' ':
 		GLMgr::I()->SwitchMode();
 		break;
@@ -729,14 +796,29 @@ void KeyboardSpecialFunc(int key, int x, int y)
 	case GLUT_KEY_UP:
 		GLMgr::I()->GetCamera()->ModelViewRotate(TRANSFORM_ROTATE_ANGLE, 1.f, 0.f, 0.f);
 		break;
+	case GLUT_KEY_F1:	//tryb GPU
+		GLMgr::I()->SetGPUMode(true);
+		break;
+	case GLUT_KEY_F2:	//tryb CPU
+		GLMgr::I()->SetGPUMode(false);
+		break;
+	case GLUT_KEY_F11:	//raportowanie do pliku
+		GLMgr::I()->Raport();
+		break;
+	case GLUT_KEY_F12:	//zapis okna do pliku
+		GLMgr::I()->SaveDisplayToFile("test.png");
+		break;
 	}
 }
+#pragma endregion
 
 void GLMgr::ResetCounter()
 {
 	this->FrameCounter = 0;
 	this->FpsObject.Reset();
+	this->FpsRaportObject.Reset();
 	this->UpdateWindowsTitle();
+	this->IntervalRaport = Interval();
 }
 void GLMgr::UpdateWindowsTitle()
 {
@@ -769,7 +851,14 @@ void GLMgr::PreInit(int argc, char* argv[])
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
 	glutInitWindowSize(WINDOWS_SIZE_X, WINDOWS_SIZE_Y);
 	glutCreateWindow("RayTracing Init");
+	
+	glewInit();
+
+	//wylaczenie synchronizacji 
+	wglSwapIntervalEXT(0);
 	this->ResetCounter();
+
+	//ustawienie callbackow
 	glutDisplayFunc(::RenderScene);
 	glutKeyboardFunc(::KeyboardFunc);
 	glutSpecialFunc(::KeyboardSpecialFunc);
@@ -805,9 +894,13 @@ GLMgr::~GLMgr(void)
 	if (this->Camera)
 		delete(this->Camera);
 	this->Camera = NULL;
+
+	if (this->SceneLoader)
+		delete(this->SceneLoader);
+	this->SceneLoader = NULL;
 }
 GLMgr::GLMgr() 
-	:GPUMode(true), RayTracerDepth(1)
+	:GPUMode(true), RayTracerDepth(1), SceneLoader(NULL)
 {
 	this->Shader_TestHit = 0;
 	this->RenderBuffer_Color = 0;
