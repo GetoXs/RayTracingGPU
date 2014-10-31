@@ -201,5 +201,11 @@
     <None Include="SceneConfig-Sphere.json">
       <Filter>Scene Configs</Filter>
     </None>
+    <None Include="SceneConfig-Sphere2.json">
+      <Filter>Scene Configs</Filter>
+    </None>
+    <None Include="SceneConfig-Dolphins.json">
+      <Filter>Scene Configs</Filter>
+    </None>
   </ItemGroup>
 </Project>

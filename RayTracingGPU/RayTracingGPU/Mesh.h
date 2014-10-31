@@ -101,11 +101,6 @@ public:
 		{
 			//pobranie trójk¹ta
 			this->GetTriangle(i, &testedTriangle);
-			if (testedTriangle.V0 == Vector3D(0.1, 0, 0.4)
-				&& testedTriangle.V2 == Vector3D(0.4, 0.4, 0.4))
-			{
-				int j = 0;
-			}
 			//testowanie trójk¹ta w tym sprawdzenie czy odleg³osc jest mniejsza od aktualnie zapisanej
 			if (this->HitTestTriangle(ray, &testedTriangle, &triangleResult)
 				&& triangleResult.MinDistance < outResult->MinDistance)

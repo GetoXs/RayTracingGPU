@@ -202,7 +202,9 @@ xcopy /y SceneConfig.json "$(OutDir)"</Command>
     <None Include="SceneConfig-Bunny1.json" />
     <None Include="SceneConfig-Bunny2.json" />
     <None Include="SceneConfig-Bunny3.json" />
+    <None Include="SceneConfig-Dolphins.json" />
     <None Include="SceneConfig-Sphere.json" />
+    <None Include="SceneConfig-Sphere2.json" />
     <None Include="SceneConfig.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

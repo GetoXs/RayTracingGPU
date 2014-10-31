@@ -132,7 +132,8 @@ void GLMgr::Init()
 	this->CurrentScene = new Scene();
 
 	//parsowanie pliku konfiguracyjnego sceny
-	this->SceneLoader->Parse(this);
+	bool result = this->SceneLoader->Parse(this);
+	assert(result);
 
 	/*
 	//unsigned mat1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 0, 0, 0.7), Color(0.6, 0, 0, 0.7), 0));
@@ -684,15 +685,16 @@ void GLMgr::Raport()
 		char delimiter = ';';
 		if (fileNotExists)
 		{
-			txt << "Tryb renderowania" << delimiter << "Liczba wierzcholkow" << delimiter << "Liczba trojkatow" << delimiter << "Liczba swiatel" << delimiter << "Glebokosc RT" << delimiter << "Liczba klatek" << delimiter << "Czas testu" << delimiter << "Plik z obrazem" << endl;
+			txt << "Data pomiaru" << delimiter << "Tryb renderowania" << delimiter << "Liczba unikalnych wierzcholkow" << delimiter << "Liczba trojkatow" << delimiter << "Liczba swiatel" << delimiter << "Glebokosc RT" << delimiter << "Liczba klatek" << delimiter << "Czas testu" << delimiter << "Plik z obrazem" << endl;
 		}
 
 		QString mode = this->IsGPUMode() ? "GPU" : "CPU";
 		QString imageExt = ".png";
-		QString displayFileName = QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss") + "-RaportImage-" + mode + "-" + QString::number(this->RayTracerDepth) + imageExt;
+		QDateTime currentDT = QDateTime::currentDateTime();
+		QString displayFileName = currentDT.toString("yyyyMMdd-HHmmss") + "-RaportImage-" + mode + "-" + QString::number(this->RayTracerDepth) + imageExt;
 
-		//Tryb    |    Liczba wierzcho³ków    |    Liczba trójk¹tów    |    Liczba œwiate³    |    G³êbokoœc RT    |    Liczba klatek    |    Czas testu    |    Plik z obrazem
-		txt << mode << delimiter << this->CurrentScene->GetPositionCount() << delimiter << this->CurrentScene->GetTriangleCount() << delimiter << this->LightList.count() 
+		//Data pomiaru    |    Tryb    |    Liczba unikalnych wierzcho³ków    |    Liczba trójk¹tów    |    Liczba œwiate³    |    G³êbokoœc RT    |    Liczba klatek    |    Czas testu    |    Plik z obrazem
+		txt << currentDT.toString(Qt::DateFormat::ISODate) << delimiter << mode << delimiter << this->CurrentScene->GetPositionCount() << delimiter << this->CurrentScene->GetTriangleCount() << delimiter << this->LightList.count()
 			<< delimiter << this->RayTracerDepth << delimiter << this->FrameCounter << delimiter << this->IntervalRaport.value() << delimiter << displayFileName << endl;
 
 		raportFile.close();
@@ -741,7 +743,8 @@ void RenderScene(void)
 void KeyboardFunc(unsigned char key, int x, int y)
 {
 	switch (key) {
-	case 0x7F:	//klawisz DELETE
+	case VK_DELETE:	//klawisz DELETE
+	case 0x7F:
 		GLMgr::I()->ResetCounter();
 		break;
 	case ' ':

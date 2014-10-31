@@ -11,5 +11,10 @@ namespace RayTracingTester
     {
         [DllImport("user32.dll")]
         public static extern int SetForegroundWindow(IntPtr hWnd);
+
+		[DllImport("user32.dll")]
+		public static extern bool PostMessage(IntPtr hWnd, UInt32 Msg, int wParam, int lParam);
+		[DllImport("user32.dll")]
+		public static extern bool SendMessage(IntPtr hWnd, UInt32 Msg, int wParam, int lParam);
     }
 }
