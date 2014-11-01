@@ -6,6 +6,7 @@
 #include "StandardMaterial.h"
 #include "Shading.h"
 #include "Mesh.h"
+#include "getopt.h"
 
 #include <stdio.h>
 #include <direct.h>
@@ -83,15 +84,7 @@ GLuint TestOutputTexture;
 void GLMgr::Init()
 {
 	GLenum numError = OpenGLHelper::CheckErrors();
-
-#pragma region Viewport
-	//ustawienia ekranu
-	this->Viewport.setLeft(0);
-	this->Viewport.setTop(0);
-	this->Viewport.setRight(WINDOWS_SIZE_X);
-	this->Viewport.setBottom(WINDOWS_SIZE_Y);
-#pragma endregion
-
+	
 #pragma region Kamera
 	float left = -1, right = 1;
 	float top = -1, bottom = 1;
@@ -388,7 +381,7 @@ void GLMgr::Init()
 	- Dodanie mecirzy transformacji na ka¿dy z obiektow (informacja o indexie macierzy do tekstury, i sam index do osobnej textury)
 	*/
 
-	glClearColor(1.f, 0.f, 0.f, 1.0f);
+	glClearColor(1.f, 1.f, 1.f, 1.0f);
 
 #pragma region Ustawienia macierzy dla OpenGL
 	glMatrixMode(GL_PROJECTION);
@@ -691,16 +684,17 @@ void GLMgr::Raport()
 		char delimiter = ';';
 		if (fileNotExists)
 		{
-			txt << "Data pomiaru" << delimiter << "Tryb renderowania" << delimiter << "Liczba unikalnych wierzcholkow" << delimiter << "Liczba trojkatow" << delimiter << "Liczba swiatel" << delimiter << "Glebokosc RT" << delimiter << "Liczba klatek" << delimiter << "Czas testu" << delimiter << "Plik z obrazem" << endl;
+			txt << "Data pomiaru" << delimiter << "Tryb renderowania" << delimiter << "Liczba unikalnych wierzcholkow" << delimiter << "Liczba trojkatow" << delimiter << "Szerokosc ekranu" << delimiter << "Wysokosc ekranu" << delimiter << "Liczba swiatel" << delimiter << "Glebokosc RT" << delimiter << "Liczba klatek" << delimiter << "Czas testu" << delimiter << "Plik z obrazem" << endl;
 		}
 
 		QString mode = this->IsGPUMode() ? "GPU" : "CPU";
 		QString imageExt = ".png";
 		QString displayFileName = currentDT.toString("yyyyMMdd-HHmmss") + "-RaportImage-" + mode + "-" + QString::number(this->RayTracerDepth) + imageExt;
 
-		//Data pomiaru    |    Tryb    |    Liczba unikalnych wierzcho³ków    |    Liczba trójk¹tów    |    Liczba œwiate³    |    G³êbokoœc RT    |    Liczba klatek    |    Czas testu    |    Plik z obrazem
-		txt << currentDT.toString(Qt::DateFormat::ISODate) << delimiter << mode << delimiter << this->CurrentScene->GetPositionCount() << delimiter << this->CurrentScene->GetTriangleCount() << delimiter << this->LightList.count()
-			<< delimiter << this->RayTracerDepth << delimiter << this->FrameCounter << delimiter << this->IntervalRaport.value() << delimiter << displayFileName << endl;
+		//Data pomiaru    |    Tryb    |    Liczba unikalnych wierzcho³ków    |    Liczba trójk¹tów    |    Szerokosc ekranu    |    Wysokosc ekranu    |    Liczba œwiate³    |    G³êbokoœc RT    |    Liczba klatek    |    Czas testu    |    Plik z obrazem
+		txt << currentDT.toString(Qt::DateFormat::ISODate) << delimiter << mode << delimiter << this->CurrentScene->GetPositionCount() << delimiter << this->CurrentScene->GetTriangleCount() << delimiter 
+			<< this->Viewport.width() - 1 << delimiter << this->Viewport.height() - 1 << delimiter << this->LightList.count() << delimiter << this->RayTracerDepth << delimiter 
+			<< this->FrameCounter << delimiter << this->IntervalRaport.value() << delimiter << displayFileName << endl;
 
 		raportFile.close();
 		
@@ -850,16 +844,40 @@ void GLMgr::UpdateCounter()
 
 void GLMgr::PreInit(int argc, char* argv[])
 {
+	//przypisanie domyœlnych wartoœci
+	int width = WINDOWS_SIZE_X;
+	int height = WINDOWS_SIZE_Y;
+
 	gltSetWorkingDirectory(argv[0]);
 	glutInit(&argc, argv);
 
+#pragma region Parsowanie argumentów
+	//parsowanie pliku sceny
 	if (argc>1)
 		this->SceneLoader = new SceneConfigLoader(argv[1]);
 	else
 		this->SceneLoader = new SceneConfigLoader("SceneConfig.json");
 
+	//ustawienie wartoœci poczatkowe parsera
+	optind = 2;
+	//szerokosc okna
+	if (getopt(argc, argv, "w:") == 'w')
+		width = atoi(optarg);
+	//wysokosc okna
+	if (getopt(argc, argv, "h:") == 'h')
+		height = atoi(optarg);
+#pragma endregion
+
+#pragma region Viewport
+	//ustawienia ekranu
+	this->Viewport.setLeft(0);
+	this->Viewport.setTop(0);
+	this->Viewport.setRight(width);
+	this->Viewport.setBottom(height);
+#pragma endregion
+
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
-	glutInitWindowSize(WINDOWS_SIZE_X, WINDOWS_SIZE_Y);
+	glutInitWindowSize(this->Viewport.width(), this->Viewport.height());
 	glutCreateWindow("RayTracing Init");
 	
 	glewInit();
@@ -874,6 +892,7 @@ void GLMgr::PreInit(int argc, char* argv[])
 	glutSpecialFunc(::KeyboardSpecialFunc);
 
 	GLenum err = glewInit();
+	assert(GLEW_OK == err);
 	if (GLEW_OK != err)
 	{
 		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
@@ -898,15 +917,15 @@ GLMgr::~GLMgr(void)
 	OpenGLHelper::DeleteTexture(&this->TextureBuffer_MaterialProperties, &this->Texture_MaterialProperties);
 
 	if (this->CurrentScene)
-		delete(this->CurrentScene);
+		delete this->CurrentScene;
 	this->CurrentScene = NULL;
 
 	if (this->Camera)
-		delete(this->Camera);
+		delete this->Camera;
 	this->Camera = NULL;
 
 	if (this->SceneLoader)
-		delete(this->SceneLoader);
+		delete this->SceneLoader;
 	this->SceneLoader = NULL;
 }
 GLMgr::GLMgr() 

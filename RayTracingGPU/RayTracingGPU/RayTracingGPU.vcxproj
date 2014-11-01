@@ -116,6 +116,7 @@ xcopy /y SceneConfig.json "$(OutDir)"</Command>
     <ClCompile Include="GeneratedFiles\Release\moc_raytracinggpu.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="getopt.cpp" />
     <ClCompile Include="GLMgr.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -135,6 +136,7 @@ xcopy /y SceneConfig.json "$(OutDir)"</Command>
     <ClInclude Include="CameraPerspective.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Fps.h" />
+    <ClInclude Include="getopt.h" />
     <ClInclude Include="HitResult.h" />
     <ClInclude Include="HitTest.fs.h">
       <FileType>Document</FileType>

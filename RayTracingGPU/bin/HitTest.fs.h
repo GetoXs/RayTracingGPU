@@ -320,11 +320,13 @@ vec4 CalculateReflectionColor(vec4 baseColor, vec4 reflectionColor, float reflec
 	return baseColor * (1.0 - reflectionRatio) + reflectionColor * reflectionRatio;
 }
 
-void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
+bool RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 	inout bool isTransmissive, inout vec3 transmissiveOrigin, inout vec3 transmissiveDir, inout float transmissiveRatio,
 	inout bool isReflective, inout vec3 reflectionOrigin, inout vec3 reflectionDir, inout float reflectionRatio)
 {
 	//rayOrigin = vec3(-0.25, 0.2, 1.5);
+	isReflective = false;
+	isTransmissive = false;
 
 
 	int count = GetTrianglesCount();
@@ -397,7 +399,7 @@ void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 	if (hitTriangle == -1)
 	{
 		outColor = vec4(1, 1, 1, 1);
-		return;
+		return false;
 	}
 	//if (hitPoint.z <-0.2)
 	//{
@@ -435,8 +437,7 @@ void RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 			reflectionOrigin = hitPoint;
 		}
 	}
-
-
+	return true;
 }
 
 void RayTrace6(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
