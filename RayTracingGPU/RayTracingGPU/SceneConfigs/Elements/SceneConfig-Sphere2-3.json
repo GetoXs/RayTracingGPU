@@ -1,0 +1,60 @@
+{
+    "rayTracer": {
+        "IsGPUMode": true,
+        "depth": 0
+    },
+    "camera": {
+        "rotate": {
+            "angle": 10,
+            "axis": [ 0, 1, 0 ]
+        }
+    },
+    "materials": [
+        {
+            "id": "mat3",
+            "diffuse": [ 0.5, 1, 1 ],
+            "ambient": [ 0.2, 0.5, 0.5 ],
+            "reflectionRatio": 0
+        },
+        {
+            "id": "matFullRef",
+            "diffuse": [ 0, 1, 0 ],
+            "ambient": [ 0.0, 0.5, 0.0 ],
+            "reflectionRatio": 1
+        }
+    ],
+    "objects": [
+        {
+            "filePath": "Models\\Sphere1.obj",
+            "position": [ -1.5, 1.5, 0.0 ],
+            "scale": 1,
+            "materialId": "mat3"
+        },
+        {
+            "filePath": "Models\\Sphere1.obj",
+            "position": [ 0, 1.5, 0.0 ],
+            "scale": 1,
+            "materialId": "mat3"
+        },
+        {
+            "filePath": "Models\\Sphere1.obj",
+            "position": [ 1.5, 1.5, 0.0 ],
+            "scale": 1,
+            "materialId": "mat3"
+        }
+    ],
+    "lights": {
+        "light": [
+            {
+                "position": [ -1, 1, 1 ],
+                "diffuse": [ 0, 1, 1 ],
+                "ambient": [ 0, 0.4, 0.4 ]
+            },
+            {
+                "position": [ 0, -1, 1 ],
+                "diffuse": [ 1, 0, 0 ],
+                "ambient": [ 0.4, 0, 0 ]
+            }
+        ]
+    }
+}

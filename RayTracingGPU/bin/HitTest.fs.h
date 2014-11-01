@@ -488,6 +488,7 @@ void RayTrace4(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 	{	//funckjonalnoœc refleksji
 		RayTrace5(reflectionOrigin, reflectionDir, reflectionColor);
 		outColor = CalculateReflectionColor(outColor, reflectionColor, reflectionRatio);
+		outTest = vec3(1);
 	}
 }
 void RayTrace3(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
@@ -570,7 +571,7 @@ void main()
 
 	//pobieranie promienia we wspó³rzêdnych modelu
 	GetRay2D(vec4(gl_FragCoord.xy, 0.0, 1.0), origin, ray);
-	//outTest = origin;
+	outTest = vec3(0);
 
 	//rozpoczêcie promienia
 	RayTrace1(origin, ray, result);

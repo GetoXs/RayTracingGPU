@@ -42,6 +42,10 @@
     </Filter>
     <Filter Include="Scene Configs">
       <UniqueIdentifier>{b301c732-acf5-42bb-a3a4-8bc0f872b4e3}</UniqueIdentifier>
+      <Extensions>json</Extensions>
+    </Filter>
+    <Filter Include="Scene Configs\Elements">
+      <UniqueIdentifier>{8bcc00fd-f75a-446c-9ad1-663382abd928}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -189,29 +193,56 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="SceneConfig.json">
+    <None Include="SceneConfigs\SceneConfig.json">
       <Filter>Scene Configs</Filter>
     </None>
-    <None Include="SceneConfig-BigBunny.json">
+    <None Include="SceneConfigs\SceneConfig-BigBunny.json">
       <Filter>Scene Configs</Filter>
     </None>
-    <None Include="SceneConfig-Bunny1.json">
+    <None Include="SceneConfigs\SceneConfig-Bunny1.json">
       <Filter>Scene Configs</Filter>
     </None>
-    <None Include="SceneConfig-Bunny2.json">
+    <None Include="SceneConfigs\SceneConfig-Bunny2.json">
       <Filter>Scene Configs</Filter>
     </None>
-    <None Include="SceneConfig-Bunny3.json">
+    <None Include="SceneConfigs\SceneConfig-Bunny3.json">
       <Filter>Scene Configs</Filter>
     </None>
-    <None Include="SceneConfig-Sphere.json">
+    <None Include="SceneConfigs\SceneConfig-Dolphins.json">
       <Filter>Scene Configs</Filter>
     </None>
-    <None Include="SceneConfig-Sphere2.json">
+    <None Include="SceneConfigs\SceneConfig-Sphere2.json">
       <Filter>Scene Configs</Filter>
     </None>
-    <None Include="SceneConfig-Dolphins.json">
+    <None Include="SceneConfigs\SceneConfig-Sphere.json">
       <Filter>Scene Configs</Filter>
+    </None>
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-1.json">
+      <Filter>Scene Configs\Elements</Filter>
+    </None>
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-2.json">
+      <Filter>Scene Configs\Elements</Filter>
+    </None>
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-3.json">
+      <Filter>Scene Configs\Elements</Filter>
+    </None>
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-4.json">
+      <Filter>Scene Configs\Elements</Filter>
+    </None>
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-5.json">
+      <Filter>Scene Configs\Elements</Filter>
+    </None>
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-6.json">
+      <Filter>Scene Configs\Elements</Filter>
+    </None>
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-7.json">
+      <Filter>Scene Configs\Elements</Filter>
+    </None>
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-8.json">
+      <Filter>Scene Configs\Elements</Filter>
+    </None>
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-9.json">
+      <Filter>Scene Configs\Elements</Filter>
     </None>
   </ItemGroup>
 </Project>

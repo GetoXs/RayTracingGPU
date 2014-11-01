@@ -1,0 +1,90 @@
+{
+    "rayTracer": {
+        "depth": 0
+    },
+    "camera": {
+        "rotate": {
+            "angle": -10,
+            "axis": [ 0, 1, 0 ]
+        }
+    },
+    "materials": [
+        {
+            "id": "mat1",
+            "diffuse": [ 1, 0, 0, 0.9 ],
+            "ambient": [ 0.6, 0, 0, 0.9 ],
+            "reflectionRatio": 0
+        },
+        {
+            "id": "mat2",
+            "diffuse": [ 0, 1, 0, 1 ],
+            "ambient": [ 0.0, 0.5, 0.0, 1 ],
+            "reflectionRatio": 0
+        },
+        {
+            "id": "matFullRef",
+            "diffuse": [ 0.8, 0.8, 0.8 ],
+            "ambient": [ 0.5, 0.5, 0.5 ],
+            "reflectionRatio":0.9
+        }
+    ],
+    "objects": [
+        {
+            "filePath": "Models\\box.obj",
+            "position": [ 0, 0, -1 ],
+            "scale": 3,
+            "materialId": "matFullRef"
+        },
+        {
+            "filePath": "Models\\box.obj",
+            "position": [ -1, 0, 0 ],
+            "scale": 3,
+            "materialId": "matFullRef"
+        },
+        {
+            "filePath": "Models\\box.obj",
+            "position": [ 1, 0, 0 ],
+            "scale": 3,
+            "materialId": "matFullRef"
+        },
+        {
+            "filePath": "Models\\box.obj",
+            "position": [ 0, 1, 0 ],
+            "scale": 3,
+            "materialId": "matFullRef"
+        },
+        {
+            "filePath": "Models\\box.obj",
+            "position": [ 0, -1, 0 ],
+            "scale": 3,
+            "materialId": "matFullRef"
+        },
+        {
+            "filePath": "Models\\box.obj",
+            "position": [ 0, 0, 1 ],
+            "scale": 3,
+            "materialId": "matFullRef"
+        },
+        {
+            "filePath": "Models\\bunny.obj",
+            "position": [ 0, -0.1, -0.05 ],
+            "scale": 11,
+            "materialId": "mat1"
+        }
+    ],
+    "lights": {
+        "meshFilePath": "Models\\box_light.obj",
+        "light": [
+            {
+                "position": [ -1, 1, 0 ],
+				"diffuse": [ 0.8, 0.8, 0.8 ],
+				"ambient": [ 0.4, 0.4, 0.4 ]
+            },
+            {
+                "position": [ 0, -1, 0 ],
+                "diffuse": [ 1, 0, 0 ],
+                "ambient": [ 0.4, 0, 0 ]
+            }
+        ]
+    }
+}

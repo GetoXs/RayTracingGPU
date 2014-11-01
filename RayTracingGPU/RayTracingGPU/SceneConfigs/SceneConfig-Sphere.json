@@ -1,13 +1,14 @@
 {
     "rayTracer": {
         "IsGPUMode": true,
-        "depth": 3
+        "depth": 4
     },
     "camera": {
         "rotate": {
-            "angle": 15,
-            "axis": [ 0, 1, 0 ]
-        }
+            "angle": 47,
+            "axis": [ 1, 1, 0 ]
+        },
+		"zoom": 1.5
     },
     "materials": [
         {
@@ -18,21 +19,21 @@
         },
         {
             "id": "mat2",
-            "diffuse": [ 1, 1, 1 ],
-            "ambient": [ 0.0, 0.5, 0.0, 1 ],
+            "diffuse": [ 1, 1, 0.2 ],
+            "ambient": [ 0.2, 0.2, 0.1, 1 ],
             "reflectionRatio": 0.5
         },
         {
-            "id": "mat10",
+            "id": "matFullRef",
             "diffuse": [ 1, 1, 1 ],
             "ambient": [ 0.5, 0.5, 0.5 ],
             "reflectionRatio":0.95
         },
         {
             "id": "mat11",
-            "diffuse": [ 1, 1, 0 ],
-            "ambient": [ 0.5, 0.5, 0 ],
-            "reflectionRatio":0.8
+            "diffuse": [ 0, 0, 0 ],
+            "ambient": [ 0, 0, 0 ],
+            "reflectionRatio":0
         }
     ],
     "objects": [
@@ -40,7 +41,7 @@
             "filePath": "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box.obj",
             "position": [ 0, 0, -0.65 ],
             "scale": 5,
-            "materialId": "mat10"
+            "materialId": "matFullRef"
         },
         {
             "filePath": "Models\\Sphere1.obj",
@@ -65,12 +66,12 @@
         "meshFilePath": "Models\\box_light.obj",
         "light": [
             {
-                "position": [ -1, 1, 1 ],
-                "diffuse": [ 0, 1, 1 ],
-                "ambient": [ 0, 0.4, 0.4 ]
+                "position": [ -1, 1, 0 ],
+				"diffuse": [ 0.8, 0.8, 0.8 ],
+				"ambient": [ 0.4, 0.4, 0.4 ]
             },
             {
-                "position": [ 0, -1, 0 ],
+                "position": [ 0, -1, 1 ],
                 "diffuse": [ 1, 0, 0 ],
                 "ambient": [ 0.4, 0, 0 ]
             }

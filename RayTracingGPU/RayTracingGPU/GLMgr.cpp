@@ -28,8 +28,8 @@ const float TRANSFORM_SCALE_RATE = 1.2;
 const float TRANSFORM_ROTATE_ANGLE = 3;
 
 //ustawienia okna oraz kamery
-const int WINDOWS_SIZE_X = 800;
-const int WINDOWS_SIZE_Y = 800;
+const int DEFAULT_WINDOWS_SIZE_X = 800;
+const int DEFAULT_WINDOWS_SIZE_Y = 800;
 const int PLANE_NEAR = 2;
 const int PLANE_FAR = 7;
 
@@ -845,8 +845,8 @@ void GLMgr::UpdateCounter()
 void GLMgr::PreInit(int argc, char* argv[])
 {
 	//przypisanie domyœlnych wartoœci
-	int width = WINDOWS_SIZE_X;
-	int height = WINDOWS_SIZE_Y;
+	int width = DEFAULT_WINDOWS_SIZE_X;
+	int height = DEFAULT_WINDOWS_SIZE_Y;
 
 	gltSetWorkingDirectory(argv[0]);
 	glutInit(&argc, argv);

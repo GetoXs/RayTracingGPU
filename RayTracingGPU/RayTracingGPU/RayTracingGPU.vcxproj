@@ -72,7 +72,7 @@
     <PostBuildEvent>
       <Command>xcopy /y Main.vs.h "$(OutDir)"
 xcopy /y HitTest.fs.h "$(OutDir)"
-xcopy /y SceneConfig.json "$(OutDir)"</Command>
+xcopy /y SceneConfigs\SceneConfig.json "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -97,7 +97,7 @@ xcopy /y SceneConfig.json "$(OutDir)"</Command>
     <PostBuildEvent>
       <Command>xcopy /y Main.vs.h "$(OutDir)"
 xcopy /y HitTest.fs.h "$(OutDir)"
-xcopy /y SceneConfig.json "$(OutDir)"</Command>
+xcopy /y SceneConfigs\SceneConfig.json "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -200,14 +200,23 @@ xcopy /y SceneConfig.json "$(OutDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="SceneConfig-BigBunny.json" />
-    <None Include="SceneConfig-Bunny1.json" />
-    <None Include="SceneConfig-Bunny2.json" />
-    <None Include="SceneConfig-Bunny3.json" />
-    <None Include="SceneConfig-Dolphins.json" />
-    <None Include="SceneConfig-Sphere.json" />
-    <None Include="SceneConfig-Sphere2.json" />
-    <None Include="SceneConfig.json" />
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-1.json" />
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-2.json" />
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-3.json" />
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-4.json" />
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-5.json" />
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-6.json" />
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-7.json" />
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-8.json" />
+    <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-9.json" />
+    <None Include="SceneConfigs\SceneConfig-BigBunny.json" />
+    <None Include="SceneConfigs\SceneConfig-Bunny1.json" />
+    <None Include="SceneConfigs\SceneConfig-Bunny2.json" />
+    <None Include="SceneConfigs\SceneConfig-Bunny3.json" />
+    <None Include="SceneConfigs\SceneConfig-Dolphins.json" />
+    <None Include="SceneConfigs\SceneConfig-Sphere.json" />
+    <None Include="SceneConfigs\SceneConfig-Sphere2.json" />
+    <None Include="SceneConfigs\SceneConfig.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
