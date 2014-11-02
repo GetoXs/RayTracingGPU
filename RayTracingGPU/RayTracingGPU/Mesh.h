@@ -2,6 +2,7 @@
 #include "ISceneObject.h"
 #include "IMaterial.h"
 #include "Triangle3D.h"
+#include <assert.h>
 
 class Mesh :
 	public ISceneObject

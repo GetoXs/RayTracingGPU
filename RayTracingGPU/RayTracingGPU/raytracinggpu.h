@@ -3,7 +3,6 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_raytracinggpu.h"
-#include "GLMgr.h"
 
 class RayTracingGPU : public QMainWindow
 {

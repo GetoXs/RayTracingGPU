@@ -1,12 +1,13 @@
 {
     "rayTracer": {
-        "depth": 1
+        "depth": 0
     },
     "camera": {
         "rotate": {
-            "angle": -15,
+            "angle": 20,
             "axis": [ 0, 1, 0 ]
-        }
+        },
+		"zoom": 1
     },
     "materials": [
         {
@@ -19,21 +20,21 @@
     "objects": [
         {
             "filePath": "Models\\bunny.ply",
-            "position": [ 0, 0, 0 ],
+            "position": [ 0, -0.1, 0 ],
             "scale": 9,
-            "materialId": "mat1"
+            "materialId": "mat1",
+			"flipFaces": true
         }
     ],
     "lights": {
-        "meshFilePath": "Models\\box_light.obj",
         "light": [
             {
-                "position": [ -1, 1, 1 ],
+                "position": [ -1, 1, 0 ],
                 "diffuse": [ 0, 1, 1 ],
                 "ambient": [ 0, 0.4, 0.4 ]
             },
             {
-                "position": [ 0, -1, 0 ],
+                "position": [ 0, -1, 1 ],
                 "diffuse": [ 1, 0, 0 ],
                 "ambient": [ 0.4, 0, 0 ]
             }

@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "OpenGLHelper.h"
+#include "ShaderHelper.h"
 
 
 OpenGLHelper::OpenGLHelper(void)
@@ -25,7 +26,7 @@ GLuint OpenGLHelper::LoadShader(
 
 	// Load them. If fail clean up and return null
 	// Vertex Program
-	if (gltLoadShaderFile(szVertexProg, hVertexShader) == false)
+	if (ShaderHelper::LoadShaderFile(szVertexProg, hVertexShader) == false)
 	{
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
@@ -36,7 +37,7 @@ GLuint OpenGLHelper::LoadShader(
 	}
 
 	// Fragment Program
-	if (gltLoadShaderFile(szFragmentProg, hFragmentShader) == false)
+	if (ShaderHelper::LoadShaderFile(szFragmentProg, hFragmentShader) == false)
 	{
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
@@ -49,7 +50,7 @@ GLuint OpenGLHelper::LoadShader(
 	//Geometry Shader
 	if (isGeometryShader)
 	{
-		if (gltLoadShaderFile(szGeometryProg, hGeometryShader) == false)
+		if (ShaderHelper::LoadShaderFile(szGeometryProg, hGeometryShader) == false)
 		{
 			glDeleteShader(hVertexShader);
 			glDeleteShader(hFragmentShader);
@@ -164,7 +165,7 @@ GLuint OpenGLHelper::LoadShaderWithAttributesAndFeedback(
 	
 	// Load them. If fail clean up and return null
 	// Vertex Program
-	if(gltLoadShaderFile(szVertexProg, hVertexShader) == false)
+	if (ShaderHelper::LoadShaderFile(szVertexProg, hVertexShader) == false)
 	{
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
@@ -175,7 +176,7 @@ GLuint OpenGLHelper::LoadShaderWithAttributesAndFeedback(
 	}
 	
 	// Fragment Program
-	if(gltLoadShaderFile(szFragmentProg, hFragmentShader) == false)
+	if (ShaderHelper::LoadShaderFile(szFragmentProg, hFragmentShader) == false)
 	{
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
@@ -188,7 +189,7 @@ GLuint OpenGLHelper::LoadShaderWithAttributesAndFeedback(
 	//Geometry Shader
 	if(isGeometryShader!=NULL)
 	{
-		if(gltLoadShaderFile(szGeometryProg, hGeometryShader) == false)
+		if (ShaderHelper::LoadShaderFile(szGeometryProg, hGeometryShader) == false)
 		{
 			glDeleteShader(hVertexShader);
 			glDeleteShader(hFragmentShader);

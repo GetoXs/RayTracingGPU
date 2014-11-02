@@ -47,6 +47,12 @@
     <Filter Include="Scene Configs\Elements">
       <UniqueIdentifier>{8bcc00fd-f75a-446c-9ad1-663382abd928}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Libraries">
+      <UniqueIdentifier>{f433b89e-99c5-4aaa-aa34-d7c3d3c75332}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\GLEW">
+      <UniqueIdentifier>{f48b5be8-c83b-4cbb-ad75-9c688a2db6fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -102,6 +108,12 @@
     </ClCompile>
     <ClCompile Include="ErrorLog.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\GL\glew.c">
+      <Filter>Libraries\GLEW</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +191,18 @@
     </ClInclude>
     <ClInclude Include="ErrorLog.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\GL\glew.h">
+      <Filter>Libraries\GLEW</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\GL\glxew.h">
+      <Filter>Libraries\GLEW</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\GL\wglew.h">
+      <Filter>Libraries\GLEW</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

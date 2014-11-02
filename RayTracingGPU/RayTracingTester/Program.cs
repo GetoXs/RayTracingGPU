@@ -14,14 +14,15 @@ namespace RayTracingTester
 		static string RayTracerFilePath = System.Configuration.ConfigurationManager.AppSettings["RayTracerFilePath"];
 		static string SceneConfigFilePath = System.Configuration.ConfigurationManager.AppSettings["SceneConfigFilePath"];
 		static int StartupWarmupTime = int.Parse(System.Configuration.ConfigurationManager.AppSettings["StartupWarmupTime"]);
+		static int WindowSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["WindowSize"]);
 		static int RTDepthStart = 0;
 		static int RTDepthEnd = 5;
 
 		static void Main(string[] args)
 		{
-			//TestRTDepthGPUAndCPU(@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfig-Bunny3.json", 3000, 0, RTDepthStart, RTDepthEnd);
+			TestRTDepthGPUAndCPU(@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\SceneConfig-Bunny3.json", 30000, 0, RTDepthStart, RTDepthEnd);
 
-			//TestRTWindowsSize(@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfig-Sphere.json", 20000, 100, 50, 20);
+			//TestRTWindowsSize(@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\SceneConfig-Sphere.json", 20000, 100, 50, 20);
 
 			//TestRTSet(new string[] {
 			//		@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-1.json",
@@ -36,7 +37,8 @@ namespace RayTracingTester
 			//	},
 			//	15000);
 
-			TestRTOne("", 30000);
+			//TestRTOne("", 30000);
+			//TestRTOne(@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\SceneConfig-BigBunny.json", 60000);
 		}
 		static void TestRTOne(string sceneConfigFilePath, int gpuTimeInterval)
 		{
@@ -52,7 +54,7 @@ namespace RayTracingTester
 				if (!string.IsNullOrEmpty(sceneConfigFilePath))
 					si.Arguments = "-c " + sceneConfigFilePath;
 				//ustawianie wielkosci ekranu
-				si.Arguments = string.Format("{0} -w {1} -h {1}", si.Arguments, 400);
+				si.Arguments = string.Format("{0} -w {1} -h {1}", si.Arguments, WindowSize);
 
 				proc = Process.Start(si);
 
@@ -95,7 +97,7 @@ namespace RayTracingTester
 					if (!string.IsNullOrEmpty(sceneConfigFilePath))
 						si.Arguments = "-c " + sceneConfigFilePath;
 					//ustawianie wielkosci ekranu
-					si.Arguments = string.Format("{0} -w {1} -h {1}", si.Arguments, 400);
+					si.Arguments = string.Format("{0} -w {1} -h {1}", si.Arguments, WindowSize);
 
 					proc = Process.Start(si);
 
@@ -185,7 +187,13 @@ namespace RayTracingTester
 				//4. Zmienić tryb RT -> zebrac wyniki
 
 				System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(RayTracerFilePath);
-				si.Arguments = "-c " + sceneConfigFilePath;
+				si.Arguments = string.Empty;
+				//ustawianie pliku konfiguracyjnego
+				if (!string.IsNullOrEmpty(sceneConfigFilePath))
+					si.Arguments = "-c " + sceneConfigFilePath;
+				//ustawianie wielkosci ekranu
+				si.Arguments = string.Format("{0} -w {1} -h {1}", si.Arguments, WindowSize);
+
 				si.WorkingDirectory = System.IO.Path.GetDirectoryName(RayTracerFilePath);
 				si.UseShellExecute = false;
 				proc = Process.Start(si);

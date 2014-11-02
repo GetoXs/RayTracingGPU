@@ -4,11 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RayTracingGPU", "RayTracingGPU\RayTracingGPU.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C} = {4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLTools", "GLTools\GLTools.vcxproj", "{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayTracingTester", "RayTracingTester\RayTracingTester.csproj", "{F9548C03-F71B-4025-A9FD-D378390125DF}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -43,20 +38,6 @@ Global
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.ActiveCfg = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.Build.0 = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.ActiveCfg = Release|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|ARM.ActiveCfg = Debug|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|Win32.Build.0 = Debug|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Debug|x64.ActiveCfg = Debug|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|Any CPU.ActiveCfg = Release|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|ARM.ActiveCfg = Release|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|Win32.ActiveCfg = Release|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|Win32.Build.0 = Release|Win32
-		{4BD7A7ED-913F-4FF2-86FB-D25B01BA416C}.Release|x64.ActiveCfg = Release|Win32
 		{F9548C03-F71B-4025-A9FD-D378390125DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F9548C03-F71B-4025-A9FD-D378390125DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9548C03-F71B-4025-A9FD-D378390125DF}.Debug|ARM.ActiveCfg = Debug|Any CPU

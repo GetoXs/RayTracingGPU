@@ -126,6 +126,8 @@ void GLMgr::Init()
 
 	//parsowanie pliku konfiguracyjnego sceny
 	bool result = this->SceneLoader->Parse(this);
+	if (!result)
+		ErrorLog::AppendError("B³¹d parsowania, nie znaleziono wskazywanego pliku");
 	assert(result);
 
 	/*
@@ -852,7 +854,6 @@ void GLMgr::PreInit(int argc, char* argv[])
 	int width = DEFAULT_WINDOWS_SIZE_X;
 	int height = DEFAULT_WINDOWS_SIZE_Y;
 
-	gltSetWorkingDirectory(argv[0]);
 	glutInit(&argc, argv);
 
 #pragma region Parsowanie argumentów

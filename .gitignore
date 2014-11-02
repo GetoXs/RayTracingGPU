@@ -35,3 +35,5 @@
 /RayTracingGPU/bin/test.png
 /RayTracingGPU/RayTracingTester/bin/RayTracingTester.vshost.exe.config
 /RayTracingGPU/RayTracingTester/bin/RayTracingTester.vshost.exe.manifest
+/RayTracingGPU/bin/Logs
+/RayTracingGPU/bin/RayTracingGPU.ilk

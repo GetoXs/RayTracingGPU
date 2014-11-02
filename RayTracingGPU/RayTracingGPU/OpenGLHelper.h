@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdarg.h>
-#include <GLTools.h>
 #include "PointLight.h"
 
 
