@@ -100,9 +100,24 @@ void SceneConfigLoader::ParseObjects(const QJsonValue *jsonObjs, GLMgr *mgr)
 		float scale = 1.;
 		if (jsonObj.contains("scale"))
 			scale = jsonObj["scale"].toDouble();
+		bool flipFaces = false;
+		if (jsonObj.contains("flipFaces"))
+			flipFaces = jsonObj["flipFaces"].toBool();
+
+		//stworzenie obiektu
+		Mesh *mesh = new Mesh(filePath, &position, scale, flipFaces);
+
+		if (jsonObj.contains("rotate"))
+		{
+			//rotacja kamery
+			QJsonObject jsonRot = jsonObj.value("rotate").toObject();
+			float angle = jsonRot["angle"].toDouble();
+			Vector3D axis = SceneConfigLoader::JsonArrayToVector3D(&jsonRot["axis"].toArray());
+			mesh->Rotate(angle, &axis);
+		}
 
 		//dodanie obiektu na scene
-		mgr->CurrentScene->AddObject(new Mesh(filePath, &position, scale), matId);
+		mgr->CurrentScene->AddObject(mesh, matId);
 	}
 }
 void SceneConfigLoader::ParseLights(const QJsonValue *jsonLights, GLMgr *mgr)

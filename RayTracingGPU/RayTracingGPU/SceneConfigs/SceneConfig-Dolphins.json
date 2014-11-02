@@ -25,7 +25,7 @@
     ],
     "objects": [
         {
-            "filePath": "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box.obj",
+            "filePath": "Models\\box.obj",
             "position": [ 0, 0, -1 ],
             "scale": 5,
             "materialId": "matFullRef"

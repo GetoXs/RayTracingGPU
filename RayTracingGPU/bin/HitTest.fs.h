@@ -1,4 +1,4 @@
-#version 410
+#version 330
 struct SLightSource
 {
 	vec4 position;              //po³o¿enie Ÿród³a œwiat³a
@@ -296,7 +296,7 @@ vec4 CalculateLocalLambertColor(int lightIndex, SMaterial material, vec3 point, 
 vec4 CalculateLambertColor(SMaterial material, vec3 point, vec3 normal)
 {
 	vec4 outColor = material.emissive;
-	for (int i = 0; i < LightNum; i++)
+	for (int i = 0; i < int(LightNum); i++)
 	{
 		outColor += CalculateLocalLambertColor(i, material, point, normal);
 	}
@@ -417,7 +417,7 @@ bool RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 	//outColor = vec4(1, 0, 0, 1);
 	reflectionRatio = material.reflectionRatio;
 
-	if (depth <= RayTracerDepth && !IsEmissive(material))
+	if (depth <= int(RayTracerDepth) && !IsEmissive(material))
 	{
 		transmissiveRatio = GetTransmissiveRatio(material);
 		isTransmissive = transmissiveRatio < 1;

@@ -175,10 +175,14 @@ public:
 	}
 
 	Mesh(const char* filename, const Vector3D *dstPosition)
-		:Mesh(filename, dstPosition, 1.f)
+		:Mesh(filename, dstPosition, 1.f, false)
 	{
 	}
 	Mesh(const char* filename, const Vector3D *dstPosition, float scaleRatio)
+		:Mesh(filename, dstPosition, scaleRatio, false)
+	{
+	}
+	Mesh(const char* filename, const Vector3D *dstPosition, float scaleRatio, bool flipFaces)
 		:ISceneObject()
 	{
 		IndexData = NULL;
@@ -187,7 +191,7 @@ public:
 		MaterialIndexData = NULL;
 		TriangleCount = PositionDataCount = PositionCount = 0;
 
-		this->_load(filename);
+		this->_load(filename, flipFaces);
 
 		this->Translate(dstPosition);
 		this->Scale(scaleRatio);
@@ -205,7 +209,7 @@ public:
 	}
 
 private:
-	void _load(const char* filename);
+	void _load(const char* filename, bool flipFaces);
 	void _loadMaterial(const unsigned int matIndex);
 
 };

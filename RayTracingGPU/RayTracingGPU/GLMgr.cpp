@@ -17,7 +17,7 @@ const char* LIGHT_MESH_FILE = "\\..\\Models\\box_light.obj";
 const char* MESH_FILE_BUNNY = "\\..\\Models\\bunny.obj";
 const char* MESH_FILE_BUNNY_BIG = "\\..\\Models\\bunny.ply";
 const char* MESH_FILE_SPHERE = "\\..\\Models\\Sphere1.obj";
-const char* MESH_FILE1 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box.obj";
+const char* MESH_FILE1 = "Models\\box.obj";
 const char* MESH_FILE2 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box2.obj";
 
 GLMgr *GLMgr::_instance = NULL;
@@ -189,7 +189,11 @@ void GLMgr::Init()
 #pragma endregion
 
 #pragma region Shader
+
+	ErrorLog::AppendError("test");
 	this->Shader_TestHit = OpenGLHelper::LoadShader("Main.vs.h", "HitTest.fs.h", NULL, 0, NULL);
+	if (this->Shader_TestHit == NULL)
+		ErrorLog::AppendError("Blad ladowania shadera");
 	OpenGLHelper::CheckErrors();
 	glUseProgram(0);
 	OpenGLHelper::CheckErrors();
@@ -853,13 +857,11 @@ void GLMgr::PreInit(int argc, char* argv[])
 
 #pragma region Parsowanie argumentów
 	//parsowanie pliku sceny
-	if (argc>1)
-		this->SceneLoader = new SceneConfigLoader(argv[1]);
-	else
-		this->SceneLoader = new SceneConfigLoader("SceneConfig.json");
+	char *configPath = "SceneConfig.json";
+	if (getopt(argc, argv, "c:") == 'c')
+		configPath = optarg;
+	this->SceneLoader = new SceneConfigLoader(configPath);
 
-	//ustawienie wartoœci poczatkowe parsera
-	optind = 2;
 	//szerokosc okna
 	if (getopt(argc, argv, "w:") == 'w')
 		width = atoi(optarg);

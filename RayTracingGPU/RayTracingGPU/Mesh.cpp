@@ -8,10 +8,13 @@
 #include <assimp\scene.h>
 
 
-void Mesh::_load(const char* filename)
+void Mesh::_load(const char* filename, bool flipFaces)
 {
 	Assimp::Importer importer;
-	const aiScene* sc = importer.ReadFile(filename, aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+	unsigned flags = aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices;
+	if (flipFaces)
+		flags |= aiProcess_FlipWindingOrder;
+	const aiScene* sc = importer.ReadFile(filename, flags);
 	if (sc == NULL)
 	{
 		const char* erer = importer.GetErrorString();

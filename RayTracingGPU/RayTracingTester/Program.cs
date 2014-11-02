@@ -13,6 +13,7 @@ namespace RayTracingTester
 	{
 		static string RayTracerFilePath = System.Configuration.ConfigurationManager.AppSettings["RayTracerFilePath"];
 		static string SceneConfigFilePath = System.Configuration.ConfigurationManager.AppSettings["SceneConfigFilePath"];
+		static int StartupWarmupTime = int.Parse(System.Configuration.ConfigurationManager.AppSettings["StartupWarmupTime"]);
 		static int RTDepthStart = 0;
 		static int RTDepthEnd = 5;
 
@@ -22,18 +23,60 @@ namespace RayTracingTester
 
 			//TestRTWindowsSize(@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfig-Sphere.json", 20000, 100, 50, 20);
 
-			TestRTSet(new string[] {
-					@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-1.json",
-					@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-2.json",
-					@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-3.json",
-					@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-4.json",
-					@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-5.json",
-					@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-6.json",
-					@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-7.json",
-					@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-8.json",
-					@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-9.json"
-				},
-				15000);
+			//TestRTSet(new string[] {
+			//		@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-1.json",
+			//		@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-2.json",
+			//		@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-3.json",
+			//		@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-4.json",
+			//		@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-5.json",
+			//		@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-6.json",
+			//		@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-7.json",
+			//		@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-8.json",
+			//		@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\Elements\SceneConfig-Sphere2-9.json"
+			//	},
+			//	15000);
+
+			TestRTOne("", 30000);
+		}
+		static void TestRTOne(string sceneConfigFilePath, int gpuTimeInterval)
+		{
+			Process proc = null;
+			try
+			{
+				System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(RayTracerFilePath);
+				si.WorkingDirectory = System.IO.Path.GetDirectoryName(RayTracerFilePath);
+				si.UseShellExecute = false;
+
+				si.Arguments = string.Empty;
+				//ustawianie pliku konfiguracyjnego
+				if (!string.IsNullOrEmpty(sceneConfigFilePath))
+					si.Arguments = "-c " + sceneConfigFilePath;
+				//ustawianie wielkosci ekranu
+				si.Arguments = string.Format("{0} -w {1} -h {1}", si.Arguments, 400);
+
+				proc = Process.Start(si);
+
+				//czas ładowania 
+				Thread.Sleep(StartupWarmupTime);
+
+				//przełączenie na GPU
+				SendSpecialKeyToProcess(proc.MainWindowHandle, (int)Keys.F1);
+
+				//test
+				_TestRTOneProbe(proc, gpuTimeInterval);
+
+				//zamkniecie procesu
+				proc.Kill();
+				Thread.Sleep(2000);
+				proc = null;
+			}
+			finally
+			{
+				if (proc != null)
+				{
+					proc.CloseMainWindow();
+				}
+			}
 		}
 
 		static void TestRTSet(string[] sceneConfigFilePathArray, int gpuTimeInterval)
@@ -47,18 +90,23 @@ namespace RayTracingTester
 
 				foreach (var sceneConfigFilePath in sceneConfigFilePathArray)
 				{
+					si.Arguments = string.Empty;
+					//ustawianie pliku konfiguracyjnego
+					if (!string.IsNullOrEmpty(sceneConfigFilePath))
+						si.Arguments = "-c " + sceneConfigFilePath;
 					//ustawianie wielkosci ekranu
-					si.Arguments = string.Format("{0} -w {1} -h {1}", sceneConfigFilePath, 400);
+					si.Arguments = string.Format("{0} -w {1} -h {1}", si.Arguments, 400);
+
 					proc = Process.Start(si);
 
 					//czas ładowania 
-					Thread.Sleep(2000);
+					Thread.Sleep(StartupWarmupTime);
 
 					//przełączenie na GPU
 					SendSpecialKeyToProcess(proc.MainWindowHandle, (int)Keys.F1);
 
 					//test
-					TestRTOnce(proc, gpuTimeInterval);
+					_TestRTOneProbe(proc, gpuTimeInterval);
 
 					//zamkniecie procesu
 					proc.Kill();
@@ -86,19 +134,24 @@ namespace RayTracingTester
 
 				for (int i = 0; i < sizeCount; i++)
 				{
+					si.Arguments = string.Empty;
+					//ustawianie pliku konfiguracyjnego
+					if (!string.IsNullOrEmpty(sceneConfigFilePath))
+						si.Arguments = "-c " + sceneConfigFilePath;
 					//ustawianie wielkosci ekranu
-					si.Arguments = string.Format("{0} -w {1} -h {1}", sceneConfigFilePath, size);
+					si.Arguments = string.Format("{0} -w {1} -h {1}", si.Arguments, size);
+
 					si.WindowStyle = ProcessWindowStyle.Minimized;
 					proc = Process.Start(si);
 
 					//czas ładowania 
-					Thread.Sleep(2000);
+					Thread.Sleep(StartupWarmupTime);
 
 					//przełączenie na GPU
 					SendSpecialKeyToProcess(proc.MainWindowHandle, (int)Keys.F1);
 
 					//test
-					TestRTOnce(proc, gpuTimeInterval);
+					_TestRTOneProbe(proc, gpuTimeInterval);
 
 					//zamkniecie procesu
 					proc.Kill();
@@ -132,13 +185,13 @@ namespace RayTracingTester
 				//4. Zmienić tryb RT -> zebrac wyniki
 
 				System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(RayTracerFilePath);
-				si.Arguments = sceneConfigFilePath;
+				si.Arguments = "-c " + sceneConfigFilePath;
 				si.WorkingDirectory = System.IO.Path.GetDirectoryName(RayTracerFilePath);
 				si.UseShellExecute = false;
 				proc = Process.Start(si);
 
 				//czas ładowania 
-				Thread.Sleep(2000);
+				Thread.Sleep(StartupWarmupTime);
 
 
 				//SendSpecialKeyToProcess(proc.MainWindowHandle, (int)Keys.F1);
@@ -177,14 +230,14 @@ namespace RayTracingTester
 			{
 				//SendKeyToProcess(proc.MainWindowHandle, ((char)('0' + depth)).ToString());
 				SendKeyToProcess(proc.MainWindowHandle, ('0' + depth));
-				TestRTOnce(proc, timeInterval);
+				_TestRTOneProbe(proc, timeInterval);
 			}
 		}
 
 		/// <summary>
 		/// Pojedynczy test.
 		/// </summary>
-		static void TestRTOnce(Process proc, int timeInterval)
+		static void _TestRTOneProbe(Process proc, int timeInterval)
 		{
 			//reset statystyk
 			//SendKeyToProcess(proc.MainWindowHandle, "{DEL}");
@@ -193,7 +246,7 @@ namespace RayTracingTester
 			//wywołanie zrzutu danych
 			//SendKeyToProcess(proc.MainWindowHandle, "{F11}");
 			SendSpecialKeyToProcess(proc.MainWindowHandle, (int)Keys.F11);
-			Thread.Sleep(timeInterval);
+			Thread.Sleep(StartupWarmupTime);
 		}
 
 		static void SendKeyToProcess(IntPtr hwnd, string keys)

@@ -31,6 +31,7 @@ GLuint OpenGLHelper::LoadShader(
 		glDeleteShader(hFragmentShader);
 		glDeleteShader(hGeometryShader);
 		fprintf(stderr, "The shader at %s could ot be found.\n", szVertexProg);
+		ErrorLog::AppendError("SHADER ERROR", "B³¹d1 ³adowania pliku.");
 		return (GLuint)NULL;
 	}
 
@@ -41,6 +42,7 @@ GLuint OpenGLHelper::LoadShader(
 		glDeleteShader(hFragmentShader);
 		glDeleteShader(hGeometryShader);
 		fprintf(stderr, "The shader at %s  could not be found.\n", szFragmentProg);
+		ErrorLog::AppendError("SHADER ERROR", "B³¹d2 ³adowania pliku.");
 		return (GLuint)NULL;
 	}
 
@@ -52,6 +54,7 @@ GLuint OpenGLHelper::LoadShader(
 			glDeleteShader(hVertexShader);
 			glDeleteShader(hFragmentShader);
 			glDeleteShader(hGeometryShader);
+			ErrorLog::AppendError("SHADER ERROR", "B³¹d3 ³adowania pliku.");
 			return (GLuint)NULL;
 		}
 	}
@@ -72,6 +75,7 @@ GLuint OpenGLHelper::LoadShader(
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
 		glDeleteShader(hGeometryShader);
+		ErrorLog::AppendError("SHADER ERROR", infoLog);
 		return (GLuint)NULL;
 	}
 
@@ -85,6 +89,7 @@ GLuint OpenGLHelper::LoadShader(
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
 		glDeleteShader(hGeometryShader);
+		ErrorLog::AppendError("SHADER ERROR", infoLog);
 		return (GLuint)NULL;
 	}
 	if (isGeometryShader)
@@ -97,6 +102,7 @@ GLuint OpenGLHelper::LoadShader(
 			glDeleteShader(hVertexShader);
 			glDeleteShader(hFragmentShader);
 			glDeleteShader(hGeometryShader);
+			ErrorLog::AppendError("SHADER ERROR", infoLog);
 			return (GLuint)NULL;
 		}
 	}
@@ -131,6 +137,7 @@ GLuint OpenGLHelper::LoadShader(
 		fprintf(stderr, "The programs %s and %s failed to link with the following errors:\n%s\n",
 			szVertexProg, szFragmentProg, infoLog);
 		glDeleteProgram(hReturn);
+		ErrorLog::AppendError("SHADER ERROR", infoLog);
 		return (GLuint)NULL;
 	}
 
@@ -163,6 +170,7 @@ GLuint OpenGLHelper::LoadShaderWithAttributesAndFeedback(
 		glDeleteShader(hFragmentShader);
 		glDeleteShader(hGeometryShader);
 		fprintf(stderr, "The shader at %s could ot be found.\n", szVertexProg);
+		ErrorLog::AppendError("SHADER ERROR", "The shader at %s could ot be found.");
 		return (GLuint)NULL;
 	}
 	
@@ -173,6 +181,7 @@ GLuint OpenGLHelper::LoadShaderWithAttributesAndFeedback(
 		glDeleteShader(hFragmentShader);
 		glDeleteShader(hGeometryShader);
 		fprintf(stderr,"The shader at %s  could not be found.\n", szFragmentProg);
+		ErrorLog::AppendError("SHADER ERROR", "The shader at %s  could not be found.");
 		return (GLuint)NULL;
 	}
 
@@ -184,6 +193,7 @@ GLuint OpenGLHelper::LoadShaderWithAttributesAndFeedback(
 			glDeleteShader(hVertexShader);
 			glDeleteShader(hFragmentShader);
 			glDeleteShader(hGeometryShader);
+			ErrorLog::AppendError("SHADER ERROR", "Blad ladowania pliku.");
 			return (GLuint)NULL;
 		}
 	}
@@ -204,6 +214,7 @@ GLuint OpenGLHelper::LoadShaderWithAttributesAndFeedback(
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
 		glDeleteShader(hGeometryShader);
+		ErrorLog::AppendError("SHADER ERROR", infoLog);
 		return (GLuint)NULL;
 	}
 		
@@ -217,6 +228,7 @@ GLuint OpenGLHelper::LoadShaderWithAttributesAndFeedback(
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
 		glDeleteShader(hGeometryShader);
+		ErrorLog::AppendError("SHADER ERROR", infoLog);
 		return (GLuint)NULL;
 	}
 	if(isGeometryShader)
@@ -229,6 +241,7 @@ GLuint OpenGLHelper::LoadShaderWithAttributesAndFeedback(
 			glDeleteShader(hVertexShader);
 			glDeleteShader(hFragmentShader);
 			glDeleteShader(hGeometryShader);
+			ErrorLog::AppendError("SHADER ERROR", infoLog);
 			return (GLuint)NULL;
 		}
 	}
@@ -281,6 +294,7 @@ GLuint OpenGLHelper::LoadShaderWithAttributesAndFeedback(
 		fprintf(stderr,"The programs %s and %s failed to link with the following errors:\n%s\n",
 			szVertexProg, szFragmentProg, infoLog);
 		glDeleteProgram(hReturn);
+		ErrorLog::AppendError("SHADER ERROR", infoLog);
 		return (GLuint)NULL;
 	}
 		
@@ -293,6 +307,7 @@ GLenum OpenGLHelper::CheckErrors()
 	GLenum error = glGetError();
 	if (error != GL_NO_ERROR)
 	{
+		ErrorLog::AppendError("OpenGLHelper::CheckErrors");
 		assert(error != GL_NO_ERROR);
 		int i = 0;
 	}

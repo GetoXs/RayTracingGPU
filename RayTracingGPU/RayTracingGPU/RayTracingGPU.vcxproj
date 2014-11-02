@@ -104,6 +104,7 @@ xcopy /y SceneConfigs\SceneConfig.json "$(OutDir)"</Command>
     <ClCompile Include="CameraOrto.cpp" />
     <ClCompile Include="CameraPerspective.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="ErrorLog.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_raytracinggpu.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -135,6 +136,7 @@ xcopy /y SceneConfigs\SceneConfig.json "$(OutDir)"</Command>
     <ClInclude Include="CameraOrto.h" />
     <ClInclude Include="CameraPerspective.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="ErrorLog.h" />
     <ClInclude Include="Fps.h" />
     <ClInclude Include="getopt.h" />
     <ClInclude Include="HitResult.h" />
@@ -210,10 +212,12 @@ xcopy /y SceneConfigs\SceneConfig.json "$(OutDir)"</Command>
     <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-8.json" />
     <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-9.json" />
     <None Include="SceneConfigs\SceneConfig-BigBunny.json" />
+    <None Include="SceneConfigs\SceneConfig-Box.json" />
     <None Include="SceneConfigs\SceneConfig-Bunny1.json" />
     <None Include="SceneConfigs\SceneConfig-Bunny2.json" />
     <None Include="SceneConfigs\SceneConfig-Bunny3.json" />
     <None Include="SceneConfigs\SceneConfig-Dolphins.json" />
+    <None Include="SceneConfigs\SceneConfig-Pawns.json" />
     <None Include="SceneConfigs\SceneConfig-Sphere.json" />
     <None Include="SceneConfigs\SceneConfig-Sphere2.json" />
     <None Include="SceneConfigs\SceneConfig.json" />

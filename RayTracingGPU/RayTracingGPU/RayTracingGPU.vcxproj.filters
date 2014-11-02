@@ -100,6 +100,9 @@
     <ClCompile Include="getopt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ErrorLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -174,6 +177,9 @@
     <ClInclude Include="getopt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ErrorLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="raytracinggpu.h">
@@ -243,6 +249,12 @@
     </None>
     <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-9.json">
       <Filter>Scene Configs\Elements</Filter>
+    </None>
+    <None Include="SceneConfigs\SceneConfig-Box.json">
+      <Filter>Scene Configs</Filter>
+    </None>
+    <None Include="SceneConfigs\SceneConfig-Pawns.json">
+      <Filter>Scene Configs</Filter>
     </None>
   </ItemGroup>
 </Project>
