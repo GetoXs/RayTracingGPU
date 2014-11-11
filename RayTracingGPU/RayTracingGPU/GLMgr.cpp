@@ -118,8 +118,6 @@ void GLMgr::Init()
 #pragma endregion
 
 #pragma region Shader
-
-	ErrorLog::AppendError("test");
 	this->Shader_TestHit = OpenGLHelper::LoadShader("Main.vs.h", "HitTest.fs.h", NULL, 0, NULL);
 	if (this->Shader_TestHit == NULL)
 		ErrorLog::AppendError("Blad ladowania shadera");
