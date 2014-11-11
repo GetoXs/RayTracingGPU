@@ -103,7 +103,6 @@ xcopy /y SceneConfigs\SceneConfig.json "$(OutDir)"</Command>
   <ItemGroup>
     <ClCompile Include="CameraOrto.cpp" />
     <ClCompile Include="CameraPerspective.cpp" />
-    <ClCompile Include="Color.cpp" />
     <ClCompile Include="ErrorLog.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_raytracinggpu.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -152,6 +151,7 @@ xcopy /y SceneConfigs\SceneConfig.json "$(OutDir)"</Command>
     <ClInclude Include="libs\GL\wglew.h" />
     <ClInclude Include="SceneConfigLoader.h" />
     <ClInclude Include="ShaderHelper.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="Triangle3D.h" />
     <_EmbedManagedResourceFile Include="Main.vs.h">
       <FileType>Document</FileType>
@@ -166,7 +166,6 @@ xcopy /y SceneConfigs\SceneConfig.json "$(OutDir)"</Command>
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shading.h" />
-    <ClInclude Include="Sphere.h" />
     <CustomBuild Include="raytracinggpu.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing raytracinggpu.h...</Message>

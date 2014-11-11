@@ -7,7 +7,6 @@
 #include <postprocess.h>
 #include <assimp\scene.h>
 
-
 void Mesh::_load(const char* filename, bool flipFaces)
 {
 	Assimp::Importer importer;

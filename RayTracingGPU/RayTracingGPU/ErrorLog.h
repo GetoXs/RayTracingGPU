@@ -1,7 +1,7 @@
 #pragma once
 #include "MetaTypes.h"
 
-
+//Provider do logowania b³êdów.
 class ErrorLog
 {
 public:

@@ -1,13 +1,12 @@
 #include "stdafx.h"
 #include "ShaderHelper.h"
 
-GLubyte ShaderHelper::_ShaderBuffer[81920];
-
 bool ShaderHelper::LoadShaderFile(const char *filePath, GLuint shaderId)
 {
 	GLint shaderLen = 0;
 	FILE *fp;
 	GLchar *stringPtr[1];
+	GLubyte *fileBuffer;
 
 	//otwarcie pliku
 	fp = fopen(filePath, "r");
@@ -17,27 +16,21 @@ bool ShaderHelper::LoadShaderFile(const char *filePath, GLuint shaderId)
 		while (fgetc(fp) != EOF)
 			shaderLen++;
 
-		assert(shaderLen < 81920);  
-		if (shaderLen > 81920)
-		{
-			fclose(fp);
-			return false;
-		}
-
-		//na poczatek pliku
+		fileBuffer = new GLubyte[shaderLen+1];
 		rewind(fp);
 
 		//za³adowanie pliku
-		if (_ShaderBuffer != NULL)
-			fread(_ShaderBuffer, 1, shaderLen, fp);
+		if (fileBuffer != NULL)
+			fread(fileBuffer, 1, shaderLen, fp);
 
-		_ShaderBuffer[shaderLen] = '\0';
+		fileBuffer[shaderLen] = '\0';
 		fclose(fp);
 	}
 	else
 		return false;
 
-	stringPtr[0] = (GLchar *)_ShaderBuffer;
+	stringPtr[0] = (GLchar *)fileBuffer;
 	glShaderSource(shaderId, 1, (const GLchar **)stringPtr, NULL);
+	delete[] fileBuffer;
 	return true;
 }

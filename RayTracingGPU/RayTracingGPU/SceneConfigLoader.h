@@ -2,6 +2,7 @@
 #include "MetaTypes.h"
 
 class GLMgr;
+//Klasa wspomagaj¹ca ³adowanie sceny.
 class SceneConfigLoader
 {
 private:
@@ -22,10 +23,12 @@ public:
 	bool Parse(GLMgr *mgr);
 
 #pragma region Static Inline
+	//Metoda konwertuj¹ca z tablicy json na wektor 3d.
 	static Vector3D JsonArrayToVector3D(QJsonArray *arr)
 	{
 		return Vector3D((*arr)[0].toDouble(), (*arr)[1].toDouble(), (*arr)[2].toDouble());
 	}
+	//Metoda konwertuj¹ca z tablicy json na kolor.
 	static Color JsonArrayToColor(QJsonArray *arr)
 	{
 		if (arr->count()>3)

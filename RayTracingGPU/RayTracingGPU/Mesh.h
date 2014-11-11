@@ -42,6 +42,7 @@ public:
 			this->PositionData + 3 * pi1,
 			this->PositionData + 3 * pi2);
 	}
+	//Funkcja implementuj¹ca test trafienia w trójk¹t podany parametrem.
 	bool HitTestTriangle(const Ray *ray, const Triangle3D *testedTriangle, ObjectHitResult *outResult)
 	{
 		//wyliczenie krawêdzi
@@ -90,7 +91,7 @@ public:
 
 		return true;
 	}
-	//sprawdzanie przeciecia z meshem
+	//Sprawdzanie przeciecia z meshem.
 	virtual bool HitTest(const Ray *ray, ObjectHitResult *outResult)
 	{
 		Triangle3D testedTriangle;
@@ -113,7 +114,7 @@ public:
 		}
 		return outResult->Result;
 	}
-
+	//Przypisanie materia³u.
 	void AssignMaterial(const IMaterial *material, const unsigned int matIndex)
 	{
 		ISceneObject::AssignMaterial(material, matIndex);
@@ -128,6 +129,7 @@ public:
 		for (int i = 0; i < this->IndexDataCount; i++)
 			IndexData[i] += indexOffset;
 	}
+#pragma region Przekszta³cenia afiniczne
 	//przesuniecie pozycji wzglêdem ostatniej pozycji
 	//depricated
 	void SetPosition(const Vector3D *dstPosition)
@@ -174,7 +176,9 @@ public:
 		modelMatrix.rotate(angle, *vector);
 		this->ApplyTransform(&modelMatrix);
 	}
+#pragma endregion
 
+#pragma region Ctors, Dtors
 	Mesh(const char* filename, const Vector3D *dstPosition)
 		:Mesh(filename, dstPosition, 1.f, false)
 	{
@@ -198,7 +202,6 @@ public:
 		this->Scale(scaleRatio);
 	}
 
-
 	~Mesh()
 	{
 		delete[] this->MaterialIndexData;
@@ -208,10 +211,14 @@ public:
 		delete[] this->NormalData;
 		NormalData = NULL;
 	}
+#pragma endregion
 
 private:
+
+#pragma region Loadery
 	void _load(const char* filename, bool flipFaces);
 	void _loadMaterial(const unsigned int matIndex);
+#pragma endregion
 
 };
 

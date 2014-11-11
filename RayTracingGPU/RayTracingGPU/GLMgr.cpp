@@ -8,18 +8,6 @@
 #include "Mesh.h"
 #include "getopt.h"
 
-#include <stdio.h>
-#include <direct.h>
-#define GetCurrentDir _getcwd
-
-const char* LIGHT_MESH_FILE = "\\..\\Models\\box_light.obj";
-
-const char* MESH_FILE_BUNNY = "\\..\\Models\\bunny.obj";
-const char* MESH_FILE_BUNNY_BIG = "\\..\\Models\\bunny.ply";
-const char* MESH_FILE_SPHERE = "\\..\\Models\\Sphere1.obj";
-const char* MESH_FILE1 = "Models\\box.obj";
-const char* MESH_FILE2 = "C:\\Users\\Mateusz\\Desktop\\New folder\\assimp--3.0.1270-sdk\\test\\models\\OBJ\\box2.obj";
-
 GLMgr *GLMgr::_instance = NULL;
 
 //sta³e wspó³czynników transformacji (obs³uga klawiatura)
@@ -117,9 +105,6 @@ void GLMgr::Init()
 #pragma endregion
 
 #pragma region Scena
-	char cwd[MAX_PATH];
-	GetCurrentDir(cwd, sizeof(cwd));
-	char tmpPath[MAX_PATH];
 
 	//tworzenie nowej sceny
 	this->CurrentScene = new Scene();
@@ -130,64 +115,6 @@ void GLMgr::Init()
 		ErrorLog::AppendError("B³¹d parsowania, nie znaleziono wskazywanego pliku");
 	assert(result);
 
-	/*
-	//unsigned mat1 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 0, 0, 0.7), Color(0.6, 0, 0, 0.7), 0));
-	//unsigned mat2 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 0), Color(0., 0.5, 0.), 0.5));
-	//unsigned mat3 = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 1), Color(0., 0.5, .5), 0));
-	//unsigned matFullRef = this->CurrentScene->AddMaterial(new StandardMaterial(Color(0, 1, 0), Color(0., 0.5, 0.), 1));
-
-	////2 szesciany
-	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(0.3, 0.3, -1.4)), mat2);
-	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(1.5, 1, 0),0.5), mat1);
-	//this->Camera->ModelViewRotate(15, 0, 1, 0);
-	//this->SetRayTracerDepth(3);
-
-	//sprintf(tmpPath, "%s%s", cwd, MESH_FILE_BUNNY);
-	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(-.3, 0, -2), 2), matFullRef);
-	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0.1, -0.08, 0.02), 11), mat3);
-	//this->Camera->ModelViewRotate(30, 0, 1, 0);
-
-	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, -0.08, -0.02),11), mat2);
-	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(1.2, 0, 2), 0.3), mat1);
-
-	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, -0.08, -0.02),11), mat2);
-	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0.12, -0.08, 0.1), 6), mat1);
-
-	//sprintf(tmpPath, "%s%s", cwd, MESH_FILE_SPHERE);
-	//this->CurrentScene->AddObject(new Mesh(MESH_FILE1, &Vector3D(0, 0, -0.65), 5), new StandardMaterial(Color(1, 1, 1), Color(0.5, 0.5, 0.5), 0.95));
-	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(-1.5, 0, -0.4), 0.5), mat1);
-	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, 0, 0), 1), mat2);
-	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(1.5, 0, -0.4), 0.5), new StandardMaterial(Color(1, 1, 0), Color(0., 0.5, 0.), 0.8));
-	//this->Camera->ModelViewRotate(30, 1, 0, 0);
-	//this->SetRayTracerDepth(3);
-
-	//sprintf(tmpPath, "%s%s", cwd, MESH_FILE_BUNNY_BIG);
-	//this->CurrentScene->AddObject(new Mesh(tmpPath, &Vector3D(0, 0, 0), 9), new StandardMaterial(Color(0.9, 0.9, 0.9), Color(0.5, 0.5, 0.5), 0));
-	//this->Camera->ModelViewRotate(-15, 0, 1, 0);
-
-	//this->CurrentScene->AddObject(new Sphere(Vector3D(0, 0, 0), 20, new StandardMaterial(Color(1,1,0), Color(0.2,0.2,0))));
-	//this->CurrentScene->AddObject(new Sphere(Vector3D(-40, 0, 0), 20, new StandardMaterial(Color(0,1,0), Color(0,0.2,0))));
-	//this->CurrentScene->AddObject(new Sphere(Vector3D(40, 40, 0), 20, new StandardMaterial(Color(0,1,1), Color(0,0.2,0.2))));
-	//this->CurrentScene->AddObject(new Sphere(Vector3D(80, -40, 0), 20, new StandardMaterial(Color(1,1,1), Color(0,0.2,0.2))));
-	//this->CurrentScene->AddObject(new Sphere(Vector3D(120, 0, 0), 20, new StandardMaterial(Color(0,1,1), Color(0,0.2,0.2))));
-	*/
-#pragma endregion
-
-#pragma region Light
-
-	//sprintf(tmpPath, "%s%s", cwd, LIGHT_MESH_FILE);
-	//Vector3D lightPosition;
-	//unsigned lightMaterial;
-
-	//lightPosition = Vector3D(-1., 1, 1);
-	//lightMaterial = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1, 1, 1)));
-	//this->CurrentScene->AddObject(new Mesh(tmpPath, &lightPosition), lightMaterial);
-	//this->LightList.append(new PointLight(lightPosition, Color(1.0, 1.0, 1.0), Color(.4, .4, .4)));
-
-	//lightPosition = Vector3D(0., -1, 0);
-	//lightMaterial = this->CurrentScene->AddMaterial(new StandardMaterial(Color(1., 0, 0)));
-	//this->CurrentScene->AddObject(new Mesh(tmpPath, &lightPosition), lightMaterial);
-	//this->LightList.append(new PointLight(lightPosition, Color(1.0, 0, 0), Color(.4, .0, .0)));
 #pragma endregion
 
 #pragma region Shader
@@ -201,60 +128,6 @@ void GLMgr::Init()
 	OpenGLHelper::CheckErrors();
 #pragma endregion
 	
-	//GLint indexArray[] = {	0, 1, 2,
-	//						3, 4, 5};
-	//GLfloat cordsArray[] = {-0.5, 0.0, 0.0, 
-	//						0.5, 0.0, 0.0,
-	//						0.0, 1.0, 0.0,
-	//						.5, 0.0, 0.0,
-	//						1.5, 0.0, 0.0,
-	//						1., 1.0, 0.0 };
-//	Assimp::Importer importer;
-//	const aiScene* sc = importer.ReadFile(MESH_FILE1, aiProcess_GenNormals | aiProcess_Triangulate);
-//	if (sc == NULL)
-//		const char* erer = importer.GetErrorString();
-//
-//	const aiMesh* mesh = sc->mMeshes[0];
-//	
-//#pragma region Pobieranie indexow wierzcholkow oraz normalnych trójk¹tów
-//	//konwersja struktury assimp na tablice
-//	unsigned int *faceArray;
-//	unsigned int *normalPrimitivesArray;
-//	faceArray = new unsigned int[mesh->mNumFaces * 3];
-//	normalPrimitivesArray = new unsigned int[mesh->mNumFaces];
-//	unsigned int faceIndex = 0;
-//	for (unsigned int t = 0; t < mesh->mNumFaces; ++t) 
-//	{
-//		const aiFace* face = &mesh->mFaces[t];
-//		memcpy(&faceArray[faceIndex], face->mIndices, 3 * sizeof(unsigned int));
-//		faceIndex += 3;
-//		//normalPrimitivesArray[t] = mesh->
-//	}
-//#pragma endregion
-//
-//#pragma region Pobieranie indexow materia³ów oraz parametrów materia³u
-//	unsigned int *materialIndexArray = new unsigned int[mesh->mNumVertices];
-//	memset(materialIndexArray, 0, sizeof(unsigned int)*mesh->mNumVertices);
-//
-//	StandardMaterial m = StandardMaterial(Color(1, 1, 0), Color(0.2, 0.2, 0));
-//	unsigned int materialBuffCount;
-//	float *materialBuff = m.GetColorProperties(&materialBuffCount);
-//	size_t materialBuffSize = materialBuffCount * sizeof(float);
-//#pragma endregion
-//	//OpenGLHelper::RegisterTexture(GL_TEXTURE0, faceArray, sizeof(unsigned int) * mesh->mNumFaces * 3, GL_R32I,
-//	//	&TextureBuffer_PositionIndex, &Texture_PositionIndex);
-//	//OpenGLHelper::RegisterTexture(GL_TEXTURE1, mesh->mVertices, sizeof(float) * 3 * mesh->mNumVertices, GL_RGB32F,
-//	//	&TextureBuffer_PositionCords, &Texture_PositionCords);
-//	//OpenGLHelper::RegisterTexture(GL_TEXTURE2, faceArray, sizeof(unsigned int) * mesh->mNumFaces * 3, GL_R32I,
-//	//	&TextureBuffer_NormalIndex, &Texture_NormalIndex);
-//	////normalnych tyle samo co wierzcholkow
-//	//OpenGLHelper::RegisterTexture(GL_TEXTURE3, mesh->mNormals, sizeof(float) * 3 * mesh->mNumVertices, GL_RGB32F,
-//	//	&TextureBuffer_NormalCords, &Texture_NormalCords);
-//	//OpenGLHelper::RegisterTexture(GL_TEXTURE4, materialIndexArray, sizeof(unsigned int) * mesh->mNumVertices, GL_R32I,
-//	//	&TextureBuffer_MaterialIndex, &Texture_MaterialIndex);
-//	//OpenGLHelper::RegisterTexture(GL_TEXTURE5, materialBuff, materialBuffSize, GL_RGBA32F,
-//	//	&TextureBuffer_MaterialProperties, &Texture_MaterialProperties);
-
 #pragma region Rejestracja buforów oraz textur
 	unsigned buffCount;
 	float *tmpBufferF;
@@ -295,70 +168,6 @@ void GLMgr::Init()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, this->Viewport.width(), this->Viewport.height(),
 		0, GL_RGB, GL_FLOAT, NULL);
 #pragma endregion
-
-//#pragma region PositionIndex
-//	// tekstura z danymi indeksów wspó³rzêdnych wierzcho³ków
-//	glGenBuffers(1, &TextureBuffer_PositionIndex);
-//	glBindBuffer(GL_TEXTURE_BUFFER, TextureBuffer_PositionIndex);
-//	//glBufferData(GL_TEXTURE_BUFFER, sizeof(indexArray), indexArray, GL_STATIC_DRAW);
-//	glBufferData(GL_TEXTURE_BUFFER, sizeof(unsigned int) * mesh->mNumFaces * 3, faceArray, GL_STATIC_DRAW);
-//	numError = OpenGLHelper::CheckErrors();
-//
-//	glActiveTexture(GL_TEXTURE0);
-//
-//	glGenTextures(1, &Texture_PositionIndex);
-//	glBindTexture(GL_TEXTURE_BUFFER, Texture_PositionIndex);
-//	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32I, Texture_PositionIndex);
-//	numError = OpenGLHelper::CheckErrors();
-//#pragma endregion
-//
-//#pragma region PositionCords
-//	// tekstura z danymi wspó³rzêdnych wierzcho³ków
-//	glGenBuffers(1, &TextureBuffer_PositionCords);
-//	glBindBuffer(GL_TEXTURE_BUFFER, TextureBuffer_PositionCords);
-//	//glBufferData(GL_TEXTURE_BUFFER, sizeof(cordsArray), cordsArray, GL_STATIC_DRAW);
-//	glBufferData(GL_TEXTURE_BUFFER, sizeof(float) * 3 * mesh->mNumVertices, mesh->mVertices, GL_STATIC_DRAW);
-//	numError = OpenGLHelper::CheckErrors();
-//
-//	glActiveTexture(GL_TEXTURE1);
-//
-//	glGenTextures(1, &Texture_PositionCords);
-//	glBindTexture(GL_TEXTURE_BUFFER, Texture_PositionCords);
-//	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, Texture_PositionCords);
-//	numError = OpenGLHelper::CheckErrors();
-//#pragma endregion
-//
-//#pragma region MaterialIndex
-//	// tekstura z danymi wspó³rzêdnych wierzcho³ków
-//	glGenBuffers(1, &TextureBuffer_MaterialIndex);
-//	glBindBuffer(GL_TEXTURE_BUFFER, TextureBuffer_MaterialIndex);
-//	glBufferData(GL_TEXTURE_BUFFER, sizeof(unsigned int) * mesh->mNumVertices, materialIndexArray, GL_STATIC_DRAW);
-//	numError = OpenGLHelper::CheckErrors();
-//	delete[] materialIndexArray;
-//
-//	glActiveTexture(GL_TEXTURE4);
-//
-//	glGenTextures(1, &Texture_MaterialIndex);
-//	glBindTexture(GL_TEXTURE_BUFFER, Texture_MaterialIndex);
-//	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32I, Texture_MaterialIndex);
-//	numError = OpenGLHelper::CheckErrors();
-//#pragma endregion
-//
-//#pragma region MaterialProperties
-//	// tekstura z danymi wspó³rzêdnych wierzcho³ków
-//	glGenBuffers(1, &TextureBuffer_MaterialProperties);
-//	glBindBuffer(GL_TEXTURE_BUFFER, TextureBuffer_MaterialProperties);
-//	glBufferData(GL_TEXTURE_BUFFER, sizeof(unsigned int) * mesh->mNumVertices, materialBuff, GL_STATIC_DRAW);
-//	numError = OpenGLHelper::CheckErrors();
-//	delete[] materialBuff;
-//
-//	glActiveTexture(GL_TEXTURE5);
-//
-//	glGenTextures(1, &Texture_MaterialProperties);
-//	glBindTexture(GL_TEXTURE_BUFFER, Texture_MaterialProperties);
-//	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, Texture_MaterialProperties);
-//	numError = OpenGLHelper::CheckErrors();
-//#pragma endregion
 
 	glBindVertexArray(0);
 
@@ -478,7 +287,6 @@ void GLMgr::RenderSceneOnCPU()
 	glutSwapBuffers();
 	glutPostRedisplay();
 	FpsObject.Update();
-	FpsRaportObject.Update();
 	OpenGLHelper::CheckErrors();
 }
 const bool IS_ADDITIONAL_FRAMEBUFFER = false;
@@ -516,41 +324,6 @@ void GLMgr::RenderSceneOnGPU()
 	numError = OpenGLHelper::CheckErrors();
 
 #pragma region Setting Uniform
-
-	/*
-	Matrix4x4 modelViewMatrix;
-	modelViewMatrix.setToIdentity();
-	modelViewMatrix.translate(0, 0, -3);
-	//modelViewMatrix.scale(2);
-	//modelViewMatrix.rotate(90, 0, 1, 0);
-
-	//Matrix4x4 modelViewProjectionMatrix = this->Camera->_ProjectionMatrix* modelViewMatrix;
-
-	this->Camera->SetModelViewMatrix(&modelViewMatrix);
-	const Matrix4x4 modelViewProjInverted = *this->Camera->GetModelViewProjectionMatrixInverted();
-	Matrix4x4 modelViewInverted = modelViewMatrix.inverted();
-
-	//wyliczanie promienia
-	QVector4D vNear = QVector4D(800, 800, 0, 1.0);
-	vNear.setX((vNear.x() - Viewport.left()) / Viewport.right());
-	vNear.setY((vNear.y() - Viewport.top()) / Viewport.bottom());
-	QVector4D vFar = QVector4D(vNear);
-	vFar.setZ(1.0);
-	vNear *= 2.0;
-	vNear -= QVector4D(1.0, 1.0, 1.0, 1.0);
-	vFar *= 2.0;
-	vFar -= QVector4D(1.0, 1.0, 1.0, 1.0);
-	QVector4D voNear = modelViewProjInverted * vNear;
-	QVector4D voFar = modelViewProjInverted * vFar;
-	voNear /= voNear.w();
-	voFar /= voFar.w();
-
-	QVector3D boN = QVector3D(voNear);
-	QVector3D boF = QVector3D(voFar);
-	QVector3D voRay = boF - boN;
-	voRay.normalize();
-	*/
-
 	//ustawienie viewportu do kalkulacji na wspó³rzedne orto
 	glUniform4f(glGetUniformLocation(Shader_TestHit, "Viewport"),
 		this->Viewport.left(), this->Viewport.top(), this->Viewport.right(), this->Viewport.bottom());
@@ -577,59 +350,6 @@ void GLMgr::RenderSceneOnGPU()
 	glVertex3f(this->Viewport.right(), this->Viewport.top(), 0);
 	glVertex3f(this->Viewport.left(), this->Viewport.top(), 0);
 	glEnd();
-	numError = OpenGLHelper::CheckErrors();
-#pragma endregion
-
-#pragma region Testy
-	/*
-	for (int y = 0; y < this->Viewport.width(); y++)
-	{
-		for (int x = 0; x < this->Viewport.height(); x++)
-		{
-			Color pixelColor;
-
-			//1. Wygenerowañ promieñ dla aktualnego piksela
-			Ray ray = this->Camera->GetRay(PointI(x, y), this->Viewport);
-			//Ray ray = this->Camera->GetRay(PointI(x, y));
-			Ray ray1(Vector3D(0.1, 0.1, -2.0), Vector3D(0.0, 0.0, 1.0));
-
-			float dist = -1;
-			Vector3D point(-1, -1, -1), normal;
-			bool isFront;
-			bool test = HitTest(Vector3D(-0.5, 0.0, 0.0), Vector3D(0.5, 0.0, 0.0), Vector3D(0.0, 1.0, 0.0),
-				ray1, &dist, &point, &isFront, &normal);
-			Vector3D uvw;
-			float frontFacing = -1;
-			//bool tt = PickTriangle(Vector3D(-0.5, 0.0, 0.0), Vector3D(0.5, 0.0, 0.0), Vector3D(0.0, 1.0, 0.0), ray1.Start, ray1.Direction,
-			//	&point, &uvw, &dist, &frontFacing);
-
-			//2. Dla ka¿dego obiektu na scenie
-			// 1. Sprawdziæ czy promieñ przecina obiekt
-			// 2. Jeœli przecina, sprardziæ czy odleg³oœc do kamery jest mniejsza od zapisanej
-			// 3. Jeœli tak to podmieniæ i obliczac dalej
-			//3. Jeœli zaleniono jakiœ obiekt na drodze promienia to sprawdziæ czy odbity promieñ dociera do Ÿróde³ œwiat³a
-			HitResult hitResult = this->CurrentScene->HandleRay(&ray);
-
-
-
-			if (hitResult.Result)
-			{
-				pixelColor = Shading::CalculateColor(&hitResult, &this->LightList);
-				//pixelColor = Color(1,1,1);
-			}
-			//4. Jeœli dociera - wyliczyæ natê¿enie koloru w danym punkcie
-			//5. Jeœli nie dociera - wyliczyæ natê¿enie w cieniu
-
-			float red = pixelColor.redF();
-			float green = pixelColor.greenF();
-			float blue = pixelColor.blueF();
-			//glColor3f(pixelColor.redF(), pixelColor.greenF(), pixelColor.blueF());
-			//glBegin(GL_POINTS);
-			//glVertex2i(x, y);
-			//glEnd();
-		}
-	}
-	*/
 	numError = OpenGLHelper::CheckErrors();
 #pragma endregion
 
@@ -816,7 +536,6 @@ void GLMgr::ResetCounter()
 {
 	this->FrameCounter = 0;
 	this->FpsObject.Reset();
-	this->FpsRaportObject.Reset();
 	this->UpdateWindowsTitle();
 	this->IntervalRaport = Interval();
 }

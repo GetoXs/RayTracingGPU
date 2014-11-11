@@ -4,16 +4,22 @@
 #include "HitResult.h"
 #include "qvector.h"
 
+//Klasa z funkcjonalnoœci¹ sceny.
 class Scene
 {
 private:
+	//Lista obiektów sceny.
 	QList<ISceneObject*> ObjectList;
+	//Lista specjalnych obiektów meshy sceny.
 	QList<Mesh*> MeshObjectList;
+	//Lista obiektów materia³ów.
 	QList<IMaterial*> MaterialList;
 
+	//Aktualny offset dla indexu materia³ów.
 	unsigned MeshIndexOffset;
 
 public:
+	//Obs³uga testowania promienia.
 	HitResult HandleRay(const Ray *ray);
 
 #pragma region Addy

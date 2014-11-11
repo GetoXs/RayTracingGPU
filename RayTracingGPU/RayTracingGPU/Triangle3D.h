@@ -1,6 +1,7 @@
 #pragma once
 #include "MetaTypes.h"
 
+//Klasa z obiektem trójk¹ta.
 class Triangle3D
 {
 public:
@@ -23,6 +24,7 @@ public:
 	{
 
 	}
+	//£adowanie trójk¹ta z pliku.
 	void LoadFromFloats(const float *v0, const float *v1, const float *v2)
 	{
 		this->V0.setX(v0[0]);

@@ -1,6 +1,7 @@
 #pragma once
 #include "ISceneObject.h"
 
+//Klasa obiektu sfery, NIEZAIMPLEMENTOWANA.
 class Sphere 
 	//:public ISceneObject
 {
