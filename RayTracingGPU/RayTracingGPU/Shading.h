@@ -4,11 +4,11 @@
 #include "PointLight.h"
 #include "qlist.h"
 
-//Klasa s³u¿aca do cieniowania sceny.
+///Klasa s³u¿aca do cieniowania sceny.
 class Shading
 {
 public:
-	//Obliczanie koloru dla trafionego punktu.
+	///Obliczanie koloru dla trafionego punktu.
 	static Color CalculateColor(HitResult *hitResult, QList<PointLight*> *lightList);
 };
 

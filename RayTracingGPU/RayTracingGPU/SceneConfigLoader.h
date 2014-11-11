@@ -2,12 +2,12 @@
 #include "MetaTypes.h"
 
 class GLMgr;
-//Klasa wspomagaj¹ca ³adowanie sceny.
+///Klasa wspomagaj¹ca ³adowanie sceny.
 class SceneConfigLoader
 {
 private:
-	//mapa z informacjami o sparsowanych materia³ach
-	//wykorzystywana przy dodawaniu nowych obiektów do sceny
+	///mapa z informacjami o sparsowanych materia³ach
+	///wykorzystywana przy dodawaniu nowych obiektów do sceny
 	QMap<QString, unsigned> _MaterialMap;
 
 	//parsery poszczególnych elementów pliku
@@ -23,12 +23,12 @@ public:
 	bool Parse(GLMgr *mgr);
 
 #pragma region Static Inline
-	//Metoda konwertuj¹ca z tablicy json na wektor 3d.
+	///Metoda konwertuj¹ca z tablicy json na wektor 3d.
 	static Vector3D JsonArrayToVector3D(QJsonArray *arr)
 	{
 		return Vector3D((*arr)[0].toDouble(), (*arr)[1].toDouble(), (*arr)[2].toDouble());
 	}
-	//Metoda konwertuj¹ca z tablicy json na kolor.
+	///Metoda konwertuj¹ca z tablicy json na kolor.
 	static Color JsonArrayToColor(QJsonArray *arr)
 	{
 		if (arr->count()>3)

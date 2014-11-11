@@ -1,12 +1,12 @@
 #pragma once
-//Klasa koloru.
+///Klasa koloru.
 class Color 
 {
 private:
 	float _r, _g, _b, _a;
 public:
 #pragma region Inne metody
-	//Metoda obcinaj¹ca wartoœc koloru do parametru.
+	///Metoda obcinaj¹ca wartoœc koloru do parametru.
 	void Clamp(float min, float max)
 	{
 		//R

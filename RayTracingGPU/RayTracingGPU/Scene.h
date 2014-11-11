@@ -4,22 +4,22 @@
 #include "HitResult.h"
 #include "qvector.h"
 
-//Klasa z funkcjonalnoœci¹ sceny.
+///Klasa z funkcjonalnoœci¹ sceny.
 class Scene
 {
 private:
-	//Lista obiektów sceny.
+	///Lista obiektów sceny.
 	QList<ISceneObject*> ObjectList;
-	//Lista specjalnych obiektów meshy sceny.
+	///Lista specjalnych obiektów meshy sceny.
 	QList<Mesh*> MeshObjectList;
-	//Lista obiektów materia³ów.
+	///Lista obiektów materia³ów.
 	QList<IMaterial*> MaterialList;
 
 	//Aktualny offset dla indexu materia³ów.
 	unsigned MeshIndexOffset;
 
 public:
-	//Obs³uga testowania promienia.
+	///Obs³uga testowania promienia.
 	HitResult HandleRay(const Ray *ray);
 
 #pragma region Addy
@@ -43,8 +43,6 @@ public:
 	void AddMeshObject(Mesh *mesh, unsigned materialIndex)
 	{
 		mesh->AssignMaterial(MaterialList[materialIndex], materialIndex);
-		///przesuniecie wspolrzednych dla indexu (z powodu zmiany indexu w teskturze przechodzacej do shadera)
-		//mesh->ApplyIndexOffset(this->MeshIndexOffset);
 		this->MeshIndexOffset += mesh->PositionCount;
 		this->MeshObjectList.append(mesh);
 	}

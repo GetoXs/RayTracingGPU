@@ -10,12 +10,12 @@
 
 GLMgr *GLMgr::_instance = NULL;
 
-//sta³e wspó³czynników transformacji (obs³uga klawiatura)
+///sta³e wspó³czynników transformacji (obs³uga klawiatura)
 const float TRANSFORM_TRANSLATE_RATE = 0.08;
 const float TRANSFORM_SCALE_RATE = 1.2;
 const float TRANSFORM_ROTATE_ANGLE = 3;
 
-//ustawienia okna oraz kamery
+///ustawienia okna oraz kamery
 const int DEFAULT_WINDOWS_SIZE_X = 800;
 const int DEFAULT_WINDOWS_SIZE_Y = 800;
 const int PLANE_NEAR = 2;

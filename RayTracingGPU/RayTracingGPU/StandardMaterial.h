@@ -3,28 +3,28 @@
 #include "MetaTypes.h"
 #include "PointLight.h"
 
-//Klasa z informacjami o materiale.
+///Klasa z informacjami o materiale.
 class StandardMaterial:
 	public IMaterial
 {
 public:
-	//Kolor rozproszenia.
+	///Kolor rozproszenia.
 	Color DiffuseColor;
-	//Kolor otoczenia.
+	///Kolor otoczenia.
 	Color AmbientColor;
-	//Kolor emisji.
+	///Kolor emisji.
 	Color EmissiveColor;
-	//Kolor odbicia.
+	///Kolor odbicia.
 	float ReflectionRatio;
 
 #pragma region Kalkulacje
-	//Obliczanie lokalnego koloru otoczenia.
+	///Obliczanie lokalnego koloru otoczenia.
 	Color CalculateLocalAmbientColor(const PointLight *light)
 	{
 		return this->AmbientColor * light->LightAmbientColor;
 	}
 	
-	//Obliczanie lokalnego koloru dla danego punktu.
+	///Obliczanie lokalnego koloru dla danego punktu.
 	virtual Color CalculateLocalColor(const PointLight *light, const Vector3D *point, const Vector3D *normal)
 	{
 		//obliczenie wektora prowadzacego od swiatla do oswietlanego punktu
@@ -43,18 +43,18 @@ public:
 				this->DiffuseColor * light->LightDiffuseColor * diffRate;
 		}
 	}
-	//Obliczanie koloru przeŸroczystoœci.
+	///Obliczanie koloru przeŸroczystoœci.
 	Color CalculateTransmissionColor(const Color *baseColor, const Color *transmissiveColor)
 	{
 		float transmissiveRatio = this->GetTransmissiveRatio();
 		return *baseColor * transmissiveRatio + *transmissiveColor * (1.0 - transmissiveRatio);
 	}
-	//Obliczanie koloru odbicia.
+	///Obliczanie koloru odbicia.
 	Color CalculateReflectionColor(const Color *baseColor, const Color *reflectionColor)
 	{
 		return *baseColor * (1.0 - this->ReflectionRatio) + *reflectionColor * this->ReflectionRatio;
 	}
-	//Obliczanie koloru emisji.
+	///Obliczanie koloru emisji.
 	Color CalculateEmissiveColor()
 	{
 		return this->EmissiveColor;

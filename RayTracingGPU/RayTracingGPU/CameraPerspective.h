@@ -2,24 +2,24 @@
 #include "MetaTypes.h"
 #include "Ray.h"
 
-//Klasa z funkcjonalnoœci¹ kamery perspektywicznej.
+///Klasa z funkcjonalnoœci¹ kamery perspektywicznej.
 class CameraPerspective
 {
 private:
-	//Macierz widoku.
+	///Macierz widoku.
 	Matrix4x4 _ModelViewMatrix;
-	//Macierz projekcji.
+	///Macierz projekcji.
 	Matrix4x4 _ProjectionMatrix;
-	//Macierz widoku projekcji.
+	///Macierz widoku projekcji.
 	Matrix4x4 _ModelViewProjectionMatrix;
-	//Odwrócona macierz widoku projekcji.
+	///Odwrócona macierz widoku projekcji.
 	Matrix4x4 _ModelViewProjectionMatrixInverted;
 public:
 
-	//Metoda zwracaj¹ca promieñ od kamery.
+	///Metoda zwracaj¹ca promieñ od kamery.
 	Ray GetRay(PointI pixelLocation, RectI viewport);
 
-	//Przeliczenie macierzy.
+	///Przeliczenie macierzy.
 	void RecalcModelViewProjectionMatrix()
 	{
 		this->_ModelViewProjectionMatrix = this->_ProjectionMatrix * this->_ModelViewMatrix;

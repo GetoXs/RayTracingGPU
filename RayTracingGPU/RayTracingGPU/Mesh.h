@@ -8,24 +8,24 @@ class Mesh :
 	public ISceneObject
 {
 public:
-	//Dane z indexem (wierzcholkow oraz normalnych)
+	///Dane z indexem (wierzcholkow oraz normalnych)
 	unsigned int *IndexData;
-	//Dane z pozycj¹ wierzcho³ków
+	///Dane z pozycj¹ wierzcho³ków
 	float *PositionData;
 
-	//Dane z wektorem normalnych
+	///Dane z wektorem normalnych
 	float *NormalData;
 
-	//Dane z indexem materia³u
+	///Dane z indexem materia³u
 	unsigned int *MaterialIndexData;
 
-	//Liczba wierzcho³kow
+	///Liczba wierzcho³kow
 	unsigned PositionCount;
-	//Liczba wierzcholkow * 3 skladowe wektora
+	///Liczba wierzcholkow * 3 skladowe wektora
 	unsigned PositionDataCount;
-	//Liczba trójk¹tów * 3 indexy trójk¹ta
+	///Liczba trójk¹tów * 3 indexy trójk¹ta
 	unsigned IndexDataCount;
-	//Liczba trojkatow
+	///Liczba trojkatow
 	unsigned TriangleCount;
 
 	void GetTriangle(int triangleIndex, Triangle3D *outTriangle)
@@ -42,7 +42,7 @@ public:
 			this->PositionData + 3 * pi1,
 			this->PositionData + 3 * pi2);
 	}
-	//Funkcja implementuj¹ca test trafienia w trójk¹t podany parametrem.
+	///Funkcja implementuj¹ca test trafienia w trójk¹t podany parametrem.
 	bool HitTestTriangle(const Ray *ray, const Triangle3D *testedTriangle, ObjectHitResult *outResult)
 	{
 		//wyliczenie krawêdzi
@@ -91,7 +91,7 @@ public:
 
 		return true;
 	}
-	//Sprawdzanie przeciecia z meshem.
+	///Sprawdzanie przeciecia z meshem.
 	virtual bool HitTest(const Ray *ray, ObjectHitResult *outResult)
 	{
 		Triangle3D testedTriangle;
@@ -114,14 +114,14 @@ public:
 		}
 		return outResult->Result;
 	}
-	//Przypisanie materia³u.
+	///Przypisanie materia³u.
 	void AssignMaterial(const IMaterial *material, const unsigned int matIndex)
 	{
 		ISceneObject::AssignMaterial(material, matIndex);
 		this->_loadMaterial(matIndex);
 	}
 
-	//przesuniecie indexu (z powodu zmiany indexu w teskturze przechodzacej do shadera
+	///przesuniecie indexu (z powodu zmiany indexu w teskturze przechodzacej do shadera
 	void ApplyIndexOffset(unsigned indexOffset)
 	{
 		if (indexOffset == 0)
@@ -130,8 +130,8 @@ public:
 			IndexData[i] += indexOffset;
 	}
 #pragma region Przekszta³cenia afiniczne
-	//przesuniecie pozycji wzglêdem ostatniej pozycji
-	//depricated
+	///przesuniecie pozycji wzglêdem ostatniej pozycji
+	///depricated
 	void SetPosition(const Vector3D *dstPosition)
 	{
 		Vector3D diff = *dstPosition - this->Position;
