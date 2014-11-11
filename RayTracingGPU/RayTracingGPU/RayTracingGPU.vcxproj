@@ -207,7 +207,6 @@ xcopy /y SceneConfigs\SceneConfig.json "$(OutDir)"</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-1.json" />
     <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-2.json" />
     <None Include="SceneConfigs\Elements\SceneConfig-Sphere2-3.json" />

@@ -2,30 +2,29 @@
 struct SLightSource
 {
 	vec4 position;              //po³o¿enie Ÿród³a œwiat³a
-	vec4 ambient;               //intensywnoœæ œwiat³a otoczenia
-	vec4 diffuse;               //intensywnoœæ œwiat³a rozproszonego
+	vec4 ambient;               //œwiat³o otoczenia
+	vec4 diffuse;               //œwiat³o rozproszonego
 };
 uniform uint LightNum;
+//tablica z Ÿród³ami œwiat³a
 uniform SLightSource Light[10];
 
+//poziom g³êbokoœci algorytmu
 uniform uint RayTracerDepth;
 
-//zawiera informacje o wspolrzednych pixela w przestrzeni widoku
+//zmienna wejœciowa zawiera informacje o wspolrzednych pixela w przestrzeni widoku
 in vec4 gl_FragCoord;
-//varying vec3 pixel;
 
+//zmienne wyjœciowe
+//wyjœciowy kolor
 layout(location = 0) out vec4 outFragColor;
+//wyjœciowy bufor testowy
 layout(location = 1) out vec3 outTest;
 
 // tekstura buforowa z indeksami wspó³rzêdnych wierzcho³ka
 uniform isamplerBuffer PositionIndexTexture;
 // tekstura buforowa z danymi wspó³rzêdnych wierzcho³ków
 uniform samplerBuffer PositionCordsTexture;
-
-// tekstura buforowa z danymi wektorów normalnych
-uniform samplerBuffer NormalTexture;
-// tekstura buforowa z indeksami wspó³rzêdnych wierzcho³ka
-uniform isamplerBuffer NormalIndexTexture;
 
 // tekstura buforowa z indeksami materialu
 uniform isamplerBuffer MaterialIndexTexture;
@@ -40,12 +39,12 @@ uniform mat4 ProjectionMatrixInverse;
 
 struct SMaterial
 {
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 emissive;
-	float reflectionRatio;
+	vec4 ambient;			//œwiat³o otoczenia
+	vec4 diffuse;			//œwiat³o rozproszenia
+	vec4 emissive;			//œwiat³o emisji
+	float reflectionRatio;	//wspó³czynnik odbicia
 };
-
+//Funckja realizuj¹ca funkcjê generowania promieni pierwotnych
 void GetRay2D(vec4 pix, inout vec3 rayOrigin, inout vec3 rayDir)
 {
 	vec4 near, far;
@@ -67,26 +66,17 @@ void GetRay2D(vec4 pix, inout vec3 rayOrigin, inout vec3 rayDir)
 	near = ProjectionMatrixInverse * near;
 	far /= far.w;
 	near /= near.w;
-	//rayOrigin = far;
-	//return;
-
-	//ustawianie zakresu -1, 1
-	//far.xyz *= 2.0;
-	//far.xyz -= 1.0;
-
-	//ustawianie odleglosci
-	//float eyeDist = -1.0;
-	//near.z = eyeDist;
-	//far.z = 0;
 
 	//obliczanie kierunku
 	rayDir = normalize(far.xyz - near.xyz);
 	rayOrigin = near.xyz;
 }
+//Liczba trójk¹tów na scenie
 int GetTrianglesCount()
 {
 	return textureSize(PositionIndexTexture) / 3;
 }
+//Funckja pobieraj¹ca wspó³rzedne wierzcho³ków trójk¹ta
 void GetTriangleCoords(int triangleIndex, inout vec3 v0, inout vec3 v1, inout vec3 v2)
 {
 	int i0 = texelFetch(PositionIndexTexture, 3 * triangleIndex + 0).x;
@@ -96,16 +86,8 @@ void GetTriangleCoords(int triangleIndex, inout vec3 v0, inout vec3 v1, inout ve
 	v1 = texelFetch(PositionCordsTexture, i1).xyz;
 	v2 = texelFetch(PositionCordsTexture, i2).xyz;
 }
-void GetTriangleNormals(int triangleIndex, inout vec3 v0, inout vec3 v1, inout vec3 v2)
-{
-	int i0 = texelFetch(NormalIndexTexture, 3 * triangleIndex + 0).x;
-	int i1 = texelFetch(NormalIndexTexture, 3 * triangleIndex + 1).x;
-	int i2 = texelFetch(NormalIndexTexture, 3 * triangleIndex + 2).x;
-	v0 = texelFetch(NormalTexture, i0).xyz;
-	v1 = texelFetch(NormalTexture, i1).xyz;
-	v2 = texelFetch(NormalTexture, i2).xyz;
-}
 
+//definicja formatu tesktury materia³u
 #define OFFSET_DIFFUSE 0
 #define OFFSET_AMBIENT 1
 #define OFFSET_EMISSIVE 2
@@ -113,6 +95,7 @@ void GetTriangleNormals(int triangleIndex, inout vec3 v0, inout vec3 v1, inout v
 
 #define OFFSET_MATERIAL (4)
 
+//Funckja pobieraj¹ca w³aœciwosci materia³u trójk¹ta
 void GetMaterial(int triangleIndex, inout SMaterial outMaterial)
 {
 	int i0 = texelFetch(MaterialIndexTexture, triangleIndex + 0).x;
@@ -122,51 +105,11 @@ void GetMaterial(int triangleIndex, inout SMaterial outMaterial)
 	outMaterial.emissive = texelFetch(MaterialPropertiesTexture, i0 * OFFSET_MATERIAL + OFFSET_EMISSIVE);
 	outMaterial.reflectionRatio = texelFetch(MaterialPropertiesTexture, i0 * OFFSET_MATERIAL + OFFSET_REFLECTION_RATIO).x;
 }
-//bool FindIntersectionNT(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
-//	inout float dist, inout vec3 hitPoint, inout bool isLine, inout bool isFront, inout vec3 normal)
-//{
-//	dist = 0.0;
-//	isLine = false;
-//
-//	//krawedzie
-//	vec3 e0, e1;
-//	e0 = v1 - v0;
-//	e1 = v2 - v0;
-//	//wyliczenie wektora normalnego do trojkata
-//	normal = normalize(cross(e0, e1));
-//	float mdotn = (rayDir^normal);
-//	float PlaneCoef = (normal^v0);	// Same coef for all three vertices.
-//	float planarDist = (rayOrigin^normal) - PlaneCoef;
-//
-//	bool isFront = (mdotn <= 0.0);
-//	if (frontFace) {
-//		if (planarDist <= 0) {
-//			return false;
-//		}
-//	}
-//	else {
-//		if (planarDist >= 0) {
-//			return false;
-//		}
-//	}
-//	*dist = -planarDist / mdotn;
-//	vec3 q;
-//	q = rayDir;
-//	q *= *dist;
-//	q += rayOrigin;						// Point of view line intersecting plane
-//
-//	// Compute barycentric coordinates
-//	vec3 v = q;
-//	v -= v0;
-//
-//
-//}
+//G³ówna funkcja do testowania przeciêcia promienia (rayOrigin, rayDit) z trójk¹tem (v0, v1, v2)
 bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
-	inout float dist, inout vec3 hitPoint, inout bool isLine, inout bool isFront, inout vec3 normal)
+	inout float dist, inout vec3 hitPoint, inout bool isFront, inout vec3 normal)
 {
 	dist = 0.0;
-	isLine = false;
-	//hitPoint.xyz = v 0.0;
 
 	//wyliczenie krawêdzi
 	vec3 e0, e1;
@@ -180,7 +123,6 @@ bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
 	vec3 s1 = cross(rayDir, e1);
 
 	//sprawdzamy czy istnieje przeciecie wektora z drug¹ krawêdzi¹
-	//float d = dot(s1, e0);
 	float d = dot(e0, s1);
 	if (d == 0.0)
 		return false;
@@ -213,70 +155,15 @@ bool HitTest(vec3 v0, vec3 v1, vec3 v2, vec3 rayOrigin, vec3 rayDir,
 	//punkt przeciêcia prostej z p³aszczyzn¹
 	hitPoint = rayOrigin + (rayDir * dist);
 
-	if (bc0 <= 0.01 || bc0 >= 0.99 || bc1 <= 0.01 || bc1 >= 0.99)
-		isLine = true;
-
 	return true;
 }
-
-bool PickTriangle(const vec3 V0, const vec3 V1, const vec3 V2,
-	const vec3 O, const vec3 D,
-	inout vec3 P, inout vec3 uvw,
-	inout float dist, inout float frontFacing)
-{
-	// obliczenie wektora normalnego p³aszczyzny
-	vec3 N = cross(V1 - V0, V2 - V0);
-
-	// obliczenie wspó³czynnika równania prostej wyznaczonej
-	// przez punkt pocz¹tkowy i wektor kierunkowy; jest
-	// to jednoczeœnie odleg³oœæ punktu przeciêcia od pocz¹tku
-	// promienia; jednoczeœnie obliczamy stronê wielok¹ta
-	frontFacing = -dot(N, D);
-	dist = (dot(N, O) - dot(V0, N)) / frontFacing;
-
-
-
-	// punkt przeciêcia le¿y przed pocz¹tkiem promienia
-	if (dist < 0.0) return false;
-
-	// punkt przeciêcia prostej z p³aszczyzn¹
-	P = O + (D * dist);
-
-	// obliczenie wspó³rzêdnych barycentrycznych punktu przeciêcia
-	// prostej z p³aszczyzn¹
-	mat4 mt1 = mat4(1.0);
-	mt1[0] = vec4(V0, 0);
-	mt1[1] = vec4(V1, 0);
-	mt1[2] = vec4(V2, 0);
-	mat4 inv2 = inverse(mt1);
-
-	mat3 mt = mat3(V0, V1, V2);
-	mat3 inv = inverse(mt);
-	uvw = inv * P;
-
-
-	//if (inv2[0][0] == 0 && inv2[0][1] == 0 && inv2[0][2] == 0
-	//	&& inv2[1][0] == 0 && inv2[1][1] == 0 && inv2[1][2] == 0
-	//	&& inv2[2][0] > 0.99)
-	//	discard;
-	//if (mt[0] == vec3(-0.5, 0, 0)
-	//	&& mt[1] == vec3(0.5, 0, 0)
-	//	&& mt[2] == vec3(0, 1, 0))
-	//	discard;
-	//if (V0[0] == -0.5)
-	//	discard;
-
-	// test przeciêcia
-	if (uvw[0] < 0.0 || uvw[0] > 1.0 || uvw[1] < 0.0 || uvw[0] + uvw[1] > 1.0) 
-		return false;
-	return true;
-}
-
+//Obliczanie koloru otoczenia metod¹ Lamberta
 vec4 CalculateLocalAmbientLight(int lightIndex, vec4 matAmbientColor)
 {
 	vec4 lightColorAmbient = Light[lightIndex].ambient;
 	return lightColorAmbient * matAmbientColor;
 }
+//Obliczanie lokalnego koloru metod¹ Lamberta
 vec4 CalculateLocalLambertColor(int lightIndex, SMaterial material, vec3 point, vec3 normal)
 {
 	vec3 lightPosition = Light[lightIndex].position.xyz;
@@ -293,6 +180,7 @@ vec4 CalculateLocalLambertColor(int lightIndex, SMaterial material, vec3 point, 
 			lightColorDiffuse * material.diffuse * diffuseRate;
 	}
 }
+//Obliczanie koloru metod¹ Lamberta
 vec4 CalculateLambertColor(SMaterial material, vec3 point, vec3 normal)
 {
 	vec4 outColor = material.emissive;
@@ -303,35 +191,37 @@ vec4 CalculateLambertColor(SMaterial material, vec3 point, vec3 normal)
 	clamp(outColor, 0, 1);
 	return outColor;
 }
+//Pobieranie wartoœci wspó³czynnika przeŸroczystoœci
 float GetTransmissiveRatio(SMaterial material)
 {
 	return ((material.ambient.a + material.diffuse.a) / 2.0);
 }
+//Pobieranie flagi odbicia materia³u
 bool IsEmissive(SMaterial material)
 {
 	return material.emissive.a > 0;
 }
+//Obliczanie koloru z uwzglêdnieniem koloru przeŸroczystoœci
 vec4 CalculateTransmissionColor(vec4 baseColor, vec4 transmissiveColor, float transmissiveRatio)
 {
 	return baseColor * transmissiveRatio + transmissiveColor * (1.0 - transmissiveRatio);
 }
+//Obliczanie koloru z uwzglêdnieniem koloru odbicia
 vec4 CalculateReflectionColor(vec4 baseColor, vec4 reflectionColor, float reflectionRatio)
 {
 	return baseColor * (1.0 - reflectionRatio) + reflectionColor * reflectionRatio;
 }
-
+//G³ówna metoda realizuj¹ca funkcjonalnoœæ œledzenia promienia (rayOrigin, rayDir)
+//zwracajaca informacje nt. trafienia oraz efektów materia³u
 bool RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 	inout bool isTransmissive, inout vec3 transmissiveOrigin, inout vec3 transmissiveDir, inout float transmissiveRatio,
 	inout bool isReflective, inout vec3 reflectionOrigin, inout vec3 reflectionDir, inout float reflectionRatio)
 {
-	//rayOrigin = vec3(-0.25, 0.2, 1.5);
 	isReflective = false;
 	isTransmissive = false;
 
-
+	//pobranie liczby trójk¹tów
 	int count = GetTrianglesCount();
-	//count = 30000;
-	//outTest = vec3(count);
 	vec3 v0, v1, v2;
 	int hitTriangle = -1;
 	int hitDistance;
@@ -339,86 +229,50 @@ bool RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 	float dist = 0, tmpDist = 0;
 	vec3 hitPoint = vec3(0), tmpHitPoint = vec3(0);
 	vec3 hitNormal = vec3(0), tmpHitNormal = vec3(0);
-	bool isLine = false, isFront = false;
+	bool isFront = false;
 
 	vec3 uvw;
 	float frontFacing;
 
-	////pobranie trójk¹ta
-	//GetTriangleCoords(0, v0, v1, v2);
-	////if (PickTriangle(vec3(-0.5, 0.0, 0.0), vec3(0.5, 0.0, 0.0), vec3(0.0, 1.0, 0.0), vec3(-1.0, 100.0, -1.0), vec3(0.0, 0.0, 1.0), tmpHitPoint, uvw, tmpDist, frontFacing))
-	////if (PickTriangle(v0, v1, v2, rayOrigin.xyz, rayDir.xyz, tmpHitPoint, uvw, tmpDist, frontFacing))
-	//if (HitTest(v0, v1, v2, rayOrigin.xyz, rayDir.xyz, dist, hitPoint, isLine))
-	////if (v0.x == -.5 && v0.y == 0 && v0.z == 0)
-	////if (v2.x == 0 && v2.y == 1 && v2.z == 0)
-	////if (rayDir.y > 0)
-	////if (rayOrigin.x < 0.41 && rayOrigin.x > 0.39 && rayOrigin.y > 0.49 && rayOrigin.y < 0.51)
-	////if (pixel.y>400 && pixel.x>400)
-	//if (rayOrigin.x < 0)
-	////if (rayOrigin.z == 0 )
-	////if (textureSize(PositionIndexTexture)==3)
-	//if (HitTest(vec3(0, 0, 0.4), vec3(0.4, 0, 0.4), vec3(0.4, 0.4, 0.4), rayOrigin.xyz, rayDir.xyz, dist, hitPoint, isLine, isFront, tmpHitNormal))
-	//if (HitTest(vec3(-0.2, 0, 0), vec3(0.2, 0, 0), vec3(0.2, 0, 0.4), rayOrigin.xyz, rayDir.xyz, dist, hitPoint, isLine, isFront, tmpHitNormal))
-	//if (pixel.x>400 && pixel.z == 0)
-	//if (count>40)
-	//	outFragColor = vec4(0, 1, 0, 1);
-	//else
-	//	outFragColor = vec4(1, 1, 0, 1);
-	//return;
-
-	//if (rayOrigin.x<0.5)
-	//	discard;
-
-
+	//dla ka¿dego trójk¹ta
 	for (int i = 0; i < count; i++)
 	{
-		isLine = false;
+		//pobranie wspó³rzêdnych
 		GetTriangleCoords(i, v0, v1, v2);
-		//if (PickTriangle(v0, v1, v2, rayOrigin.xyz, rayDir.xyz, tmpHitPoint, uvw, tmpDist, frontFacing))
-		if (HitTest(v0, v1, v2, rayOrigin, rayDir, tmpDist, tmpHitPoint, isLine, isFront, tmpHitNormal))
+		//test przeciêcia
+		if (HitTest(v0, v1, v2, rayOrigin, rayDir, tmpDist, tmpHitPoint, isFront, tmpHitNormal))
 		{
-			//sprawdzanie czy po³o¿ony bli¿ej od poprzedniego
+			//sprawdzanie czy znaleziony po³o¿ony jest bli¿ej od poprzedniego
 			if (isFront && (hitTriangle == -1 || tmpDist < dist))
 			{
 				hitPoint = tmpHitPoint;
 				hitTriangle = i;
 				dist = tmpDist;
 				hitNormal = tmpHitNormal;
-
-				//uvw = tmpUvw;
-				//frontFacing = tmpFrontFacing;
-			}
-			if (isLine)
-			{
-				//outColor = vec4(0, 0, 1, 1);
-				//return;
 			}
 		}
 
 	}
 	if (hitTriangle == -1)
 	{
+		//w przypadku nieznalezienia przeciêcia
 		outColor = vec4(1, 1, 1, 1);
 		return false;
 	}
-	//if (hitPoint.z <-0.2)
-	//{
-	//	outColor = vec4(1, 0, 0, 1);
-	//	return;
-	//}
 
-	//vec3 vn0, vn1, vn2;
-	//GetTriangleNormals(hitTriangle, vn0, vn1, vn2);
-
+	//pobieranie materia³u trójk¹ta
 	SMaterial material;
 	GetMaterial(hitTriangle, material);
 
+	//wstêpna kalkulacja koloru
 	outColor = CalculateLambertColor(material, hitPoint, hitNormal);
-	//outColor = vec4(1, 0, 0, 1);
+	//wspó³czynnik odbicia
 	reflectionRatio = material.reflectionRatio;
 
+	//sprawdzenie warunku poziomu g³êbokoœci oraz czy dany obiekt nie wytwarza œwiat³a (nie jest Ÿród³em œwiat³a)
 	if (depth <= int(RayTracerDepth) && !IsEmissive(material))
 	{
+		//sprawdzenie przeŸroczystoœci
 		transmissiveRatio = GetTransmissiveRatio(material);
 		isTransmissive = transmissiveRatio < 1;
 		if (isTransmissive)
@@ -427,6 +281,7 @@ bool RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 			//dodatkowe minimalne przesuniecie (likwiduje bledy kolejnego przeciecia)
 			transmissiveOrigin = hitPoint + transmissiveDir*0.0001;
 		}
+		//sprawdzenie odbicia
 		isReflective = reflectionRatio > 0;
 		if (isReflective)
 		{	//ustawiamy promien odbicia
@@ -440,6 +295,7 @@ bool RayTrace(int depth, vec3 rayOrigin, vec3 rayDir, inout vec4 outColor,
 	return true;
 }
 
+//funkcje do obs³ugi kolejnych poziomów g³êbokoœci techniki œledzenia promieni
 void RayTrace6(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 {
 	vec3 transmissiveOrigin, transmissiveDir, reflectionOrigin, reflectionDir;
@@ -488,7 +344,6 @@ void RayTrace4(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 	{	//funckjonalnoœc refleksji
 		RayTrace5(reflectionOrigin, reflectionDir, reflectionColor);
 		outColor = CalculateReflectionColor(outColor, reflectionColor, reflectionRatio);
-		outTest = vec3(1);
 	}
 }
 void RayTrace3(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
@@ -554,18 +409,6 @@ void RayTrace1(vec3 rayOrigin, vec3 rayDir, inout vec4 outColor)
 
 void main()
 {
-
-	//if (ray.z>0.0)
-	//if (pixel.y>400)
-	//if ((ProjectionMatrixInverse * vec4(pixel, 1.0)).x>0)
-	//	outFragColor = vec4(0, 1, 0, 1);
-	//else
-	//	outFragColor = vec4(0, 1, 1, 1);
-	//return;
-
-
-
-
 	vec3 ray, origin;
 	vec4 result;
 
@@ -579,124 +422,4 @@ void main()
 	//przypisanie wyjsciowego koloru
 	outFragColor = result;
 	return;
-
-
-
-
-
-
-
-
-	/*
-
-
-	int count = GetTrianglesCount();
-	vec3 v0, v1, v2;
-	int hitTriangle = -1;
-	int hitDistance;
-
-	float dist = 0, tmpDist = 0;
-	vec3 hitPoint = vec3(0), tmpHitPoint = vec3(0);
-	vec3 hitNormal = vec3(0), tmpHitNormal = vec3(0);
-	bool isLine = false, isFront = false;
-
-	vec3 uvw;
-	float frontFacing;
-
-	////pobranie trójk¹ta
-	//GetTriangleCoords(0, v0, v1, v2);
-	////if (PickTriangle(vec3(-0.5, 0.0, 0.0), vec3(0.5, 0.0, 0.0), vec3(0.0, 1.0, 0.0), vec3(-1.0, 100.0, -1.0), vec3(0.0, 0.0, 1.0), tmpHitPoint, uvw, tmpDist, frontFacing))
-	////if (PickTriangle(v0, v1, v2, origin.xyz, ray.xyz, tmpHitPoint, uvw, tmpDist, frontFacing))
-	//if (HitTest(v0, v1, v2, origin.xyz, ray.xyz, dist, hitPoint, isLine))
-	////if (v0.x == -.5 && v0.y == 0 && v0.z == 0)
-	////if (v2.x == 0 && v2.y == 1 && v2.z == 0)
-	////if (ray.y > 0)
-	////if (origin.x < 0.41 && origin.x > 0.39 && origin.y > 0.49 && origin.y < 0.51)
-	////if (pixel.y>400 && pixel.x>400)
-	//if (origin.x < 0)
-	////if (origin.z == 0 )
-	////if (textureSize(PositionIndexTexture)==3)
-	//if (HitTest(vec3(0, 0, 0.4), vec3(0.4, 0, 0.4), vec3(0.4, 0.4, 0.4), origin.xyz, ray.xyz, dist, hitPoint, isLine, isFront, tmpHitNormal))
-	//if (HitTest(vec3(-0.2, 0, 0), vec3(0.2, 0, 0), vec3(0.2, 0, 0.4), origin.xyz, ray.xyz, dist, hitPoint, isLine, isFront, tmpHitNormal))
-	//if (pixel.x>400 && pixel.z == 0)
-	//if (count>40)
-	//	outFragColor = vec4(0, 1, 0, 1);
-	//else
-	//	outFragColor = vec4(1, 1, 0, 1);
-	//return;
-
-	//if (origin.x<0.5)
-	//	discard;
-
-
-	for (int i = 0; i < count; i++)
-	{
-		isLine = false;
-		GetTriangleCoords(i, v0, v1, v2);
-		//if (PickTriangle(v0, v1, v2, origin.xyz, ray.xyz, tmpHitPoint, uvw, tmpDist, frontFacing))
-		if (HitTest(v0, v1, v2, origin.xyz, ray.xyz, tmpDist, tmpHitPoint, isLine, isFront, tmpHitNormal))
-		{
-			//sprawdzanie czy po³o¿ony bli¿ej od poprzedniego
-			if (hitTriangle == -1 || tmpDist < dist)
-			{
-				hitPoint = tmpHitPoint;
-				hitTriangle = i;
-				dist = tmpDist;
-				hitNormal = tmpHitNormal;
-
-				//uvw = tmpUvw;
-				//frontFacing = tmpFrontFacing;
-			}
-			if (isLine)
-			{
-				//outFragColor = vec4(0, 0, 1, 1);
-				//return;
-			}
-			if (i == 13)
-			{
-				//outFragColor = vec4(0, 1, 1, 1);
-				//return;
-			}
-
-		}
-
-	}
-	if (hitTriangle == -1)
-	{
-		outFragColor = vec4(1, 0, 0, 1);
-		return;
-	}
-
-	vec3 vn0, vn1, vn2;
-	GetTriangleNormals(hitTriangle, vn0, vn1, vn2);
-
-	vec4 matDiffuse, matAmbient;
-	float reflectionRatio;
-	GetMaterial(hitTriangle, matDiffuse, matAmbient, reflectionRatio);
-
-	result = CalculateLambertColor(matAmbient, matDiffuse, hitPoint, hitNormal);
-
-	vec4 transColor;
-	//if (IsTransmissive(matDiffuse, matAmbient))
-	//{	//ustawiamy promien przezroczystosci
-	//	//todo
-	//	transColor = vec4(0);
-
-	//	result += transColor;
-	//}
-
-
-
-	outFragColor = vec4(result.rgb, 1.0);
-	//outFragColor = vec4(1, 1, 0, 1);
-
-
-	//if (matDiffuse.xyz == vec3(1, 1, 0)
-	//	&& matAmbient.xyz == vec3(0.2, 0.2, 0))
-	//{
-	//}else
-	//	outFragColor = vec4(0, 1, 0, 1);
-
-	//outFragColor = vec4(1, 1, 1, 1);
-	*/
 }

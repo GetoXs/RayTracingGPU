@@ -222,7 +222,6 @@
     </_EmbedManagedResourceFile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="SceneConfigs\SceneConfig.json">
       <Filter>Scene Configs</Filter>
     </None>

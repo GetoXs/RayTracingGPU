@@ -275,14 +275,6 @@ void GLMgr::Init()
 	OpenGLHelper::RegisterTexture(GL_TEXTURE1, tmpBufferF, sizeof(float) * buffCount, GL_RGB32F,
 		&TextureBuffer_PositionCords, &Texture_PositionCords);
 
-	tmpBufferUI = this->CurrentScene->GetNormalIndexData(&buffCount);
-	OpenGLHelper::RegisterTexture(GL_TEXTURE2, tmpBufferUI, sizeof(unsigned int) * buffCount, GL_R32I,
-		&TextureBuffer_NormalIndex, &Texture_NormalIndex);
-
-	tmpBufferF = this->CurrentScene->GetNormalData(&buffCount);
-	OpenGLHelper::RegisterTexture(GL_TEXTURE3, tmpBufferF, sizeof(float) * buffCount, GL_RGB32F,
-		&TextureBuffer_NormalCords, &Texture_NormalCords);
-
 	tmpBufferUI = this->CurrentScene->GetMaterialIndexData(&buffCount);
 	OpenGLHelper::RegisterTexture(GL_TEXTURE4, tmpBufferUI, sizeof(unsigned int) * buffCount, GL_R32I,
 		&TextureBuffer_MaterialIndex, &Texture_MaterialIndex);
@@ -568,8 +560,6 @@ void GLMgr::RenderSceneOnGPU()
 	//ustawienie tekstur
 	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "PositionIndexTexture"), 0);
 	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "PositionCordsTexture"), 1);
-	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "NormalTexture"), 2);
-	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "NormalIndexTexture"), 3);
 	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "MaterialIndexTexture"), 4);
 	glUniform1i(OpenGLHelper::GetUniformLocation(Shader_TestHit, "MaterialPropertiesTexture"), 5);
 	//ustawienie wlasciwosci swiatla
@@ -914,8 +904,6 @@ GLMgr::~GLMgr(void)
 
 	OpenGLHelper::DeleteTexture(&this->TextureBuffer_PositionIndex, &this->Texture_PositionIndex);
 	OpenGLHelper::DeleteTexture(&this->TextureBuffer_PositionCords, &this->Texture_PositionCords);
-	OpenGLHelper::DeleteTexture(&this->TextureBuffer_NormalIndex, &this->Texture_NormalIndex);
-	OpenGLHelper::DeleteTexture(&this->TextureBuffer_NormalCords, &this->Texture_NormalCords);
 	OpenGLHelper::DeleteTexture(&this->TextureBuffer_MaterialIndex, &this->Texture_MaterialIndex);
 	OpenGLHelper::DeleteTexture(&this->TextureBuffer_MaterialProperties, &this->Texture_MaterialProperties);
 
@@ -940,10 +928,6 @@ GLMgr::GLMgr()
 	this->Texture_PositionIndex = 0;
 	this->TextureBuffer_PositionCords = 0;
 	this->Texture_PositionCords = 0;
-	this->TextureBuffer_NormalIndex = 0;
-	this->Texture_NormalIndex = 0;
-	this->TextureBuffer_NormalCords = 0;
-	this->Texture_NormalCords = 0;
 	this->TextureBuffer_MaterialIndex = 0;
 	this->Texture_MaterialIndex = 0;
 	this->TextureBuffer_MaterialProperties = 0;

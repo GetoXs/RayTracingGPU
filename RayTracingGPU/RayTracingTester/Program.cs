@@ -20,7 +20,7 @@ namespace RayTracingTester
 
 		static void Main(string[] args)
 		{
-			TestRTDepthGPUAndCPU(@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\SceneConfig-Bunny3.json", 30000, 0, RTDepthStart, RTDepthEnd);
+			TestRTDepthGPUAndCPU(@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\SceneConfig-Bunny3.json", 60000, 0, RTDepthStart, RTDepthEnd);
 
 			//TestRTWindowsSize(@"C:\Users\Mateusz\Desktop\mgr\proj\Qt\git\RayTracingGPU\RayTracingGPU\SceneConfigs\SceneConfig-Sphere.json", 20000, 100, 50, 20);
 
