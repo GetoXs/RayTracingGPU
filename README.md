@@ -12,6 +12,6 @@ Whole project configured for VS2012/2013.
 * [FreeGLUT](http://freeglut.sourceforge.net/) - as OpenGL mess helper
 * [Qt](http://qt-project.org/) - as GUI
 
-###Project Contains:
+### Project Contains:
 * RayTracingGPU - Core project with
 * RayTracingTester - Helper application for testing purpose.
